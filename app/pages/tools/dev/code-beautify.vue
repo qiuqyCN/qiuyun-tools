@@ -85,7 +85,7 @@ const pluginMap: Record<string, any[]> = {
   ts: [typescript, estree],
   html: [html],
   css: [postcss],
-  json: [json as any].filter(Boolean),
+  json: [], // JSON 不走 prettier，用原生处理
   md: [markdown],
   yaml: [yaml],
 }
@@ -93,9 +93,19 @@ const pluginMap: Record<string, any[]> = {
 async function runFormat(printWidth = 80) {
   errMsg.value = ''
   try {
+    // JSON 原生处理（prettier standalone 无内置 JSON parser）
+    if (lang.value === 'json') {
+      if (!input.value.trim()) { output.value = ''; return }
+      if (printWidth >= 99999) {
+        output.value = JSON.stringify(JSON.parse(input.value))
+      } else {
+        output.value = JSON.stringify(JSON.parse(input.value), null, tabWidth.value || 2)
+      }
+      return
+    }
     const parserMap: Record<string, string> = {
       js: 'babel', ts: 'typescript', html: 'html', css: 'css',
-      json: 'json', md: 'markdown', yaml: 'yaml',
+      md: 'markdown', yaml: 'yaml',
     }
     const result = await prettier.format(input.value, {
       parser: parserMap[lang.value],
