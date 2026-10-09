@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-5xl mx-auto px-8 py-10">
+  <div class="max-w-6xl mx-auto px-6 lg:px-8 py-8 lg:py-10">
     <!-- Hero -->
     <header class="mb-10">
       <h1 class="text-3xl font-bold text-slate-800 mb-2">开发者工具集</h1>
