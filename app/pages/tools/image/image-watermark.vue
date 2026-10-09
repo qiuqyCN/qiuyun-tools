@@ -2,10 +2,32 @@
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <section class="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
       <h3 class="text-sm font-semibold text-slate-700">图片水印</h3>
-      <label class="flex flex-col items-center justify-center h-36 border-2 border-dashed border-slate-200 rounded-lg cursor-pointer hover:border-indigo-400">
-        <input type="file" accept="image/*" class="hidden" @change="onFile" />
-        <span class="text-sm text-slate-500">选择底图</span>
-      </label>
+      <!-- Upload zone -->
+      <div
+        class="relative"
+        @dragover.prevent="dragOver = true"
+        @dragleave.prevent="dragOver = false"
+        @drop.prevent="onDrop"
+      >
+        <label
+          v-if="!baseImg"
+          class="flex flex-col items-center justify-center h-36 border-2 border-dashed rounded-lg cursor-pointer transition"
+          :class="dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
+        >
+          <input type="file" accept="image/*" class="hidden" @change="onFile" />
+          <component :is="icons.Upload" class="w-6 h-6 text-slate-300 mb-1" />
+          <span class="text-sm text-slate-500">选择底图</span>
+        </label>
+        <div v-else class="relative group rounded-lg overflow-hidden border border-slate-200">
+          <img :src="baseImg.src" class="w-full h-36 object-contain bg-slate-50" />
+          <button
+            @click.stop="clearFile"
+            class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100"
+          >
+            <component :is="icons.X" class="w-4 h-4" />
+          </button>
+        </div>
+      </div>
       <div v-if="baseImg" class="space-y-3 text-xs">
         <div>
           <label class="block text-slate-500 mb-1">水印文字</label>
@@ -46,10 +68,12 @@
 
     <section class="bg-white rounded-xl border border-slate-200 p-5 flex flex-col items-center">
       <h3 class="text-sm font-semibold text-slate-700 mb-3">预览</h3>
-      <div class="flex-1 flex items-center justify-center">
+      <div class="flex-1 flex items-center justify-center w-full">
+        <!-- 有水印结果时显示结果 -->
         <img v-if="resultUrl" :src="resultUrl" class="max-w-full max-h-96 rounded-lg border border-slate-200" />
-        <canvas v-else ref="canvasRef" class="max-w-full max-h-96 rounded-lg border border-slate-200 hidden"></canvas>
-        <div v-if="!resultUrl && !baseImg" class="h-40 flex items-center text-slate-400 text-sm">等待上传</div>
+        <!-- 无水印结果但已上传时显示原图 -->
+        <img v-else-if="baseImg" :src="baseImg.src" class="max-w-full max-h-96 rounded-lg border border-slate-200 bg-slate-50" />
+        <div v-else class="h-40 flex items-center text-slate-400 text-sm">等待上传</div>
       </div>
       <button v-if="resultUrl" @click="download" class="mt-4 h-9 px-4 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">下载</button>
     </section>
@@ -57,6 +81,8 @@
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
+
 const baseImg = ref<HTMLImageElement | null>(null)
 const text = ref('Watermark')
 const fontSize = ref(48)
@@ -65,14 +91,31 @@ const angle = ref(-30)
 const color = ref('#ffffff')
 const position = ref('tile')
 const resultUrl = ref('')
+const dragOver = ref(false)
 
-function onFile(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file) return
+function clearFile() {
+  if (baseImg.value?.src.startsWith('blob:')) URL.revokeObjectURL(baseImg.value.src)
+  baseImg.value = null
+  resultUrl.value = ''
+}
+
+function handleFile(file: File) {
+  if (!file.type.startsWith('image/')) return
   const url = URL.createObjectURL(file)
   const img = new Image()
   img.onload = () => { baseImg.value = img; resultUrl.value = '' }
   img.src = url
+}
+
+function onFile(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (file) handleFile(file)
+}
+
+function onDrop(e: DragEvent) {
+  dragOver.value = false
+  const file = e.dataTransfer?.files?.[0]
+  if (file) handleFile(file)
 }
 
 function apply() {

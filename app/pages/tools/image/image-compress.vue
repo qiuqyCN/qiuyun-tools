@@ -3,18 +3,36 @@
     <!-- Input -->
     <section class="bg-white rounded-xl border border-slate-200 p-5">
       <h3 class="text-sm font-semibold text-slate-700 mb-3">图片压缩</h3>
-      <label
-        class="flex flex-col items-center justify-center h-48 border-2 border-dashed border-slate-200 rounded-lg cursor-pointer hover:border-indigo-400 transition"
+      <!-- Upload zone with preview -->
+      <div
+        class="relative"
+        @dragover.prevent="dragOver = true"
+        @dragleave.prevent="dragOver = false"
+        @drop.prevent="onDrop"
       >
-        <input type="file" accept="image/*" class="hidden" @change="onFile" />
-        <component :is="icons.Upload" class="w-8 h-8 text-slate-300 mb-2" />
-        <span class="text-sm text-slate-500">点击或拖拽上传图片</span>
-      </label>
-      <div v-if="original" class="mt-4 space-y-3">
-        <div class="grid grid-cols-2 gap-2 text-xs text-slate-500">
-          <div>原始大小: <span class="font-mono text-slate-700">{{ fmtSize(original.size) }}</span></div>
-          <div>尺寸: <span class="font-mono text-slate-700">{{ original.width }} × {{ original.height }}</span></div>
+        <label
+          v-if="!original"
+          class="flex flex-col items-center justify-center h-48 border-2 border-dashed rounded-lg cursor-pointer transition"
+          :class="dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
+        >
+          <input type="file" accept="image/*" class="hidden" @change="onFile" />
+          <component :is="icons.Upload" class="w-8 h-8 text-slate-300 mb-2" />
+          <span class="text-sm text-slate-500">点击或拖拽上传图片</span>
+        </label>
+        <div v-else class="relative group rounded-lg overflow-hidden border border-slate-200">
+          <img :src="original.url" class="w-full max-h-48 object-contain bg-slate-50" />
+          <button
+            @click.stop="clearFile"
+            class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100"
+          >
+            <component :is="icons.X" class="w-4 h-4" />
+          </button>
+          <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-3 py-2 text-xs text-white">
+            {{ original.file.name }} · {{ fmtSize(original.size) }} · {{ original.width }}×{{ original.height }}
+          </div>
         </div>
+      </div>
+      <div v-if="original" class="mt-4 space-y-3">
         <div>
           <label class="block text-xs text-slate-500 mb-1">压缩质量: {{ quality }}%</label>
           <input v-model.number="quality" type="range" min="10" max="100" class="w-full" />
@@ -53,6 +71,7 @@ const original = ref<{ url: string; size: number; width: number; height: number;
 const compressed = ref<{ url: string; size: number; width: number; height: number; blob: Blob } | null>(null)
 const quality = ref(70)
 const maxWidth = ref(1920)
+const dragOver = ref(false)
 
 const savedPct = computed(() => {
   if (!original.value || !compressed.value) return 0
@@ -65,9 +84,15 @@ function fmtSize(bytes: number) {
   return (bytes / 1024 / 1024).toFixed(2) + ' MB'
 }
 
-function onFile(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file) return
+function clearFile() {
+  if (original.value) URL.revokeObjectURL(original.value.url)
+  original.value = null
+  compressed.value = null
+  maxWidth.value = 1920
+}
+
+function handleFile(file: File) {
+  if (!file.type.startsWith('image/')) return
   const url = URL.createObjectURL(file)
   const img = new Image()
   img.onload = () => {
@@ -76,6 +101,17 @@ function onFile(e: Event) {
     compressed.value = null
   }
   img.src = url
+}
+
+function onFile(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (file) handleFile(file)
+}
+
+function onDrop(e: DragEvent) {
+  dragOver.value = false
+  const file = e.dataTransfer?.files?.[0]
+  if (file) handleFile(file)
 }
 
 async function compress() {
@@ -95,9 +131,15 @@ async function compress() {
   canvas.width = w
   canvas.height = h
   const ctx = canvas.getContext('2d')!
-  ctx.drawImage(img, 0, 0, w, h)
+  // JPEG 不透明，先填白底避免 PNG 透明区变深色
   const mime = original.value.file.type === 'image/png' ? 'image/png' : 'image/jpeg'
+  if (mime === 'image/jpeg') {
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, w, h)
+  }
+  ctx.drawImage(img, 0, 0, w, h)
   const blob: Blob = await new Promise(res => canvas.toBlob(b => res(b as Blob), mime, quality.value / 100))
+  if (compressed.value) URL.revokeObjectURL(compressed.value.url)
   compressed.value = { url: URL.createObjectURL(blob), size: blob.size, width: w, height: h, blob }
 }
 

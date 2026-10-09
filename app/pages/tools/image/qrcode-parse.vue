@@ -2,11 +2,22 @@
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <section class="bg-white rounded-xl border border-slate-200 p-5">
       <h3 class="text-sm font-semibold text-slate-700 mb-3">上传图片识别</h3>
-      <label class="flex flex-col items-center justify-center h-40 border-2 border-dashed border-slate-200 rounded-lg cursor-pointer hover:border-indigo-400 transition">
-        <input type="file" accept="image/*" class="hidden" @change="onFile" />
-        <component :is="icons.Scan" class="w-8 h-8 text-slate-300 mb-2" />
-        <span class="text-sm text-slate-500">选择含二维码的图片</span>
-      </label>
+      <!-- Upload zone -->
+      <div
+        class="relative mb-3"
+        @dragover.prevent="dragOver = true"
+        @dragleave.prevent="dragOver = false"
+        @drop.prevent="onDrop"
+      >
+        <label
+          class="flex flex-col items-center justify-center h-40 border-2 border-dashed rounded-lg cursor-pointer transition"
+          :class="dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
+        >
+          <input type="file" accept="image/*" class="hidden" @change="onFile" />
+          <component :is="icons.Scan" class="w-8 h-8 text-slate-300 mb-2" />
+          <span class="text-sm text-slate-500">选择含二维码的图片</span>
+        </label>
+      </div>
       <div v-if="src" class="mt-3">
         <img :src="src" class="max-w-full max-h-40 rounded-lg" />
       </div>
@@ -38,17 +49,28 @@ const src = ref('')
 const result = ref('')
 const error = ref('')
 const canvasRef = ref<HTMLCanvasElement | null>(null)
+const dragOver = ref(false)
 
 const isUrl = computed(() => result.value && /^https?:\/\//i.test(result.value))
 
-function onFile(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file) return
+function handleFile(file: File) {
+  if (!file.type.startsWith('image/')) return
   const url = URL.createObjectURL(file)
   src.value = url
   result.value = ''
   error.value = ''
   decodeQr(url)
+}
+
+function onFile(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (file) handleFile(file)
+}
+
+function onDrop(e: DragEvent) {
+  dragOver.value = false
+  const file = e.dataTransfer?.files?.[0]
+  if (file) handleFile(file)
 }
 
 async function decodeQr(url: string) {
