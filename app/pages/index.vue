@@ -53,4 +53,32 @@ import { categories } from '~/data/tools'
 import * as icons from 'lucide-vue-next'
 
 const totalTools = computed(() => categories.reduce((s, c) => s + c.tools.length, 0))
+
+// ============ SEO ============
+const siteUrl = 'https://qiuyun.tools'
+const toolKeywords = computed(() => {
+  const allTools = categories.flatMap(c => c.tools.map(t => t.name))
+  const allCategories = categories.map(c => c.name)
+  return allTools.concat(allCategories).join('、')
+})
+
+useSeoMeta({
+  title: '免费在线开发者工具箱',
+  description: `免费在线开发者工具箱,包含${totalTools.value}+实用工具:JSON格式化、加密工具、图片压缩、代码美化、前端CSS生成器、PDF处理、Markdown编辑、日期计算等。所有工具纯前端运行,数据不上传更安全,无需注册即可使用。`,
+  keywords: `开发者工具,在线工具,JSON格式化,Base64编码,MD5加密,正则测试,时间戳转换,Cron生成,颜色选择器,二维码生成,图片压缩,PDF合并,Markdown编辑器,BMI计算器,房贷计算器,${toolKeywords.value}`,
+  ogTitle: '秋雨工具 - 一站式免费开发者工具箱',
+  ogDescription: `60+在线免费工具,覆盖开发、加密、文本、图片、前端、文档、生活等场景,纯前端运行更安全。`,
+  ogImage: `${siteUrl}/favicon.png`,
+  ogUrl: siteUrl,
+  ogType: 'website',
+  twitterTitle: '秋雨工具 - 一站式免费开发者工具箱',
+  twitterDescription: '60+在线免费工具,覆盖开发、加密、文本、图片、前端、文档、生活等场景,纯前端运行更安全。',
+  twitterImage: `${siteUrl}/favicon.png`,
+})
+
+useHead({
+  link: [
+    { rel: 'canonical', href: siteUrl },
+  ],
+})
 </script>
