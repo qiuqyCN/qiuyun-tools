@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@lucide/vue": "^1.52.0",
+    "@nuxtjs/i18n": "^10.6.0",
     "@nuxtjs/seo": "^5.3.16",
     "chroma-js": "^3.2.0",
     "class-variance-authority": "^0.7.1",

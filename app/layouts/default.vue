@@ -8,25 +8,25 @@
       ]"
     >
       <!-- Logo + Home -->
-      <NuxtLink to="/" class="h-16 flex items-center gap-2.5 px-4 border-b border-slate-100 shrink-0 hover:bg-slate-50 transition cursor-pointer group">
+      <NuxtLink :to="homeRoute" class="h-16 flex items-center gap-2.5 px-4 border-b border-slate-100 shrink-0 hover:bg-slate-50 transition cursor-pointer group">
         <img src="/favicon.png" alt="logo" class="w-9 h-9 rounded-xl shrink-0 shadow-sm object-contain" />
         <div v-if="!collapsed" class="min-w-0 leading-tight">
-          <div class="font-semibold text-slate-800 text-[15px] group-hover:text-indigo-600 transition">开发者工具箱</div>
-          <div class="text-[11px] text-slate-400 truncate">一站式工具箱</div>
+          <div class="font-semibold text-slate-800 text-[15px] group-hover:text-indigo-600 transition">{{ $t('site.name') }}</div>
+          <div class="text-[11px] text-slate-400 truncate">{{ $t('site.tagline') }}</div>
         </div>
       </NuxtLink>
 
       <!-- Home entry (after Logo, before Search) -->
       <div class="px-2 pt-2 shrink-0">
         <NuxtLink
-          to="/"
+          :to="homeRoute"
           class="flex items-center gap-2 px-2.5 py-2 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-indigo-600 transition"
           active-class="bg-indigo-50 text-indigo-600 font-medium"
-          :title="collapsed ? '首页' : undefined"
+          :title="collapsed ? $t('common.backHome') : undefined"
           :class="collapsed ? 'justify-center' : ''"
         >
           <component :is="icons.Home" class="w-4 h-4 shrink-0" />
-          <span v-if="!collapsed">首页</span>
+          <span v-if="!collapsed">{{ $t('common.backHome') }}</span>
         </NuxtLink>
       </div>
 
@@ -39,7 +39,7 @@
           />
           <input
             v-model="searchQuery"
-            placeholder="搜索工具..."
+            :placeholder="isZhCN ? '搜索工具...' : 'Search tools...'"
             class="w-full h-9 pl-9 pr-3 text-sm rounded-lg border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
           />
         </div>
@@ -67,7 +67,7 @@
               <NuxtLink
                 v-for="tool in cat.tools"
                 :key="tool.id"
-                :to="tool.route"
+                :to="resolveToolRoute(tool.route)"
                 class="group relative flex items-center gap-2 px-2.5 py-1.5 text-sm text-slate-600 rounded-md hover:bg-slate-100 hover:text-indigo-600 transition"
                 active-class="bg-indigo-50 text-indigo-600 font-medium before:content-[''] before:absolute before:-left-2.5 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-4 before:bg-indigo-500 before:rounded-full"
               >
@@ -79,14 +79,18 @@
         </template>
       </nav>
 
-      <!-- Collapse toggle -->
-      <div class="border-t border-slate-100 px-2 py-2 shrink-0">
+      <!-- Footer: Language Switcher + Collapse -->
+      <div class="border-t border-slate-100 shrink-0">
+        <!-- Language Switcher -->
+        <div v-if="!collapsed" class="px-2 py-2 border-b border-slate-100">
+          <LanguageSwitcher />
+        </div>
         <button
           @click="collapsed = !collapsed"
           class="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs text-slate-400 hover:text-indigo-500 hover:bg-slate-50 rounded-md transition"
         >
           <component :is="collapsed ? icons.ChevronRight : icons.ChevronLeft" class="w-4 h-4" />
-          <span v-if="!collapsed">收起侧边栏</span>
+          <span v-if="!collapsed">{{ isZhCN ? '收起侧边栏' : 'Collapse' }}</span>
         </button>
       </div>
     </aside>
@@ -98,10 +102,10 @@
       </main>
       <footer class="border-t border-slate-200 bg-white/60 backdrop-blur-sm">
         <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between text-xs text-slate-400">
-          <span>© {{ new Date().getFullYear() }} 开发者工具箱 · 一站式开发者工具箱</span>
+          <span>© {{ new Date().getFullYear() }} {{ $t('site.name') }}</span>
           <span class="flex items-center gap-2">
             <component :is="icons.Shield" class="w-3.5 h-3.5" />
-            本地安全处理
+            {{ isZhCN ? '本地安全处理' : 'Processed securely locally' }}
           </span>
         </div>
       </footer>
@@ -111,12 +115,41 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { categories } from '~/data/tools'
+import { getCategories } from '~/data/tools'
 import * as icons from 'lucide-vue-next'
 
-const openCats = ref(new Set(categories.map(c => c.id)))
+// 统一多语言 SEO(必须在最前面,确保 SSR 阶段立即求值)
+useSiteSeo()
+
+const { locale } = useI18n()
+
+const isZhCN = computed(() => locale.value === 'zh-CN')
+
+const openCats = ref(new Set<string>())
 const searchQuery = ref('')
 const collapsed = ref(false)
+
+// 带多语言文案的分类
+const categories = computed(() => getCategories(locale.value))
+
+// 初始化展开所有分类
+watch(categories, (cats) => {
+  if (openCats.value.size === 0 && cats.length > 0) {
+    openCats.value = new Set(cats.map(c => c.id))
+  }
+}, { immediate: true })
+
+// 首页路由(带语言前缀)
+const homeRoute = computed(() => {
+  if (locale.value === 'zh-CN') return '/'
+  return `/${locale.value}`
+})
+
+// 工具路由(带语言前缀)
+function resolveToolRoute(route: string) {
+  if (locale.value === 'zh-CN') return route
+  return `/${locale.value}${route}`
+}
 
 function toggleCategory(id: string) {
   const next = new Set(openCats.value)
@@ -127,14 +160,14 @@ function toggleCategory(id: string) {
 
 const filteredCategories = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
-  if (!q) return categories
-  return categories
+  if (!q) return categories.value
+  return categories.value
     .map(cat => ({
       ...cat,
       tools: cat.tools.filter(
-        t =>
-          t.name.toLowerCase().includes(q) ||
-          t.desc.toLowerCase().includes(q),
+        tool =>
+          tool.name.toLowerCase().includes(q) ||
+          tool.desc.toLowerCase().includes(q),
       ),
     }))
     .filter(c => c.tools.length > 0)
