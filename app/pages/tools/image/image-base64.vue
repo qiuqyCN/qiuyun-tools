@@ -1,59 +1,82 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- File → Base64 -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">图片 → Base64</h3>
-      <!-- Upload zone -->
-      <div
-        class="relative mb-3"
-        @dragover.prevent="dragOver1 = true"
-        @dragleave.prevent="dragOver1 = false"
-        @drop.prevent="onDrop1"
-      >
-        <label
-          v-if="!srcPreview"
-          class="flex flex-col items-center justify-center h-32 border-2 border-dashed rounded-lg cursor-pointer transition"
-          :class="dragOver1 ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">图片转 Base64</h3>
+      <span class="text-xs text-slate-400">图片文件转 Base64 字符串，或从 Base64 还原图片</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <!-- File → Base64 -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center gap-2 mb-2">
+          <component :is="icons.ImageToIcon" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">图片 → Base64</span>
+        </div>
+        <!-- Upload zone -->
+        <div
+          class="relative mb-3"
+          @dragover.prevent="dragOver1 = true"
+          @dragleave.prevent="dragOver1 = false"
+          @drop.prevent="onDrop1"
         >
-          <input type="file" accept="image/*" class="hidden" @change="file2b64" />
-          <component :is="icons.Upload" class="w-6 h-6 text-slate-300 mb-1" />
-          <span class="text-sm text-slate-500">选择图片文件</span>
-        </label>
-        <div v-else class="relative group rounded-lg overflow-hidden border border-slate-200">
-          <img :src="srcPreview" class="w-full h-32 object-contain bg-slate-50" />
-          <button
-            @click.stop="clearSrc"
-            class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100"
+          <label
+            v-if="!srcPreview"
+            class="flex flex-col items-center justify-center h-32 border-2 border-dashed rounded-xl cursor-pointer transition"
+            :class="dragOver1 ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
           >
-            <component :is="icons.X" class="w-4 h-4" />
-          </button>
+            <input type="file" accept="image/*" class="hidden" @change="file2b64" />
+            <component :is="icons.ImageUp" class="w-6 h-6 text-slate-300 mb-1" />
+            <span class="text-sm text-slate-500">选择图片文件</span>
+          </label>
+          <div v-else class="relative group rounded-lg overflow-hidden border border-slate-200">
+            <img :src="srcPreview" class="w-full h-32 object-contain bg-slate-50" />
+            <button
+              @click.stop="clearSrc"
+              class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100"
+            >
+              <component :is="icons.X" class="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        <textarea
+          v-model="b64output"
+          class="w-full h-40 p-3 text-xs rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+          :placeholder="srcPreview ? '' : '上传图片后 Base64 将显示在此处...'"
+        />
+        <div v-if="b64output" class="mt-2 flex items-center gap-3 text-xs text-slate-400">
+          <span>长度: {{ b64output.length }}</span>
+          <CopyButton :text="b64output" label="复制" />
         </div>
       </div>
-      <textarea
-        v-model="b64output"
-        class="w-full h-40 p-3 text-xs rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-      />
-      <div v-if="b64output" class="mt-2 flex items-center gap-3 text-xs text-slate-400">
-        <span>长度: {{ b64output.length }}</span>
-        <CopyButton :text="b64output" label="复制" />
-      </div>
-    </section>
 
-    <!-- Base64 → File -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">Base64 → 图片</h3>
-      <textarea
-        v-model="b64input"
-        placeholder="粘贴 base64 或 data:image/...;base64,..."
-        class="w-full h-40 p-3 text-xs rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-      />
-      <div v-if="previewUrl" class="mt-3 text-center">
-        <img :src="previewUrl" class="max-h-32 rounded-lg border border-slate-200 mx-auto" />
-        <button @click="download" class="mt-2 h-8 px-4 text-xs rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">下载</button>
+      <!-- Base64 → File -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center gap-2 mb-2">
+          <component :is="icons.FileImage" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">Base64 → 图片</span>
+        </div>
+        <textarea
+          v-model="b64input"
+          placeholder="粘贴 base64 或 data:image/...;base64,..."
+          class="w-full h-40 p-3 text-xs rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+        />
+        <div v-if="previewUrl" class="mt-3 text-center">
+          <img :src="previewUrl" class="max-h-32 rounded-lg border border-slate-200 mx-auto shadow-sm" />
+          <button
+            @click="download"
+            class="mt-2 h-9 px-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium shadow-sm flex items-center gap-1.5 mx-auto transition"
+          >
+            <component :is="icons.Download" class="w-3.5 h-3.5" />
+            下载
+          </button>
+        </div>
+        <div v-else-if="b64input" class="mt-3 text-xs text-red-500 flex items-center gap-1.5">
+          <component :is="icons.AlertTriangle" class="w-4 h-4" />
+          无效的 Base64 图片数据
+        </div>
       </div>
-      <div v-else-if="b64input" class="mt-3 text-xs text-red-500">无效的 Base64 图片数据</div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">

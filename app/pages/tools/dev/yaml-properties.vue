@@ -1,52 +1,145 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="space-y-5">
     <!-- Properties → YAML -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <div class="flex items-center justify-between mb-3">
+    <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+      <div class="flex items-center gap-2 mb-4">
         <h3 class="text-sm font-semibold text-slate-700">Properties → YAML</h3>
-        <button @click="p2y" class="px-2.5 py-1 rounded-md bg-indigo-600 text-white text-xs hover:bg-indigo-700">转换</button>
+        <span class="text-xs text-slate-400">扁平化键值对转层级结构</span>
       </div>
-      <textarea
-        v-model="pInput"
-        placeholder="app.name=测试&#10;app.version=1.0"
-        class="w-full h-44 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-      />
-      <div class="mt-3 flex items-center justify-between">
-        <span class="text-xs text-slate-400">YAML 输出</span>
-        <CopyButton :text="yOutput" label="复制" />
+
+      <div class="flex flex-col lg:flex-row gap-4 items-stretch">
+        <!-- 输入 -->
+        <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">Properties 输入</span>
+            <button
+              @click="pInput = exampleProps"
+              class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline"
+            >
+              📝 示例
+            </button>
+          </div>
+          <textarea
+            v-model="pInput"
+            placeholder="app.name=测试&#10;app.version=1.0&#10;server.port=8080"
+            class="w-full h-40 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+          />
+        </div>
+
+        <!-- 转换按钮 -->
+        <div class="flex lg:flex-col items-center justify-center shrink-0">
+          <button
+            @click="p2y"
+            :disabled="!pInput.trim()"
+            class="h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-medium shadow-sm flex items-center gap-1.5 transition"
+          >
+            <component :is="icons.ArrowRightLeft" class="w-4 h-4" />
+            转换
+          </button>
+        </div>
+
+        <!-- 输出 -->
+        <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">YAML 输出</span>
+            <CopyButton :text="yOutput" label="复制" />
+          </div>
+          <div
+            v-if="yOutput"
+            class="p-3 rounded-lg font-mono text-xs overflow-auto whitespace-pre-wrap min-h-[120px] bg-slate-50 text-slate-700 border border-slate-100"
+          >{{ yOutput }}</div>
+          <div
+            v-else
+            class="p-3 rounded-lg min-h-[120px] bg-slate-50 text-slate-400 flex flex-col items-center justify-center text-xs gap-1 border border-slate-100"
+          >
+            <component :is="icons.FileJson" class="w-6 h-6 text-slate-300" />
+            <span>在左侧粘贴内容，点击转换</span>
+          </div>
+        </div>
       </div>
-      <pre class="mt-2 p-3 rounded-lg font-mono text-xs overflow-auto whitespace-pre-wrap min-h-[80px] bg-slate-50 text-slate-700">{{ yOutput || '等待转换...' }}</pre>
     </section>
 
     <!-- YAML → Properties -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <div class="flex items-center justify-between mb-3">
+    <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+      <div class="flex items-center gap-2 mb-4">
         <h3 class="text-sm font-semibold text-slate-700">YAML → Properties</h3>
-        <button @click="y2p" class="px-2.5 py-1 rounded-md bg-indigo-600 text-white text-xs hover:bg-indigo-700">转换</button>
+        <span class="text-xs text-slate-400">层级结构扁平化输出</span>
       </div>
-      <textarea
-        v-model="yInput"
-        placeholder="app:&#10;  name: 测试&#10;  version: 1.0"
-        class="w-full h-44 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-      />
-      <div class="mt-3 flex items-center justify-between">
-        <span class="text-xs text-slate-400">Properties 输出</span>
-        <CopyButton :text="pOutput" label="复制" />
+
+      <div class="flex flex-col lg:flex-row gap-4 items-stretch">
+        <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">YAML 输入</span>
+            <button
+              @click="yInput = exampleYaml"
+              class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline"
+            >
+              📝 示例
+            </button>
+          </div>
+          <textarea
+            v-model="yInput"
+            placeholder="app:&#10;  name: 测试&#10;  version: 1.0&#10;server:&#10;  port: 8080"
+            class="w-full h-40 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+          />
+        </div>
+
+        <div class="flex lg:flex-col items-center justify-center shrink-0">
+          <button
+            @click="y2p"
+            :disabled="!yInput.trim()"
+            class="h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-medium shadow-sm flex items-center gap-1.5 transition"
+          >
+            <component :is="icons.ArrowRightLeft" class="w-4 h-4" />
+            转换
+          </button>
+        </div>
+
+        <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">Properties 输出</span>
+            <CopyButton :text="pOutput" label="复制" />
+          </div>
+          <div
+            v-if="pOutput"
+            class="p-3 rounded-lg font-mono text-xs overflow-auto whitespace-pre-wrap min-h-[120px] bg-slate-50 text-slate-700 border border-slate-100"
+          >{{ pOutput }}</div>
+          <div
+            v-else
+            class="p-3 rounded-lg min-h-[120px] bg-slate-50 text-slate-400 flex flex-col items-center justify-center text-xs gap-1 border border-slate-100"
+          >
+            <component :is="icons.FileText" class="w-6 h-6 text-slate-300" />
+            <span>在左侧粘贴内容，点击转换</span>
+          </div>
+        </div>
       </div>
-      <pre class="mt-2 p-3 rounded-lg font-mono text-xs overflow-auto whitespace-pre-wrap min-h-[80px] bg-slate-50 text-slate-700">{{ pOutput || '等待转换...' }}</pre>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
 import * as yaml from 'js-yaml'
+import * as icons from 'lucide-vue-next'
 
 const pInput = ref('')
 const yInput = ref('')
 const yOutput = ref('')
 const pOutput = ref('')
 
-// Properties → JS object
+const exampleProps = `app.name=Qiuyun Tools
+app.version=2.0
+server.host=localhost
+server.port=3000
+server.debug=true`
+
+const exampleYaml = `app:
+  name: Qiuyun Tools
+  version: 2.0
+server:
+  host: localhost
+  port: 3000
+  debug: true`
+
 function parseProperties(text: string): Record<string, any> {
   const obj: Record<string, any> = {}
   for (const line of text.split('\n')) {
@@ -56,7 +149,6 @@ function parseProperties(text: string): Record<string, any> {
     if (idx === -1) continue
     const key = trimmed.substring(0, idx).trim()
     const value = trimmed.substring(idx + 1).trim()
-    // Try auto-type conversion
     let val: any = value
     if (value === 'true') val = true
     else if (value === 'false') val = false
@@ -84,7 +176,7 @@ function objToProperties(obj: any, prefix = ''): string {
 function p2y() {
   try {
     const obj = parseProperties(pInput.value)
-    yOutput.value = yaml.dump(obj, { lineWidth: 120 })
+    yOutput.value = yaml.dump(obj, { lineWidth: 120 }).trim()
   } catch (e: any) {
     yOutput.value = '转换失败: ' + e?.message
   }

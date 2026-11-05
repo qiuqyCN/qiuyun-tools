@@ -1,30 +1,57 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">CSS 格式化 / 压缩</h3>
-      <textarea
-        v-model="input"
-        placeholder=".class{color:red;background:#fff}"
-        class="w-full h-[440px] p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-      />
-    </section>
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex gap-2">
-          <button @click="format" class="h-8 px-3 text-xs rounded-md bg-indigo-600 text-white hover:bg-indigo-700">格式化</button>
-          <button @click="minify" class="h-8 px-3 text-xs rounded-md bg-slate-100 hover:bg-slate-200">压缩</button>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">CSS 格式化 / 压缩</h3>
+      <span class="text-xs text-slate-400">美化或压缩 CSS 代码，保持结构完整</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center gap-2 mb-2">
+          <component :is="icons.Code" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">输入</span>
         </div>
-        <CopyButton :text="output" label="复制" />
+        <textarea
+          v-model="input"
+          placeholder=".class{color:red;background:#fff}"
+          class="w-full h-[440px] p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+        />
       </div>
-      <pre
-        class="w-full h-[440px] p-3 rounded-lg text-xs font-mono overflow-auto whitespace-pre-wrap"
-        :class="errMsg ? 'bg-red-50 text-red-700' : 'bg-slate-50 text-slate-700'"
-      >{{ errMsg || output || '等待输入...' }}</pre>
-    </section>
-  </div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <component :is="icons.Wand2" class="w-4 h-4 text-indigo-400" />
+            <span class="text-xs font-medium text-slate-500">输出</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              @click="format"
+              class="h-9 px-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium shadow-sm flex items-center gap-1 transition"
+            >
+              <component :is="icons.Sparkles" class="w-3.5 h-3.5" />
+              格式化
+            </button>
+            <button
+              @click="minify"
+              class="h-9 px-4 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-medium flex items-center gap-1 transition"
+            >
+              <component :is="icons.Compress" class="w-3.5 h-3.5" />
+              压缩
+            </button>
+            <CopyButton :text="output" label="复制" />
+          </div>
+        </div>
+        <pre
+          class="w-full h-[440px] p-3 rounded-lg text-xs font-mono overflow-auto whitespace-pre-wrap border"
+          :class="errMsg ? 'bg-red-50 text-red-700 border-red-100' : output ? 'bg-slate-50 text-slate-700 border-slate-100' : 'bg-slate-50 text-slate-400 border-slate-100 flex items-center justify-center'"
+        >{{ errMsg || output || '在左侧输入 CSS 代码，点击格式化或压缩' }}</pre>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
 import * as prettier from 'prettier/standalone'
 import postcss from 'prettier/plugins/postcss'
 

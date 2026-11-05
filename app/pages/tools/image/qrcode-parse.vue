@@ -1,44 +1,66 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">上传图片识别</h3>
-      <!-- Upload zone -->
-      <div
-        class="relative mb-3"
-        @dragover.prevent="dragOver = true"
-        @dragleave.prevent="dragOver = false"
-        @drop.prevent="onDrop"
-      >
-        <label
-          class="flex flex-col items-center justify-center h-40 border-2 border-dashed rounded-lg cursor-pointer transition"
-          :class="dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
-        >
-          <input type="file" accept="image/*" class="hidden" @change="onFile" />
-          <component :is="icons.Scan" class="w-8 h-8 text-slate-300 mb-2" />
-          <span class="text-sm text-slate-500">选择含二维码的图片</span>
-        </label>
-      </div>
-      <div v-if="src" class="mt-3">
-        <img :src="src" class="max-w-full max-h-40 rounded-lg" />
-      </div>
-    </section>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">二维码解析</h3>
+      <span class="text-xs text-slate-400">上传含二维码的图片，自动识别解码</span>
+    </div>
 
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">识别结果</h3>
-      <div v-if="result" class="space-y-3">
-        <div class="text-xs text-slate-500">解码内容</div>
-        <pre class="p-3 bg-indigo-50 rounded-lg text-sm font-mono text-indigo-900 break-all whitespace-pre-wrap">{{ result }}</pre>
-        <div class="flex items-center gap-2">
-          <CopyButton :text="result" label="复制" />
-          <a v-if="isUrl" :href="result" target="_blank" class="text-xs px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200">打开链接</a>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center gap-2 mb-2">
+          <component :is="icons.Upload" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">上传图片识别</span>
+        </div>
+        <!-- Upload zone -->
+        <div
+          class="relative mb-3"
+          @dragover.prevent="dragOver = true"
+          @dragleave.prevent="dragOver = false"
+          @drop.prevent="onDrop"
+        >
+          <label
+            class="flex flex-col items-center justify-center h-40 border-2 border-dashed rounded-xl cursor-pointer transition"
+            :class="dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
+          >
+            <input type="file" accept="image/*" class="hidden" @change="onFile" />
+            <component :is="icons.Scan" class="w-8 h-8 text-slate-300 mb-2" />
+            <span class="text-sm text-slate-500">选择含二维码的图片</span>
+          </label>
+        </div>
+        <div v-if="src" class="mt-3">
+          <img :src="src" class="max-w-full max-h-40 rounded-lg shadow-sm border border-slate-200 mx-auto" />
         </div>
       </div>
-      <div v-else-if="error" class="p-3 bg-red-50 rounded-lg text-sm text-red-600">{{ error }}</div>
-      <div v-else class="h-32 flex items-center justify-center text-slate-400 text-sm">等待上传图片</div>
-    </section>
 
-    <canvas ref="canvasRef" class="hidden"></canvas>
-  </div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center gap-2 mb-2">
+          <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">识别结果</span>
+        </div>
+        <div v-if="result" class="space-y-3">
+          <div class="text-xs text-slate-400">解码内容</div>
+          <pre class="p-3 bg-indigo-50 rounded-lg text-sm font-mono text-indigo-900 break-all whitespace-pre-wrap border border-indigo-100">{{ result }}</pre>
+          <div class="flex items-center gap-2">
+            <CopyButton :text="result" label="复制" />
+            <a v-if="isUrl" :href="result" target="_blank" class="text-xs px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium flex items-center gap-1.5 shadow-sm transition">
+              <component :is="icons.ExternalLink" class="w-3.5 h-3.5" />
+              打开链接
+            </a>
+          </div>
+        </div>
+        <div v-else-if="error" class="p-3 bg-red-50 rounded-lg text-sm text-red-600 border border-red-100 flex items-start gap-2">
+          <component :is="icons.AlertTriangle" class="w-4 h-4 mt-0.5 shrink-0" />
+          {{ error }}
+        </div>
+        <div v-else class="h-48 flex flex-col items-center justify-center text-slate-400 text-xs gap-2 bg-slate-50 rounded-lg border border-slate-100">
+          <component :is="icons.Search" class="w-8 h-8 text-slate-300" />
+          上传图片后在此显示识别结果
+        </div>
+      </div>
+
+      <canvas ref="canvasRef" class="hidden"></canvas>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">

@@ -18,13 +18,13 @@ export const categories: ToolCategory[] = [
   {
     id: 'dev',
     name: '开发工具',
-    icon: 'Code2',
+    icon: 'Code',
     tools: [
-      { id: 'json-formatter', name: 'JSON 格式化', desc: 'JSON 美化、压缩、校验', icon: 'FileJson', route: '/tools/dev/json-formatter' },
+      { id: 'json-formatter', name: 'JSON 格式化', desc: 'JSON 美化、压缩、校验', icon: 'FileCode', route: '/tools/dev/json-formatter' },
       { id: 'yaml-json', name: 'YAML / JSON 互转', desc: 'YAML 与 JSON 双向转换', icon: 'ArrowLeftRight', route: '/tools/dev/yaml-json' },
       { id: 'yaml-properties', name: 'YAML / Properties 互转', desc: 'Java Properties 与 YAML 转换', icon: 'FileText', route: '/tools/dev/yaml-properties' },
       { id: 'json-java', name: 'JSON / Java 互转', desc: 'JSON 生成 Java POJO', icon: 'Coffee', route: '/tools/dev/json-java' },
-      { id: 'code-beautify', name: '代码美化', desc: '多种语言代码格式化', icon: 'Wand2', route: '/tools/dev/code-beautify' },
+      { id: 'code-beautify', name: '代码美化', desc: '多种语言代码格式化', icon: 'WandSparkles', route: '/tools/dev/code-beautify' },
       { id: 'regex-tester', name: '正则测试', desc: '正则表达式实时匹配测试', icon: 'Search', route: '/tools/dev/regex-tester' },
       { id: 'timestamp', name: '时间戳转换', desc: 'Unix 时间戳与日期互转', icon: 'Clock', route: '/tools/dev/timestamp' },
       { id: 'cron', name: 'Cron 生成与解析', desc: 'Cron 表达式可视化编辑与解析', icon: 'Calendar', route: '/tools/dev/cron' },
@@ -42,7 +42,7 @@ export const categories: ToolCategory[] = [
       { id: 'base64', name: 'Base64 编解码', desc: '文本 / 文件 Base64 转换', icon: 'Binary', route: '/tools/crypto/base64' },
       { id: 'url-codec', name: 'URL 编解码', desc: 'URL encode / decode', icon: 'Link', route: '/tools/crypto/url-codec' },
       { id: 'md5', name: 'MD5 加密', desc: '文本 MD5 摘要', icon: 'Hash', route: '/tools/crypto/md5' },
-      { id: 'hmac', name: 'HMAC 生成器', desc: 'WebCrypto HMAC 签名', icon: 'Fingerprint', route: '/tools/crypto/hmac' },
+      { id: 'hmac', name: 'HMAC 生成器', desc: 'WebCrypto HMAC 签名', icon: 'FingerprintPattern', route: '/tools/crypto/hmac' },
       { id: 'jwt', name: 'JWT 解析器', desc: 'JWT Token Payload 解析', icon: 'Key', route: '/tools/crypto/jwt' },
       { id: 'rsa', name: 'RSA 密钥生成器', desc: 'WebCrypto 生成 RSA 密钥对', icon: 'Shield', route: '/tools/crypto/rsa' },
     ],
@@ -50,9 +50,9 @@ export const categories: ToolCategory[] = [
   {
     id: 'text',
     name: '文本工具',
-    icon: 'FileEdit',
+    icon: 'FilePenLine',
     tools: [
-      { id: 'word-count', name: '字数统计', desc: '字符 / 词 / 行数统计', icon: 'BarChart3', route: '/tools/text/word-count' },
+      { id: 'word-count', name: '字数统计', desc: '字符 / 词 / 行数统计', icon: 'ChartBar', route: '/tools/text/word-count' },
       { id: 'dedup-lines', name: '重复行删除', desc: '去除文本中的重复行', icon: 'List', route: '/tools/text/dedup-lines' },
       { id: 'diff', name: '文本对比', desc: '两段文本差异高亮对比', icon: 'GitCompare', route: '/tools/text/diff' },
       { id: 'pinyin', name: '汉字转拼音', desc: '中文字符转拼音', icon: 'Languages', route: '/tools/text/pinyin' },
@@ -65,7 +65,7 @@ export const categories: ToolCategory[] = [
     tools: [
       { id: 'random', name: '随机数生成', desc: '指定范围 / 整数 / 小数', icon: 'Dice5', route: '/tools/number/random' },
       { id: 'base-convert', name: '进制转换', desc: '二进制 / 八进制 / 十进制 / 十六进制', icon: 'RotateCcw', route: '/tools/number/base-convert' },
-      { id: 'chinese-num', name: '数字转中文大写', desc: '金额 / 数字中文大写', icon: 'Yen', route: '/tools/number/chinese-num' },
+      { id: 'chinese-num', name: '数字转中文大写', desc: '金额 / 数字中文大写', icon: 'Banknote', route: '/tools/number/chinese-num' },
       { id: 'sci-calc', name: '科学计算器', desc: '表达式求值计算器', icon: 'Calculator', route: '/tools/number/sci-calc' },
     ],
   },
@@ -74,7 +74,7 @@ export const categories: ToolCategory[] = [
     name: '前端工具',
     icon: 'Palette',
     tools: [
-      { id: 'flex-box', name: 'Flex 布局生成器', desc: '可视化 Flex 布局编辑器', icon: 'Layout', route: '/tools/frontend/flex-box' },
+      { id: 'flex-box', name: 'Flex 布局生成器', desc: '可视化 Flex 布局编辑器', icon: 'LayoutDashboard', route: '/tools/frontend/flex-box' },
       { id: 'css-formatter', name: 'CSS 格式化', desc: 'CSS / SCSS / Less 美化压缩', icon: 'Paintbrush', route: '/tools/frontend/css-formatter' },
       { id: 'color-picker', name: '颜色选择器', desc: 'HEX / RGB / HSL 颜色互转', icon: 'Droplets', route: '/tools/frontend/color-picker' },
       { id: 'box-shadow', name: 'CSS 阴影生成器', desc: 'box-shadow 可视化调参', icon: 'Square', route: '/tools/frontend/box-shadow' },
@@ -103,15 +103,16 @@ export const categories: ToolCategory[] = [
     name: '文档转换',
     icon: 'FileText',
     tools: [
-      { id: 'markdown-editor', name: 'Markdown 编辑器', desc: '分栏编辑 + 实时预览', icon: 'FileEdit', route: '/tools/document/markdown-editor' },
+      { id: 'markdown-editor', name: 'Markdown 编辑器', desc: '分栏编辑 + 实时预览', icon: 'FilePenLine', route: '/tools/document/markdown-editor' },
       { id: 'markdown-convert', name: 'Markdown 格式转换', desc: 'MD → HTML / 纯文本', icon: 'FileCode', route: '/tools/document/markdown-convert' },
-      { id: 'pdf-merge', name: 'PDF 合并', desc: '多 PDF 文件合并（前端基础版）', icon: 'Combine', route: '/tools/document/pdf-merge' },
+      { id: 'pdf-merge', name: 'PDF 合并', desc: '多 PDF 文件合并（纯前端）', icon: 'Combine', route: '/tools/document/pdf-merge' },
+      { id: 'pdf-split', name: 'PDF 拆分', desc: '按范围 / 每 N 页 / 提取页面', icon: 'Scissors', route: '/tools/document/pdf-split' },
     ],
   },
   {
     id: 'life',
     name: '生活工具',
-    icon: 'Home',
+    icon: 'House',
     tools: [
       { id: 'date-calc', name: '日期计算器', desc: '两日期差值 / 日期加减', icon: 'CalendarDays', route: '/tools/life/date-calc' },
       { id: 'countdown', name: '倒计时工具', desc: '自定义目标时间倒计时', icon: 'Timer', route: '/tools/life/countdown' },

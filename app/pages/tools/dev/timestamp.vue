@@ -14,38 +14,127 @@
       <div class="text-xs opacity-70 mt-2">{{ nowDate }}</div>
     </section>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-      <!-- Timestamp → Date -->
-      <section class="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 class="text-sm font-semibold text-slate-700 mb-3">时间戳 → 日期</h3>
-        <input
-          v-model="tsInput"
-          placeholder="输入时间戳（10位或13位）..."
-          class="w-full h-10 px-3 text-sm rounded-lg border border-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-        />
-        <div class="mt-3 p-3 bg-slate-50 rounded-lg font-mono text-sm text-slate-700 min-h-[48px]">
-          {{ tsDate || '等待输入...' }}
-        </div>
-      </section>
+    <!-- Timestamp → Date -->
+    <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+      <div class="flex items-center gap-2 mb-4">
+        <h3 class="text-sm font-semibold text-slate-700">时间戳 → 日期</h3>
+        <span class="text-xs text-slate-400">支持 10 位秒级 / 13 位毫秒级时间戳</span>
+      </div>
 
-      <!-- Date → Timestamp -->
-      <section class="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 class="text-sm font-semibold text-slate-700 mb-3">日期 → 时间戳</h3>
-        <input
-          v-model="dateInput"
-          type="datetime-local"
-          class="w-full h-10 px-3 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-        />
-        <div class="mt-3 p-3 bg-slate-50 rounded-lg font-mono text-sm min-h-[48px]">
-          <div class="text-slate-600">秒级: <span class="text-indigo-600">{{ dateSec }}</span></div>
-          <div class="text-slate-600 mt-1">毫秒级: <span class="text-indigo-600">{{ dateMs }}</span></div>
+      <div class="flex flex-col lg:flex-row gap-4 items-stretch">
+        <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">时间戳输入</span>
+            <div class="flex items-center gap-3">
+              <button @click="tsInput = exampleTs" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 示例</button>
+              <button @click="tsInput = ''" class="text-xs text-slate-400 hover:text-slate-600">清空</button>
+            </div>
+          </div>
+          <input
+            v-model="tsInput"
+            placeholder="输入时间戳（10位或13位）..."
+            class="w-full h-10 px-3 text-sm rounded-lg border border-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+          />
         </div>
-      </section>
-    </div>
+
+        <div class="flex lg:flex-col items-center justify-center shrink-0">
+          <button
+            disabled
+            class="h-10 px-5 rounded-xl bg-indigo-500 text-white text-sm font-medium shadow-sm flex items-center gap-1.5 disabled:bg-slate-300 disabled:cursor-not-allowed"
+          >
+            <component :is="icons.ArrowRightLeft" class="w-4 h-4" />
+            实时转换
+          </button>
+        </div>
+
+        <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">日期输出</span>
+            <CopyButton :text="tsDate" label="复制" />
+          </div>
+          <div
+            v-if="tsDate && tsDate !== '无效时间戳'"
+            class="p-3 rounded-lg font-mono text-xs overflow-auto whitespace-pre-wrap min-h-[120px] bg-slate-50 text-slate-700 border border-slate-100 flex items-center"
+          >{{ tsDate }}</div>
+          <div
+            v-else-if="tsDate === '无效时间戳'"
+            class="p-3 rounded-lg font-mono text-xs overflow-auto whitespace-pre-wrap min-h-[120px] bg-red-50 text-red-600 border border-red-100 flex items-center"
+          >{{ tsDate }}</div>
+          <div
+            v-else
+            class="p-3 rounded-lg min-h-[120px] bg-slate-50 text-slate-400 flex flex-col items-center justify-center text-xs gap-1 border border-slate-100"
+          >
+            <component :is="icons.Calendar" class="w-6 h-6 text-slate-300" />
+            <span>在左侧粘贴内容，点击转换</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Date → Timestamp -->
+    <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+      <div class="flex items-center gap-2 mb-4">
+        <h3 class="text-sm font-semibold text-slate-700">日期 → 时间戳</h3>
+        <span class="text-xs text-slate-400">本地日期转 Unix 时间戳</span>
+      </div>
+
+      <div class="flex flex-col lg:flex-row gap-4 items-stretch">
+        <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">日期输入</span>
+            <div class="flex items-center gap-3">
+              <button @click="fillNow" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">现在</button>
+              <button @click="dateInput = ''" class="text-xs text-slate-400 hover:text-slate-600">清空</button>
+            </div>
+          </div>
+          <input
+            v-model="dateInput"
+            type="datetime-local"
+            class="w-full h-10 px-3 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+          />
+        </div>
+
+        <div class="flex lg:flex-col items-center justify-center shrink-0">
+          <button
+            disabled
+            class="h-10 px-5 rounded-xl bg-indigo-500 text-white text-sm font-medium shadow-sm flex items-center gap-1.5 disabled:bg-slate-300 disabled:cursor-not-allowed"
+          >
+            <component :is="icons.ArrowRightLeft" class="w-4 h-4" />
+            实时转换
+          </button>
+        </div>
+
+        <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">时间戳输出</span>
+            <div class="flex items-center gap-2">
+              <CopyButton :text="String(dateSec)" label="秒级" />
+              <CopyButton :text="String(dateMs)" label="毫秒" />
+            </div>
+          </div>
+          <div
+            v-if="dateInput"
+            class="p-3 rounded-lg font-mono text-xs overflow-auto whitespace-pre-wrap min-h-[120px] bg-slate-50 text-slate-700 border border-slate-100"
+          >
+            <div class="text-slate-600">秒级: <span class="text-indigo-600">{{ dateSec }}</span></div>
+            <div class="text-slate-600 mt-1">毫秒级: <span class="text-indigo-600">{{ dateMs }}</span></div>
+          </div>
+          <div
+            v-else
+            class="p-3 rounded-lg min-h-[120px] bg-slate-50 text-slate-400 flex flex-col items-center justify-center text-xs gap-1 border border-slate-100"
+          >
+            <component :is="icons.CalendarClock" class="w-6 h-6 text-slate-300" />
+            <span>在左侧选择日期，自动转换</span>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
+
 // 当前时间
 const now = ref(Date.now())
 const nowSec = computed(() => Math.floor(now.value / 1000))
@@ -64,6 +153,8 @@ onUnmounted(() => {
 
 // Timestamp → Date
 const tsInput = ref('')
+const exampleTs = String(Math.floor(Date.now() / 1000))
+
 const tsDate = computed(() => {
   if (!tsInput.value) return ''
   let ts = Number(tsInput.value.trim())
@@ -96,5 +187,11 @@ function formatDate(d: Date): string {
 function copyNow(digits: 10 | 13) {
   const v = digits === 10 ? nowSec.value : nowMs.value
   navigator.clipboard.writeText(String(v))
+}
+
+function fillNow() {
+  const d = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  dateInput.value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 </script>

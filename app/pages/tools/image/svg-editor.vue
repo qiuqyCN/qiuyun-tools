@@ -1,40 +1,70 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <section class="bg-white rounded-xl border border-slate-200 p-5 lg:col-span-2">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold text-slate-700">SVG 预览</h3>
-        <div class="flex items-center gap-2 text-xs">
-          <button @click="loadPreset('star')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200">⭐ 星形</button>
-          <button @click="loadPreset('flower')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200">🌸 花朵</button>
-          <button @click="loadPreset('gradient')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200">🌈 渐变</button>
-        </div>
-      </div>
-      <div class="aspect-square bg-slate-50 rounded-lg p-8 flex items-center justify-center">
-        <div v-html="svg" class="w-full h-full flex items-center justify-center" />
-      </div>
-      <div class="mt-3 text-xs text-slate-400">
-        提示：这是一个简单的 SVG 源代码编辑器，支持预览和导出
-      </div>
-    </section>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">SVG 编辑器</h3>
+      <span class="text-xs text-slate-400">在线编辑 SVG 源代码，实时预览并导出</span>
+    </div>
 
-    <section class="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
-      <div class="flex items-center justify-between">
-        <h3 class="text-sm font-semibold text-slate-700">SVG 源码</h3>
-        <div class="flex items-center gap-2">
-          <CopyButton :text="svg" label="复制" />
-          <button @click="download" class="h-8 px-3 text-xs rounded-md bg-indigo-600 text-white hover:bg-indigo-700">下载 SVG</button>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="bg-white rounded-xl p-4 border border-slate-200 lg:col-span-2">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
+            <span class="text-xs font-medium text-slate-500">SVG 预览</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <button @click="loadPreset('star')" class="h-8 px-3 rounded-lg bg-slate-50 hover:bg-slate-100 text-xs text-slate-600 border border-slate-100 transition flex items-center gap-1">
+              <component :is="icons.Star" class="w-3.5 h-3.5" />星形
+            </button>
+            <button @click="loadPreset('flower')" class="h-8 px-3 rounded-lg bg-slate-50 hover:bg-slate-100 text-xs text-slate-600 border border-slate-100 transition flex items-center gap-1">
+              <component :is="icons.Sparkles" class="w-3.5 h-3.5" />花朵
+            </button>
+            <button @click="loadPreset('gradient')" class="h-8 px-3 rounded-lg bg-slate-50 hover:bg-slate-100 text-xs text-slate-600 border border-slate-100 transition flex items-center gap-1">
+              <component :is="icons.GraduationCap" class="w-3.5 h-3.5" />渐变
+            </button>
+          </div>
+        </div>
+        <div class="aspect-square bg-slate-50 rounded-xl p-8 flex items-center justify-center border border-slate-100">
+          <div v-html="svg" class="w-full h-full flex items-center justify-center" />
+        </div>
+        <div class="mt-3 text-xs text-slate-400 flex items-center gap-1.5">
+          <component :is="icons.Info" class="w-3.5 h-3.5" />
+          提示：这是一个简单的 SVG 源代码编辑器，支持预览和导出
         </div>
       </div>
-      <textarea
-        v-model="svg"
-        class="w-full h-80 p-3 text-xs rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-      />
-      <div v-if="svgError" class="text-xs text-red-500">{{ svgError }}</div>
-    </section>
-  </div>
+
+      <div class="bg-white rounded-xl p-4 border border-slate-200 space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <component :is="icons.Code" class="w-4 h-4 text-indigo-400" />
+            <span class="text-xs font-medium text-slate-500">SVG 源码</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <CopyButton :text="svg" label="复制" />
+            <button
+              @click="download"
+              class="h-9 px-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium shadow-sm flex items-center gap-1.5 transition"
+            >
+              <component :is="icons.Download" class="w-3.5 h-3.5" />
+              下载 SVG
+            </button>
+          </div>
+        </div>
+        <textarea
+          v-model="svg"
+          class="w-full h-80 p-3 text-xs rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+        />
+        <div v-if="svgError" class="text-xs text-red-500 flex items-center gap-1.5">
+          <component :is="icons.AlertTriangle" class="w-3.5 h-3.5" />
+          {{ svgError }}
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
 const svg = ref(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
   <circle cx="100" cy="100" r="80" fill="#6366f1" />
   <circle cx="100" cy="100" r="60" fill="#a855f7" />

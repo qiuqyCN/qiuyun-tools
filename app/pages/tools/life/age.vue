@@ -1,12 +1,19 @@
 <template>
-  <div class="max-w-xl mx-auto space-y-5">
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">年龄计算器</h3>
-      <label class="block text-xs text-slate-500 mb-1">出生日期</label>
-      <input v-model="birthday" type="date" class="w-full h-11 px-3 rounded-lg border border-slate-200 text-lg" />
-    </section>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">年龄计算器</h3>
+      <span class="text-xs text-slate-400">精确计算周岁、月份、天数</span>
+    </div>
 
-    <section class="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+    <div class="bg-white rounded-xl p-4 border border-slate-200">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-medium text-slate-500">出生日期</span>
+        <button @click="birthday = '2000-01-01'" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 示例</button>
+      </div>
+      <input v-model="birthday" type="date" class="w-full h-11 px-3 rounded-lg border border-slate-200 text-lg" />
+    </div>
+
+    <div class="bg-white rounded-xl p-5 border border-slate-200 mt-4">
       <div class="text-center py-2">
         <div class="text-5xl font-bold text-indigo-600 font-mono">{{ age.years }}</div>
         <div class="text-sm text-slate-500 mt-1">岁</div>
@@ -28,11 +35,13 @@
       <div class="text-center text-xs text-slate-500 pt-2">
         已度过 {{ age.totalHours.toLocaleString() }} 小时 · {{ age.totalMinutes.toLocaleString() }} 分钟
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
+
 const birthday = ref('2000-01-01')
 
 const age = computed(() => {

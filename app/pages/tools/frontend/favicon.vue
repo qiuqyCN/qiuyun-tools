@@ -1,47 +1,66 @@
 <template>
-  <div class="space-y-6">
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-4">Favicon 生成器</h3>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">Favicon 生成器</h3>
+      <span class="text-xs text-slate-400">在线生成网站图标，支持 PNG 和 ICO 格式导出</span>
+    </div>
+
+    <div class="bg-white rounded-xl p-4 border border-slate-200">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        <div class="space-y-4">
+        <div class="space-y-3">
           <div>
-            <label class="block text-xs text-slate-500 mb-1">文字</label>
-            <input v-model="text" maxlength="2" class="w-full h-10 px-3 text-lg rounded-lg border border-slate-200 font-bold text-center" />
+            <label class="block text-xs text-slate-400 mb-1">文字（最多2个字符）</label>
+            <input v-model="text" maxlength="2" class="w-full h-10 px-3 text-lg rounded-lg border border-slate-200 font-bold text-center focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400" />
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-500 mb-1">背景色</label>
+              <label class="block text-xs text-slate-400 mb-1">背景色</label>
               <input v-model="bgColor" type="color" class="w-full h-10 rounded-lg border border-slate-200" />
             </div>
             <div>
-              <label class="block text-xs text-slate-500 mb-1">文字颜色</label>
+              <label class="block text-xs text-slate-400 mb-1">文字颜色</label>
               <input v-model="fgColor" type="color" class="w-full h-10 rounded-lg border border-slate-200" />
             </div>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-500 mb-1">圆角: {{ radius }}%</label>
+              <label class="block text-xs text-slate-400 mb-1">圆角: {{ radius }}%</label>
               <input v-model.number="radius" type="range" min="0" max="100" class="w-full" />
             </div>
             <div>
-              <label class="block text-xs text-slate-500 mb-1">阴影</label>
+              <label class="block text-xs text-slate-400 mb-1">阴影: {{ shadow }}</label>
               <input v-model.number="shadow" type="range" min="0" max="30" class="w-full" />
             </div>
           </div>
         </div>
         <div class="flex gap-6 items-center justify-center">
-          <canvas ref="canvasRef" width="256" height="256" class="rounded-lg border border-slate-200" />
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+            <canvas ref="canvasRef" width="256" height="256" class="rounded-lg border border-slate-200" />
+          </div>
           <div class="space-y-2 text-center">
-            <button @click="download('png')" class="w-32 h-10 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">下载 PNG</button>
-            <button @click="download('ico')" class="w-32 h-10 text-sm rounded-lg bg-slate-100 hover:bg-slate-200">下载 ICO</button>
+            <button
+              @click="download('png')"
+              class="w-32 h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition"
+            >
+              <component :is="icons.Download" class="w-4 h-4" />
+              下载 PNG
+            </button>
+            <button
+              @click="download('ico')"
+              class="w-32 h-10 px-5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 text-sm font-medium flex items-center justify-center gap-1.5 transition"
+            >
+              <component :is="icons.Download" class="w-4 h-4" />
+              下载 ICO
+            </button>
           </div>
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
 const text = ref('Q')
 const bgColor = ref('#6366f1')
 const fgColor = ref('#ffffff')

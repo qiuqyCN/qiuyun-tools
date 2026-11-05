@@ -1,68 +1,96 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">图片格式转换</h3>
-      <!-- Upload zone -->
-      <div
-        class="relative mb-4"
-        @dragover.prevent="dragOver = true"
-        @dragleave.prevent="dragOver = false"
-        @drop.prevent="onDrop"
-      >
-        <label
-          v-if="!src"
-          class="flex flex-col items-center justify-center h-40 border-2 border-dashed rounded-lg cursor-pointer transition"
-          :class="dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">图片格式转换</h3>
+      <span class="text-xs text-slate-400">PNG / JPG / WebP / GIF 在线互转，本地处理不上传</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center gap-2 mb-2">
+          <component :is="icons.Upload" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">上传图片</span>
+        </div>
+        <!-- Upload zone -->
+        <div
+          class="relative mb-4"
+          @dragover.prevent="dragOver = true"
+          @dragleave.prevent="dragOver = false"
+          @drop.prevent="onDrop"
         >
-          <input type="file" accept="image/*" class="hidden" @change="onFile" />
-          <component :is="icons.Upload" class="w-8 h-8 text-slate-300 mb-2" />
-          <span class="text-sm text-slate-500">点击或拖拽上传图片</span>
-        </label>
-        <div v-else class="relative group rounded-lg overflow-hidden border border-slate-200">
-          <img :src="src" class="w-full h-40 object-contain bg-slate-50" />
-          <button
-            @click.stop="clearFile"
-            class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100"
+          <label
+            v-if="!src"
+            class="flex flex-col items-center justify-center h-40 border-2 border-dashed rounded-xl cursor-pointer transition"
+            :class="dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
           >
-            <component :is="icons.X" class="w-4 h-4" />
+            <input type="file" accept="image/*" class="hidden" @change="onFile" />
+            <component :is="icons.ImageUp" class="w-8 h-8 text-slate-300 mb-2" />
+            <span class="text-sm text-slate-500">点击或拖拽上传图片</span>
+          </label>
+          <div v-else class="relative group rounded-lg overflow-hidden border border-slate-200">
+            <img :src="src" class="w-full h-40 object-contain bg-slate-50" />
+            <button
+              @click.stop="clearFile"
+              class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100"
+            >
+              <component :is="icons.X" class="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        <div v-if="src">
+          <div class="text-xs font-medium text-slate-500 mb-2">目标格式</div>
+          <div class="flex gap-2">
+            <button
+              v-for="f in formats"
+              :key="f.value"
+              @click="target = f.value"
+              class="px-3 py-1.5 text-xs rounded-lg border transition"
+              :class="target === f.value ? 'border-indigo-500 bg-indigo-50 text-indigo-700 font-medium' : 'border-slate-200 text-slate-600 hover:border-indigo-300'"
+            >{{ f.label }}</button>
+          </div>
+          <div class="mt-3">
+            <label class="block text-xs text-slate-400 mb-1">质量: {{ quality }}%</label>
+            <input v-model.number="quality" type="range" min="10" max="100" class="w-full" />
+          </div>
+          <button
+            @click="convert"
+            class="w-full mt-3 h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition"
+          >
+            <component :is="icons.ArrowRightLeft" class="w-4 h-4" />
+            转换
           </button>
         </div>
       </div>
-      <div v-if="src">
-        <div class="text-xs text-slate-500 mb-1">目标格式</div>
-        <div class="flex gap-2">
-          <button
-            v-for="f in formats"
-            :key="f.value"
-            @click="target = f.value"
-            class="px-3 py-1.5 text-xs rounded-md border transition"
-            :class="target === f.value ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-200 text-slate-600 hover:border-indigo-300'"
-          >{{ f.label }}</button>
-        </div>
-        <div class="mt-3">
-          <label class="block text-xs text-slate-500 mb-1">质量: {{ quality }}%</label>
-          <input v-model.number="quality" type="range" min="10" max="100" class="w-full" />
-        </div>
-        <button @click="convert" class="w-full mt-3 h-10 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">转换</button>
-      </div>
-    </section>
 
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">结果</h3>
-      <div v-if="src && !result" class="text-center">
-        <img :src="src" class="max-w-full max-h-64 rounded-lg border border-slate-200 mx-auto bg-slate-50" />
-        <div class="text-xs text-slate-400 mt-2">原图预览</div>
-      </div>
-      <div v-if="result" class="text-center">
-        <img :src="result.url" class="max-w-full max-h-80 rounded-lg border border-indigo-200 bg-indigo-50 mx-auto" />
-        <div class="mt-3 flex justify-center gap-3 items-center">
-          <span class="text-xs text-indigo-600 font-mono">{{ fmtSize(result.size) }}</span>
-          <button @click="download" class="h-8 px-4 text-xs rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">下载</button>
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center gap-2 mb-2">
+          <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">结果</span>
+        </div>
+        <div v-if="src && !result" class="text-center">
+          <img :src="src" class="max-w-full max-h-64 rounded-lg border border-slate-200 mx-auto bg-slate-50" />
+          <div class="text-xs text-slate-400 mt-2">原图预览</div>
+        </div>
+        <div v-if="result" class="text-center">
+          <img :src="result.url" class="max-w-full max-h-80 rounded-lg border border-indigo-200 bg-indigo-50 mx-auto shadow-sm" />
+          <div class="mt-3 flex justify-center gap-3 items-center">
+            <span class="text-xs text-indigo-600 font-mono">{{ fmtSize(result.size) }}</span>
+            <button
+              @click="download"
+              class="h-9 px-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium shadow-sm flex items-center gap-1 transition"
+            >
+              <component :is="icons.Download" class="w-3.5 h-3.5" />
+              下载
+            </button>
+          </div>
+        </div>
+        <div v-if="!result && !src" class="h-60 flex flex-col items-center justify-center text-slate-400 text-xs gap-2 bg-slate-50 rounded-lg border border-slate-100">
+          <component :is="icons.Image" class="w-8 h-8 text-slate-300" />
+          等待上传图片
         </div>
       </div>
-      <div v-if="!result && !src" class="h-60 flex items-center justify-center text-slate-400 text-sm">等待上传</div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">

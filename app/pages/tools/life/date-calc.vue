@@ -1,52 +1,65 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Diff -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
-      <h3 class="text-sm font-semibold text-slate-700">日期差值计算</h3>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs text-slate-500 mb-1">开始日期</label>
-          <input v-model="start1" type="date" class="w-full h-10 px-3 rounded-lg border border-slate-200" />
-        </div>
-        <div>
-          <label class="block text-xs text-slate-500 mb-1">结束日期</label>
-          <input v-model="end1" type="date" class="w-full h-10 px-3 rounded-lg border border-slate-200" />
-        </div>
-      </div>
-      <div class="p-3 bg-indigo-50 rounded-lg text-center">
-        <div class="text-3xl font-bold text-indigo-600 font-mono">{{ diffDays }}</div>
-        <div class="text-xs text-slate-500 mt-1">天 {{ diffWeeks }} 周 / {{ diffDays * 24 }} 小时</div>
-      </div>
-    </section>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">日期计算器</h3>
+      <span class="text-xs text-slate-400">日期差值 / 日期加减</span>
+    </div>
 
-    <!-- Add/Subtract -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
-      <h3 class="text-sm font-semibold text-slate-700">日期加减</h3>
-      <div>
-        <label class="block text-xs text-slate-500 mb-1">基准日期</label>
-        <input v-model="baseDate" type="date" class="w-full h-10 px-3 rounded-lg border border-slate-200" />
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <!-- Diff -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-500">日期差值计算</span>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">开始日期</label>
+            <input v-model="start1" type="date" class="w-full h-10 px-3 rounded-lg border border-slate-200" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">结束日期</label>
+            <input v-model="end1" type="date" class="w-full h-10 px-3 rounded-lg border border-slate-200" />
+          </div>
+        </div>
+        <div class="p-4 bg-indigo-50 rounded-lg text-center border border-indigo-100">
+          <div class="text-3xl font-bold text-indigo-600 font-mono">{{ diffDays }}</div>
+          <div class="text-xs text-slate-500 mt-1">天 · {{ diffWeeks }} 周 · {{ diffDays * 24 }} 小时</div>
+        </div>
       </div>
-      <div class="flex items-center gap-2">
-        <select v-model="op" class="h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm">
-          <option value="+">+</option>
-          <option value="-">-</option>
-        </select>
-        <input v-model.number="num" type="number" class="w-24 h-10 px-3 rounded-lg border border-slate-200 font-mono" />
-        <select v-model="unit" class="h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm">
-          <option value="day">天</option>
-          <option value="week">周</option>
-          <option value="month">月</option>
-          <option value="year">年</option>
-        </select>
+
+      <!-- Add/Subtract -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-500">日期加减</span>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">基准日期</label>
+          <input v-model="baseDate" type="date" class="w-full h-10 px-3 rounded-lg border border-slate-200" />
+        </div>
+        <div class="flex items-center gap-2">
+          <select v-model="op" class="h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm">
+            <option value="+">+</option>
+            <option value="-">-</option>
+          </select>
+          <input v-model.number="num" type="number" class="w-24 h-10 px-3 rounded-lg border border-slate-200 font-mono" />
+          <select v-model="unit" class="h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm">
+            <option value="day">天</option>
+            <option value="week">周</option>
+            <option value="month">月</option>
+            <option value="year">年</option>
+          </select>
+        </div>
+        <div class="p-4 bg-indigo-50 rounded-lg text-center border border-indigo-100">
+          <div class="text-xl font-bold text-indigo-600 font-mono">{{ addResult }}</div>
+        </div>
       </div>
-      <div class="p-3 bg-indigo-50 rounded-lg text-center">
-        <div class="text-xl font-bold text-indigo-600 font-mono">{{ addResult }}</div>
-      </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
+
 const today = () => new Date().toISOString().slice(0, 10)
 const start1 = ref(today())
 const end1 = ref(() => {

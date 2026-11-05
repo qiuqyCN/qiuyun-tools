@@ -1,100 +1,124 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Connection panel -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5 lg:col-span-1 space-y-4">
-      <h3 class="text-sm font-semibold text-slate-700">连接</h3>
-      <div>
-        <label class="block text-xs text-slate-500 mb-1">URL</label>
-        <input
-          v-model="url"
-          placeholder="wss://echo.websocket.org"
-          :disabled="connected"
-          class="w-full h-10 px-3 text-sm font-mono rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 disabled:bg-slate-50"
-        />
-      </div>
-      <div class="flex gap-2">
-        <button
-          v-if="!connected"
-          @click="connect"
-          :disabled="connecting"
-          class="flex-1 h-10 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
-        >{{ connecting ? '连接中...' : '连接' }}</button>
-        <button
-          v-else
-          @click="disconnect"
-          class="flex-1 h-10 text-sm rounded-lg bg-red-500 text-white hover:bg-red-600"
-        >断开</button>
-      </div>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">WebSocket 测试</h3>
+      <span class="text-xs text-slate-400">连接 WebSocket 服务器，实时收发消息</span>
+    </div>
 
-      <div
-        class="flex items-center gap-2 text-xs"
-        :class="statusColor"
-      >
-        <span class="w-2 h-2 rounded-full" :class="statusDot"></span>
-        {{ statusText }}
-      </div>
-
-      <!-- Quick URLs -->
-      <div>
-        <div class="text-xs text-slate-500 mb-1">快速测试</div>
-        <div class="flex flex-wrap gap-1">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- Connection panel -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200 lg:col-span-1 space-y-4">
+        <div class="text-xs font-medium text-slate-500">连接配置</div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">URL</label>
+          <input
+            v-model="url"
+            placeholder="wss://echo.websocket.org"
+            :disabled="connected"
+            class="w-full h-10 px-3 text-sm font-mono rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 disabled:bg-slate-50"
+          />
+        </div>
+        <div class="flex gap-2">
           <button
-            v-for="q in quickUrls"
-            :key="q"
-            @click="url = q"
-            class="text-xs px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 font-mono"
-          >{{ q }}</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Messages -->
-    <section class="lg:col-span-2 space-y-4">
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-semibold text-slate-700">发送消息</h3>
-          <span class="text-xs text-slate-400">{{ connected ? '✓ 已连接' : '未连接' }}</span>
-        </div>
-        <textarea
-          v-model="message"
-          :disabled="!connected"
-          placeholder="输入要发送的消息..."
-          @keyup.enter.exact.prevent="send"
-          class="w-full h-24 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 disabled:bg-slate-50"
-        />
-        <button
-          @click="send"
-          :disabled="!connected || !message"
-          class="mt-2 h-9 px-4 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
-        >发送 (Enter)</button>
-      </div>
-
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-semibold text-slate-700">消息记录</h3>
-          <button @click="messages = []" class="text-xs text-slate-400 hover:text-red-500">清空</button>
-        </div>
-        <div class="h-64 overflow-auto space-y-2">
-          <div
-            v-for="(m, i) in messages"
-            :key="i"
-            class="flex gap-2 text-xs font-mono"
+            v-if="!connected"
+            @click="connect"
+            :disabled="connecting"
+            class="flex-1 h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition disabled:bg-slate-300 disabled:cursor-not-allowed"
           >
-            <span class="text-slate-400 w-20 shrink-0">{{ m.time }}</span>
-            <span
-              :class="m.type === 'sent' ? 'text-indigo-600' : m.type === 'recv' ? 'text-green-600' : 'text-red-500'"
-            >
-              [{{ m.type.toUpperCase() }}] {{ m.data }}
+            <component :is="icons.PlugZap" class="w-4 h-4" />
+            {{ connecting ? '连接中...' : '连接' }}
+          </button>
+          <button
+            v-else
+            @click="disconnect"
+            class="flex-1 h-10 px-5 rounded-xl bg-white border border-red-200 hover:bg-red-50 text-red-600 text-sm font-medium flex items-center justify-center gap-1.5 transition"
+          >
+            <component :is="icons.Unplug" class="w-4 h-4" />
+            断开
+          </button>
+        </div>
+
+        <div
+          class="flex items-center gap-2 text-xs font-medium"
+          :class="statusColor"
+        >
+          <span class="w-2 h-2 rounded-full" :class="statusDot"></span>
+          {{ statusText }}
+        </div>
+
+        <!-- Quick URLs -->
+        <div>
+          <div class="text-xs text-slate-400 mb-1">快速测试</div>
+          <div class="flex flex-wrap gap-1">
+            <button
+              v-for="q in quickUrls"
+              :key="q"
+              @click="url = q"
+              class="text-xs px-2 py-1 rounded bg-slate-50 hover:bg-slate-100 border border-slate-100 font-mono"
+            >{{ q }}</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="lg:col-span-2 space-y-4">
+        <div class="bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">发送消息</span>
+            <span class="text-xs flex items-center gap-1" :class="connected ? 'text-green-600' : 'text-slate-400'">
+              <span class="w-1.5 h-1.5 rounded-full" :class="connected ? 'bg-green-500' : 'bg-slate-300'"></span>
+              {{ connected ? '已连接' : '未连接' }}
             </span>
           </div>
-          <div v-if="!messages.length" class="py-8 text-center text-slate-400 text-sm">暂无消息</div>
+          <textarea
+            v-model="message"
+            :disabled="!connected"
+            placeholder="输入要发送的消息..."
+            @keyup.enter.exact.prevent="send"
+            class="w-full h-24 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 disabled:bg-slate-50"
+          />
+          <button
+            @click="send"
+            :disabled="!connected || !message"
+            class="mt-2 h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center gap-1.5 transition disabled:bg-slate-300 disabled:cursor-not-allowed"
+          >
+            <component :is="icons.Send" class="w-4 h-4" />
+            发送 (Enter)
+          </button>
+        </div>
+
+        <div class="bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">消息记录</span>
+            <button @click="messages = []" class="text-xs text-slate-400 hover:text-red-500 flex items-center gap-1">
+              <component :is="icons.Trash2" class="w-3 h-3" />
+              清空
+            </button>
+          </div>
+          <div class="h-64 overflow-auto space-y-1.5">
+            <div
+              v-for="(m, i) in messages"
+              :key="i"
+              class="flex gap-2 text-xs font-mono p-1.5 rounded"
+              :class="m.type === 'sent' ? 'bg-indigo-50 text-indigo-600' : m.type === 'recv' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-500'"
+            >
+              <span class="text-slate-400 w-16 shrink-0">{{ m.time }}</span>
+              <span class="font-semibold w-12 shrink-0">[{{ m.type.toUpperCase() }}]</span>
+              <span class="break-all">{{ m.data }}</span>
+            </div>
+            <div v-if="!messages.length" class="h-40 flex flex-col items-center justify-center text-slate-400 text-xs gap-1">
+              <component :is="icons.MessageSquare" class="w-6 h-6 text-slate-300" />
+              暂无消息
+            </div>
+          </div>
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
 const url = ref('wss://echo.websocket.org')
 const connected = ref(false)
 const connecting = ref(false)

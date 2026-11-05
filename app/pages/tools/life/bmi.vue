@@ -1,24 +1,31 @@
 <template>
-  <div class="max-w-xl mx-auto space-y-5">
-    <section class="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
       <h3 class="text-sm font-semibold text-slate-700">BMI 计算器</h3>
+      <span class="text-xs text-slate-400">身体质量指数 · 健康评估</span>
+    </div>
+
+    <div class="bg-white rounded-xl p-4 border border-slate-200">
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-xs text-slate-500 mb-1">体重 (kg)</label>
-          <input v-model.number="weight" type="number" step="0.1" class="w-full h-11 px-3 rounded-lg border border-slate-200 font-mono text-lg" />
+          <input v-model.number="weight" type="number" step="0.1" class="w-full h-11 px-3 rounded-lg border border-slate-200 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400" />
         </div>
         <div>
           <label class="block text-xs text-slate-500 mb-1">身高 (cm)</label>
-          <input v-model.number="height" type="number" class="w-full h-11 px-3 rounded-lg border border-slate-200 font-mono text-lg" />
+          <input v-model.number="height" type="number" class="w-full h-11 px-3 rounded-lg border border-slate-200 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400" />
         </div>
       </div>
-    </section>
+    </div>
 
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
+    <div class="bg-white rounded-xl p-5 border border-slate-200 mt-4">
       <div class="text-center mb-5">
         <div class="text-xs text-slate-500">你的 BMI</div>
         <div class="text-5xl font-bold font-mono mt-1" :class="statusColor">{{ bmi }}</div>
-        <div class="text-sm mt-1" :class="statusColor">{{ statusText }}</div>
+        <div class="text-sm mt-1 flex items-center justify-center gap-1" :class="statusColor">
+          <component :is="statusIcon" class="w-4 h-4" />
+          {{ statusText }}
+        </div>
       </div>
       <div class="space-y-1">
         <div v-for="r in ranges" :key="r.label" class="flex items-center gap-3 text-xs">
@@ -33,11 +40,13 @@
           <div class="w-16 text-right font-mono text-slate-500">{{ r.min }}-{{ r.max }}</div>
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
+
 const weight = ref(70)
 const height = ref(175)
 
@@ -65,5 +74,11 @@ const statusText = computed(() => {
 const statusColor = computed(() => {
   const t = statusText.value
   return t === '正常' ? 'text-green-600' : t === '偏瘦' ? 'text-blue-500' : t === '偏胖' ? 'text-yellow-600' : 'text-red-500'
+})
+const statusIcon = computed(() => {
+  const t = statusText.value
+  if (t === '正常') return icons.CheckCircle
+  if (t === '偏瘦') return icons.TrendingDown
+  return icons.TrendingUp
 })
 </script>

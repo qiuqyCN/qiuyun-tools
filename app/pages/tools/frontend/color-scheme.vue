@@ -1,55 +1,81 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <section class="bg-white rounded-xl border border-slate-200 p-5 lg:col-span-1 space-y-3">
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
       <h3 class="text-sm font-semibold text-slate-700">配色方案生成</h3>
-      <div>
-        <label class="block text-xs text-slate-500 mb-1">基色</label>
-        <input v-model="baseColor" type="color" class="w-full h-10 rounded-lg border border-slate-200" />
-      </div>
-      <div>
-        <label class="block text-xs text-slate-500 mb-1">方案类型</label>
-        <select v-model="scheme" class="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white text-sm">
-          <option v-for="s in schemes" :key="s.id" :value="s.id">{{ s.label }}</option>
-        </select>
-      </div>
-      <div class="text-xs text-slate-500">
-        <div class="font-medium mb-1">说明</div>
-        <div class="text-slate-400">{{ schemes.find(s => s.id === scheme)?.desc }}</div>
-      </div>
-      <button @click="refresh" class="w-full h-9 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700">🔄 重新生成</button>
-    </section>
+      <span class="text-xs text-slate-400">基于色轮理论自动生成和谐配色方案</span>
+    </div>
 
-    <section class="lg:col-span-2 space-y-6">
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 class="text-sm font-semibold text-slate-700 mb-3">方案预览（{{ schemeColors.length }} 色）</h3>
-        <div class="grid grid-cols-5 gap-3">
-          <div
-            v-for="(c, i) in schemeColors"
-            :key="i"
-            class="aspect-square rounded-lg flex flex-col items-center justify-center relative group cursor-pointer hover:scale-105 transition"
-            :style="{ backgroundColor: c }"
-            @click="copyHex(c)"
-          >
-            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/20 text-white opacity-0 group-hover:opacity-100 transition">{{ c }}</span>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="bg-white rounded-xl p-4 border border-slate-200 lg:col-span-1 space-y-3">
+        <div class="text-xs font-medium text-slate-500 mb-1">配色配置</div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">基色</label>
+          <input v-model="baseColor" type="color" class="w-full h-10 rounded-lg border border-slate-200 cursor-pointer" />
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">方案类型</label>
+          <select v-model="scheme" class="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white text-sm">
+            <option v-for="s in schemes" :key="s.id" :value="s.id">{{ s.label }}</option>
+          </select>
+        </div>
+        <div class="text-xs p-3 bg-slate-50 rounded-lg border border-slate-100">
+          <div class="font-medium text-slate-600 mb-1 flex items-center gap-1">
+            <component :is="icons.Lightbulb" class="w-3.5 h-3.5" />
+            说明
+          </div>
+          <div class="text-slate-400">{{ schemes.find(s => s.id === scheme)?.desc }}</div>
+        </div>
+        <button
+          @click="refresh"
+          class="w-full h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition"
+        >
+          <component :is="icons.RefreshCw" class="w-4 h-4" />
+          重新生成
+        </button>
+      </div>
+
+      <div class="lg:col-span-2 space-y-4">
+        <div class="bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center gap-2 mb-3">
+            <component :is="icons.Palette" class="w-4 h-4 text-indigo-400" />
+            <span class="text-xs font-medium text-slate-500">方案预览（{{ schemeColors.length }} 色）</span>
+          </div>
+          <div class="grid grid-cols-5 gap-3">
+            <div
+              v-for="(c, i) in schemeColors"
+              :key="i"
+              class="aspect-square rounded-lg flex flex-col items-center justify-center relative group cursor-pointer hover:scale-105 transition shadow-sm"
+              :style="{ backgroundColor: c }"
+              @click="copyHex(c)"
+            >
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/20 text-white opacity-0 group-hover:opacity-100 transition">{{ c }}</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-semibold text-slate-700">渐变预览</h3>
-          <CopyButton :text="schemeColors.join(', ')" label="复制全部 HEX" />
+        <div class="bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <component :is="icons.GripVertical" class="w-4 h-4 text-indigo-400" />
+              <span class="text-xs font-medium text-slate-500">渐变预览</span>
+            </div>
+            <CopyButton :text="schemeColors.join(', ')" label="复制全部 HEX" />
+          </div>
+          <div class="h-20 rounded-lg shadow-sm border border-slate-100" :style="{ background: `linear-gradient(90deg, ${schemeColors.join(', ')})` }"></div>
         </div>
-        <div class="h-20 rounded-lg" :style="{ background: `linear-gradient(90deg, ${schemeColors.join(', ')})` }"></div>
+        <div class="bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center gap-2 mb-2">
+            <component :is="icons.CurlyBraces" class="w-4 h-4 text-indigo-400" />
+            <span class="text-xs font-medium text-slate-500">Tailwind / CSS 变量</span>
+          </div>
+          <pre class="p-3 rounded-lg bg-slate-900 text-indigo-300 text-xs font-mono whitespace-pre-wrap">{{ cssVars }}</pre>
+        </div>
       </div>
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 class="text-sm font-semibold text-slate-700 mb-3">Tailwind / CSS 变量</h3>
-        <pre class="p-3 rounded-lg bg-slate-900 text-indigo-300 text-xs font-mono whitespace-pre-wrap">{{ cssVars }}</pre>
-      </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
 import chroma from 'chroma-js'
 
 const baseColor = ref('#6366f1')

@@ -1,72 +1,90 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <section class="bg-white rounded-xl border border-slate-200 p-5 lg:col-span-1 space-y-4">
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
       <h3 class="text-sm font-semibold text-slate-700">渐变生成器</h3>
-      <div>
-        <label class="block text-xs text-slate-500 mb-1">类型</label>
-        <select v-model="type" class="w-full h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm">
-          <option value="linear">线性渐变</option>
-          <option value="radial">径向渐变</option>
-          <option value="conic">圆锥渐变</option>
-        </select>
-      </div>
-      <div v-if="type === 'linear'">
-        <label class="block text-xs text-slate-500 mb-1">角度: {{ angle }}°</label>
-        <input v-model.number="angle" type="range" min="0" max="360" class="w-full" />
-      </div>
-      <div v-else-if="type === 'radial'">
-        <label class="block text-xs text-slate-500 mb-1">位置</label>
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <div>X <input v-model.number="cx" type="range" min="0" max="100" class="w-full" /></div>
-          <div>Y <input v-model.number="cy" type="range" min="0" max="100" class="w-full" /></div>
+      <span class="text-xs text-slate-400">线性/径向/圆锥渐变可视化编辑器，支持多色停靠点</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="bg-white rounded-xl p-4 border border-slate-200 lg:col-span-1 space-y-3">
+        <div class="text-xs font-medium text-slate-500 mb-1">渐变配置</div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">类型</label>
+          <select v-model="type" class="w-full h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm">
+            <option value="linear">线性渐变</option>
+            <option value="radial">径向渐变</option>
+            <option value="conic">圆锥渐变</option>
+          </select>
+        </div>
+        <div v-if="type === 'linear'">
+          <label class="block text-xs text-slate-400 mb-1">角度: {{ angle }}°</label>
+          <input v-model.number="angle" type="range" min="0" max="360" class="w-full" />
+        </div>
+        <div v-else-if="type === 'radial'">
+          <label class="block text-xs text-slate-400 mb-1">位置</label>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>X {{ cx }}% <input v-model.number="cx" type="range" min="0" max="100" class="w-full" /></div>
+            <div>Y {{ cy }}% <input v-model.number="cy" type="range" min="0" max="100" class="w-full" /></div>
+          </div>
+        </div>
+
+        <!-- stops -->
+        <div class="pt-2 border-t border-slate-100">
+          <div class="flex items-center justify-between text-xs font-medium text-slate-500 mb-2">
+            <span>颜色停靠点</span>
+            <button v-if="stops.length < 6" @click="addStop" class="text-indigo-500 hover:text-indigo-600 hover:underline flex items-center gap-0.5">
+              <component :is="icons.Plus" class="w-3 h-3" />添加
+            </button>
+          </div>
+          <div v-for="(s, i) in stops" :key="i" class="flex items-center gap-2 mb-2">
+            <input v-model="s.color" type="color" class="w-8 h-8 rounded cursor-pointer" />
+            <input v-model.number="s.pos" type="range" min="0" max="100" class="flex-1" />
+            <span class="text-xs text-slate-400 w-8">{{ s.pos }}%</span>
+            <button v-if="stops.length > 2" @click="stops.splice(i, 1)" class="text-xs text-red-400 hover:text-red-500">
+              <component :is="icons.X" class="w-3 h-3" />
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- stops -->
-      <div>
-        <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
-          <span>颜色停靠点</span>
-          <button v-if="stops.length < 6" @click="addStop" class="text-indigo-600 hover:underline">+ 添加</button>
+      <div class="lg:col-span-2 space-y-4">
+        <div class="bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center gap-2 mb-2">
+            <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
+            <span class="text-xs font-medium text-slate-500">预览</span>
+          </div>
+          <div class="h-48 rounded-xl shadow-sm border border-slate-100" :style="{ background: css }"></div>
         </div>
-        <div v-for="(s, i) in stops" :key="i" class="flex items-center gap-2 mb-2">
-          <input v-model="s.color" type="color" class="w-8 h-8 rounded cursor-pointer" />
-          <input v-model.number="s.pos" type="range" min="0" max="100" class="flex-1" />
-          <span class="text-xs text-slate-400 w-8">{{ s.pos }}%</span>
-          <button v-if="stops.length > 2" @click="stops.splice(i, 1)" class="text-xs text-red-400">×</button>
+        <div class="bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between text-xs font-medium text-slate-500 mb-1">
+            <span class="flex items-center gap-1"><component :is="icons.Code" class="w-3.5 h-3.5" />CSS</span>
+            <CopyButton :text="css" label="复制" />
+          </div>
+          <pre class="p-3 rounded-lg bg-slate-900 text-indigo-300 text-xs font-mono whitespace-pre-wrap">{{ 'background: ' + css + ';' }}</pre>
         </div>
-      </div>
-    </section>
-
-    <section class="lg:col-span-2 space-y-6">
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 class="text-sm font-semibold text-slate-700 mb-3">预览</h3>
-        <div class="h-48 rounded-xl" :style="{ background: css }"></div>
-      </div>
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <div class="flex items-center justify-between text-xs text-slate-500 mb-1">
-          <span>CSS</span>
-          <CopyButton :text="css" label="复制" />
-        </div>
-        <pre class="p-3 rounded-lg bg-slate-900 text-indigo-300 text-xs font-mono whitespace-pre-wrap">{{ 'background: ' + css + ';' }}</pre>
-      </div>
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 class="text-sm font-semibold text-slate-700 mb-3">预设</h3>
-        <div class="grid grid-cols-3 md:grid-cols-5 gap-3">
-          <button
-            v-for="p in presets"
-            :key="p.name"
-            @click="applyPreset(p)"
-            class="h-16 rounded-lg hover:ring-2 hover:ring-indigo-400 transition"
-            :style="{ background: p.css }"
-            :title="p.name"
-          />
+        <div class="bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center gap-2 mb-2">
+            <component :is="icons.Sparkles" class="w-4 h-4 text-indigo-400" />
+            <span class="text-xs font-medium text-slate-500">预设</span>
+          </div>
+          <div class="grid grid-cols-3 md:grid-cols-5 gap-3">
+            <button
+              v-for="p in presets"
+              :key="p.name"
+              @click="applyPreset(p)"
+              class="h-16 rounded-lg hover:ring-2 hover:ring-indigo-400 transition border border-slate-100"
+              :style="{ background: p.css }"
+              :title="p.name"
+            />
+          </div>
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
 const type = ref<'linear' | 'radial' | 'conic'>('linear')
 const angle = ref(135)
 const cx = ref(50)

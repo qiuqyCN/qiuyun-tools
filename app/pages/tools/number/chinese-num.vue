@@ -1,30 +1,65 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">数字转中文大写</h3>
-      <input
-        v-model="input"
-        placeholder="输入数字（整数或小数，支持负数）..."
-        class="w-full h-11 px-3 text-sm rounded-lg border border-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-      />
-      <div class="mt-3 flex items-center gap-3 text-xs text-slate-500">
-        <label class="flex items-center gap-1"><input v-model="useYuan" type="checkbox" class="rounded" />金额模式（元/角/分）</label>
-        <label class="flex items-center gap-1"><input v-model="simplified" type="checkbox" class="rounded" />使用简体</label>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">数字转中文大写</h3>
+      <span class="text-xs text-slate-400">支持金额模式（元/角/分）与简体/繁体</span>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-4 items-stretch">
+      <!-- 输入 -->
+      <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-500">数字输入</span>
+          <button @click="input = example" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 示例</button>
+        </div>
+        <input
+          v-model="input"
+          placeholder="输入数字（整数或小数，支持负数）..."
+          class="w-full h-11 px-3 text-sm rounded-lg border border-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+        />
+        <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+          <label class="flex items-center gap-1"><input v-model="useYuan" type="checkbox" class="rounded" />金额模式（元/角/分）</label>
+          <label class="flex items-center gap-1"><input v-model="simplified" type="checkbox" class="rounded" />使用简体</label>
+        </div>
       </div>
-    </section>
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold text-slate-700">转换结果</h3>
+
+      <!-- 操作按钮 -->
+      <div class="flex lg:flex-col items-center justify-center gap-2 shrink-0">
         <CopyButton :text="result" label="复制" />
+        <button
+          @click="input = ''"
+          class="h-8 px-3 rounded-lg text-xs text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+        >清空</button>
       </div>
-      <div class="p-4 bg-indigo-50 rounded-lg text-base font-semibold text-indigo-900 break-all min-h-[60px]">
-        {{ result || '等待输入...' }}
+
+      <!-- 输出 -->
+      <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-medium text-slate-500">转换结果</span>
+        </div>
+        <div
+          v-if="result"
+          class="p-4 bg-indigo-50 rounded-lg text-base font-semibold text-indigo-900 break-all border border-indigo-100 min-h-[60px]"
+        >
+          {{ result }}
+        </div>
+        <div
+          v-else
+          class="w-full min-h-[120px] rounded-lg bg-slate-50 text-slate-400 border border-slate-100 flex flex-col items-center justify-center gap-2 text-xs"
+        >
+          <component :is="icons.CircleDollarSign" class="w-8 h-8 text-slate-300" />
+          <span>在左侧输入数字，结果将实时生成</span>
+        </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
+
+const example = `1234567.89`
+
 const input = ref('')
 const useYuan = ref(true)
 const simplified = ref(false)

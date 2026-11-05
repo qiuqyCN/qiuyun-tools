@@ -1,57 +1,84 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Calculator -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <input
-        v-model="expr"
-        @keyup.enter="calc"
-        placeholder="输入表达式，如 sin(30) + sqrt(16)"
-        class="w-full h-12 px-4 text-lg rounded-lg border border-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-      />
-      <div class="mt-3 text-right">
-        <div v-if="result !== null" class="text-3xl font-bold text-indigo-600 font-mono">{{ result }}</div>
-        <div v-else-if="error" class="text-sm text-red-500">{{ error }}</div>
-      </div>
-      <div class="mt-4 grid grid-cols-5 gap-2">
-        <button v-for="btn in buttons" :key="btn" @click="insert(btn)" class="h-10 text-sm rounded-lg bg-slate-100 hover:bg-slate-200 transition font-mono">
-          {{ btn }}
-        </button>
-      </div>
-      <div class="mt-4 flex gap-2">
-        <button @click="expr = ''" class="flex-1 h-10 text-sm rounded-lg bg-slate-100 hover:bg-slate-200 transition">清空</button>
-        <button @click="calc" class="flex-1 h-10 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">计算 (Enter)</button>
-      </div>
-    </section>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">科学计算器</h3>
+      <span class="text-xs text-slate-400">支持常见数学函数与历史记录</span>
+    </div>
 
-    <!-- History & Cheat Sheet -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">历史记录</h3>
-      <div v-if="history.length" class="space-y-1.5 max-h-52 overflow-auto">
-        <div
-          v-for="(h, i) in history"
-          :key="i"
-          @click="expr = h.expr"
-          class="p-2 rounded-md bg-slate-50 hover:bg-slate-100 cursor-pointer text-xs font-mono"
-        >
-          <div class="text-slate-500">{{ h.expr }}</div>
-          <div class="text-indigo-600 font-semibold">= {{ h.result }}</div>
+    <div class="flex flex-col lg:flex-row gap-4 items-stretch">
+      <!-- 主计算器 -->
+      <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-500">表达式输入</span>
+          <button @click="expr = example" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 示例</button>
+        </div>
+        <input
+          v-model="expr"
+          @keyup.enter="calc"
+          placeholder="输入表达式，如 sin(30) + sqrt(16)"
+          class="w-full h-12 px-4 text-lg rounded-lg border border-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+        />
+        <div class="text-right">
+          <div v-if="result !== null" class="text-3xl font-bold text-indigo-600 font-mono">{{ result }}</div>
+          <div v-else-if="error" class="text-sm text-red-500 flex items-center justify-end gap-1.5">
+            <component :is="icons.AlertCircle" class="w-4 h-4" />
+            {{ error }}
+          </div>
+        </div>
+        <div class="grid grid-cols-5 gap-2">
+          <button v-for="btn in buttons" :key="btn" @click="insert(btn)" class="h-10 text-sm rounded-lg bg-slate-100 hover:bg-slate-200 transition font-mono">
+            {{ btn }}
+          </button>
+        </div>
+        <div class="flex gap-2">
+          <button @click="expr = ''" class="flex-1 h-10 text-sm rounded-lg bg-slate-100 hover:bg-slate-200 transition">清空</button>
+          <button
+            @click="calc"
+            :disabled="!expr.trim()"
+            class="flex-1 h-10 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition"
+          >
+            <component :is="icons.Calculator" class="w-4 h-4" />
+            计算 (Enter)
+          </button>
         </div>
       </div>
-      <div v-else class="py-8 text-center text-xs text-slate-400">暂无历史</div>
 
-      <h3 class="text-sm font-semibold text-slate-700 mt-5 mb-2">支持的函数 / 常量</h3>
-      <div class="text-xs text-slate-500 space-y-1 font-mono">
-        <div>sin / cos / tan / asin / acos / atan</div>
-        <div>log / log10 / sqrt / abs / pow / exp</div>
-        <div>ceil / floor / round</div>
-        <div>PI / E</div>
-        <div>使用 `deg()` 将角度转弧度，如 sin(deg(30))</div>
+      <!-- 历史记录 + 帮助 -->
+      <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col gap-3">
+        <span class="text-xs font-medium text-slate-500">历史记录</span>
+        <div v-if="history.length" class="space-y-1.5 max-h-48 overflow-auto">
+          <div
+            v-for="(h, i) in history"
+            :key="i"
+            @click="expr = h.expr"
+            class="p-2 rounded-md bg-slate-50 hover:bg-slate-100 cursor-pointer text-xs font-mono transition"
+          >
+            <div class="text-slate-500">{{ h.expr }}</div>
+            <div class="text-indigo-600 font-semibold">= {{ h.result }}</div>
+          </div>
+        </div>
+        <div v-else class="py-4 text-center text-xs text-slate-400">暂无历史</div>
+
+        <div class="pt-3 border-t border-slate-100">
+          <span class="text-xs font-medium text-slate-500">支持的函数 / 常量</span>
+          <div class="text-xs text-slate-500 space-y-1 font-mono mt-2">
+            <div>sin / cos / tan / asin / acos / atan</div>
+            <div>log / log10 / sqrt / abs / pow / exp</div>
+            <div>ceil / floor / round</div>
+            <div>PI / E</div>
+            <div>使用 `deg()` 将角度转弧度，如 sin(deg(30))</div>
+          </div>
+        </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
+
+const example = `sin(deg(30)) + sqrt(16) * 2`
+
 const expr = ref('')
 const result = ref<number | null>(null)
 const error = ref('')

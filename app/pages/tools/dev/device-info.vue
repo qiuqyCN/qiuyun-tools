@@ -1,79 +1,99 @@
 <template>
-  <div class="space-y-6">
-    <!-- Basic -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-4">基本信息</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5">
-        <InfoRow label="浏览器" :value="browser" />
-        <InfoRow label="浏览器版本" :value="browserVersion" />
-        <InfoRow label="操作系统" :value="os" />
-        <InfoRow label="平台" :value="platform" />
-        <InfoRow label="语言" :value="language" />
-        <InfoRow label="时区" :value="timezone" />
-        <InfoRow label="在线状态" :value="online ? '在线' : '离线'" />
-        <InfoRow label="Cookie" :value="cookieEnabled ? '已启用' : '已禁用'" />
-      </div>
-    </section>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">设备信息检测</h3>
+      <span class="text-xs text-slate-400">获取当前浏览器和设备的详细信息</span>
+    </div>
 
-    <!-- Screen -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-4">屏幕与视口</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5">
-        <InfoRow label="屏幕分辨率" :value="screenSize" />
-        <InfoRow label="可用区域" :value="availSize" />
-        <InfoRow label="屏幕色深" :value="colorDepth + ' bit'" />
-        <InfoRow label="像素比" :value="pixelRatio + 'x'" />
-        <InfoRow label="视口尺寸" :value="viewport" />
-        <InfoRow label="移动设备" :value="isMobile ? '是' : '否'" />
-        <InfoRow label="支持触摸" :value="touchSupport ? '是' : '否'" />
-      </div>
-    </section>
-
-    <!-- Hardware -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-4">硬件信息</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5">
-        <InfoRow label="CPU 核心数" :value="cpuCores" />
-        <InfoRow label="内存" :value="memory" />
-        <InfoRow label="最大并发连接" :value="maxConn" />
-        <InfoRow label="WebGL" :value="webglVendor" />
-      </div>
-    </section>
-
-    <!-- Canvas test -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-4">Canvas 渲染测试</h3>
-      <div class="flex gap-6 items-center">
-        <canvas ref="canvasRef" width="200" height="60" class="rounded-lg border border-slate-200" />
-        <div class="text-xs text-slate-500">
-          <div>Canvas 2D: {{ canvas2d ? '✓ 支持' : '✗ 不支持' }}</div>
-          <div>Canvas Text: {{ canvasText || '-' }}</div>
+    <div class="space-y-4">
+      <!-- Basic -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center gap-2 mb-3">
+          <component :is="icons.Window" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">基本信息</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5">
+          <InfoRow label="浏览器" :value="browser" />
+          <InfoRow label="浏览器版本" :value="browserVersion" />
+          <InfoRow label="操作系统" :value="os" />
+          <InfoRow label="平台" :value="platform" />
+          <InfoRow label="语言" :value="language" />
+          <InfoRow label="时区" :value="timezone" />
+          <InfoRow label="在线状态" :value="online ? '在线' : '离线'" />
+          <InfoRow label="Cookie" :value="cookieEnabled ? '已启用' : '已禁用'" />
         </div>
       </div>
-    </section>
-  </div>
+
+      <!-- Screen -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center gap-2 mb-3">
+          <component :is="icons.Monitor" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">屏幕与视口</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5">
+          <InfoRow label="屏幕分辨率" :value="screenSize" />
+          <InfoRow label="可用区域" :value="availSize" />
+          <InfoRow label="屏幕色深" :value="colorDepth + ' bit'" />
+          <InfoRow label="像素比" :value="pixelRatio + 'x'" />
+          <InfoRow label="视口尺寸" :value="viewport" />
+          <InfoRow label="移动设备" :value="isMobile ? '是' : '否'" />
+          <InfoRow label="支持触摸" :value="touchSupport ? '是' : '否'" />
+        </div>
+      </div>
+
+      <!-- Hardware -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center gap-2 mb-3">
+          <component :is="icons.Cpu" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">硬件信息</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5">
+          <InfoRow label="CPU 核心数" :value="cpuCores" />
+          <InfoRow label="内存" :value="memory" />
+          <InfoRow label="最大并发连接" :value="maxConn" />
+          <InfoRow label="WebGL" :value="webglVendor" />
+        </div>
+      </div>
+
+      <!-- Canvas test -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center gap-2 mb-3">
+          <component :is="icons.Palette" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">Canvas 渲染测试</span>
+        </div>
+        <div class="flex gap-6 items-center">
+          <canvas ref="canvasRef" width="200" height="60" class="rounded-lg border border-slate-200" />
+          <div class="text-xs text-slate-500 space-y-1">
+            <div class="flex items-center gap-1"><component :is="icons.Check" v-if="canvas2d" class="w-3 h-3 text-green-500" /><component :is="icons.X" v-else class="w-3 h-3 text-red-500" />Canvas 2D: {{ canvas2d ? '支持' : '不支持' }}</div>
+            <div>Canvas Text: {{ canvasText || '-' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
-const browser = ref(navigator.userAgent) // 简化，实际可解析
+import * as icons from 'lucide-vue-next'
+const browser = ref('-')
 const browserVersion = ref('')
-const os = ref(navigator.platform)
-const platform = ref(navigator.platform)
-const language = ref(navigator.language + (navigator.languages ? ` / [${navigator.languages.join(', ')}]` : ''))
-const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
-const online = ref(navigator.onLine)
-const cookieEnabled = ref(navigator.cookieEnabled)
+const os = ref('-')
+const platform = ref('-')
+const language = ref('-')
+const timezone = ref('-')
+const online = ref(false)
+const cookieEnabled = ref(false)
 
-const screenSize = ref(`${screen.width} × ${screen.height}`)
-const availSize = ref(`${screen.availWidth} × ${screen.availHeight}`)
-const colorDepth = ref(screen.colorDepth)
-const pixelRatio = ref(window.devicePixelRatio || 1)
-const viewport = ref(`${window.innerWidth} × ${window.innerHeight}`)
-const isMobile = ref('ontouchstart' in window || /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent))
-const touchSupport = ref('ontouchstart' in window || navigator.maxTouchPoints > 0)
+const screenSize = ref('-')
+const availSize = ref('-')
+const colorDepth = ref(0)
+const pixelRatio = ref(1)
+const viewport = ref('-')
+const isMobile = ref(false)
+const touchSupport = ref(false)
 
-const cpuCores = ref(navigator.hardwareConcurrency || '-')
-const memory = ref((navigator as any).deviceMemory ? `${(navigator as any).deviceMemory} GB` : '不可用（隐私保护）')
+const cpuCores = ref('-')
+const memory = ref('不可用（隐私保护）')
 const maxConn = ref('不可用')
 const webglVendor = ref('')
 
@@ -82,15 +102,37 @@ const canvas2d = ref(false)
 const canvasText = ref('')
 
 onMounted(() => {
-  // 解析浏览器
-  const ua = navigator.userAgent
+  const nav = navigator
+  // 基本
+  const ua = nav.userAgent
   const match = ua.match(/(Chrome|Firefox|Safari|Edge|Opera)\/([\d.]+)/)
   if (match) {
     browser.value = match[1]
     browserVersion.value = match[2]
   } else {
-    browser.value = navigator.appName
+    browser.value = nav.appName || '-', browserVersion.value = nav.appVersion || ''
   }
+  os.value = nav.platform || '-'
+  platform.value = nav.platform || '-'
+  language.value = nav.language + (nav.languages?.length ? ` / [${nav.languages.join(', ')}]` : '')
+  try { timezone.value = Intl.DateTimeFormat().resolvedOptions().timeZone } catch {}
+  online.value = nav.onLine
+  cookieEnabled.value = nav.cookieEnabled
+
+  // 屏幕
+  try {
+    screenSize.value = `${screen.width} × ${screen.height}`
+    availSize.value = `${screen.availWidth} × ${screen.availHeight}`
+    colorDepth.value = screen.colorDepth
+  } catch {}
+  pixelRatio.value = window.devicePixelRatio || 1
+  viewport.value = `${window.innerWidth} × ${window.innerHeight}`
+  isMobile.value = 'ontouchstart' in window || /Mobile|Android|iPhone|iPad/i.test(ua)
+  touchSupport.value = 'ontouchstart' in window || (nav as any).maxTouchPoints > 0
+
+  // 硬件
+  cpuCores.value = String(nav.hardwareConcurrency || '-')
+  if ((nav as any).deviceMemory) memory.value = `${(nav as any).deviceMemory} GB`
 
   // WebGL
   try {

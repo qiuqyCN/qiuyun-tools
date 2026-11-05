@@ -1,7 +1,11 @@
 <template>
-  <div class="max-w-2xl mx-auto space-y-5">
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-4">综合单位换算</h3>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">综合单位换算</h3>
+      <span class="text-xs text-slate-400">长度 / 重量 / 面积 / 体积 / 时间</span>
+    </div>
+
+    <div class="bg-white rounded-xl p-4 border border-slate-200">
       <div class="grid grid-cols-2 gap-3 text-sm">
         <div>
           <label class="block text-xs text-slate-500 mb-1">类别</label>
@@ -11,7 +15,7 @@
         </div>
         <div>
           <label class="block text-xs text-slate-500 mb-1">数量</label>
-          <input v-model.number="value" type="number" step="any" class="w-full h-10 px-3 rounded-lg border border-slate-200 font-mono" />
+          <input v-model.number="value" type="number" step="any" class="w-full h-10 px-3 rounded-lg border border-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400" />
         </div>
         <div>
           <label class="block text-xs text-slate-500 mb-1">从</label>
@@ -26,21 +30,27 @@
           </select>
         </div>
       </div>
-    </section>
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">转换结果</h3>
+    </div>
+
+    <div class="bg-white rounded-xl p-4 border border-slate-200 mt-4">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-medium text-slate-500">转换结果</span>
+        <CopyButton :text="result" label="复制" />
+      </div>
       <div class="text-3xl font-bold text-indigo-600 font-mono">{{ result }}</div>
       <div class="text-xs text-slate-400 mt-1">{{ value }} {{ from }} = {{ result }} {{ to }}</div>
       <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-        <div v-for="u in currentUnits" :key="u" class="p-2 rounded bg-slate-50 font-mono">
+        <div v-for="u in currentUnits" :key="u" class="p-2 rounded bg-slate-50 font-mono border border-slate-100">
           <span class="text-slate-500">{{ u }}:</span> {{ convertFromBase(baseValue, u).toPrecision(6) }}
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
+
 type UnitSystem = Record<string, { factor: number }>
 const categories: { id: string; label: string; units: string[]; baseFactor: (u: string) => number }[] = [
   {

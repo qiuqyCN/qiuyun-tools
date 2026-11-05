@@ -1,8 +1,12 @@
 <template>
-  <div class="space-y-5">
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-4">随机数生成器</h3>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">随机数生成</h3>
+      <span class="text-xs text-slate-400">支持整数 / 小数 / 不重复整数生成</span>
+    </div>
+
+    <div class="bg-white rounded-xl p-4 border border-slate-200">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <div>
           <label class="block text-xs text-slate-500 mb-1">最小值</label>
           <input
@@ -41,37 +45,51 @@
           </select>
         </div>
       </div>
-      <div class="mt-4 flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-3">
         <button
           @click="generate"
-          class="px-5 py-2 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
-        >生成随机数</button>
-        <label v-if="type !== 'float'" class="flex items-center gap-1.5 text-xs text-slate-500 ml-2">
+          class="h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center gap-1.5 transition"
+        >
+          <component :is="icons.Dices" class="w-4 h-4" />
+          生成随机数
+        </button>
+        <label v-if="type !== 'float'" class="flex items-center gap-1.5 text-xs text-slate-500">
           <input v-model="useCrypto" type="checkbox" class="rounded" />
           安全随机数（WebCrypto）
         </label>
       </div>
-    </section>
+    </div>
 
-    <section v-if="result.length" class="bg-white rounded-xl border border-slate-200 p-5">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold text-slate-700">生成结果（{{ result.length }} 个）</h3>
+    <!-- 结果区域 -->
+    <div class="bg-white rounded-xl p-4 border border-slate-200 mt-4">
+      <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-2">
-          <CopyButton :text="result.join(', ')" label="复制全部" />
+          <span class="text-xs font-medium text-slate-500">生成结果</span>
+          <span v-if="result.length" class="text-[11px] text-slate-400">（{{ result.length }} 个）</span>
         </div>
+        <CopyButton v-if="result.length" :text="result.join(', ')" label="复制全部" />
       </div>
-      <div class="flex flex-wrap gap-2">
+      <div v-if="result.length" class="flex flex-wrap gap-2">
         <span
           v-for="(n, i) in result"
           :key="i"
-          class="inline-flex items-center px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 font-mono text-xs"
+          class="inline-flex items-center px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 font-mono text-xs border border-indigo-100"
         >{{ n }}</span>
       </div>
-    </section>
-  </div>
+      <div
+        v-else
+        class="py-12 text-center text-slate-400 flex flex-col items-center gap-2 text-xs"
+      >
+        <component :is="icons.Shuffle" class="w-8 h-8 text-slate-300" />
+        <span>点击上方按钮生成随机数</span>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
+
 const min = ref(1)
 const max = ref(100)
 const count = ref(10)

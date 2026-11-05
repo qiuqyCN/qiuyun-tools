@@ -1,29 +1,69 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Input -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">JSON 输入</h3>
-      <textarea
-        v-model="input"
-        placeholder='{"user": {"name": "张三", "age": 25, "tags": ["开发者"]}}'
-        class="w-full h-[440px] p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-      />
-    </section>
-    <!-- Output -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold text-slate-700">Java POJO</h3>
-        <div class="flex items-center gap-2 text-xs">
-          <CopyButton :text="output" label="复制" />
-          <DownloadButton :content="output" filename="Pojo.java" label="下载" />
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">JSON / Java 互转</h3>
+      <span class="text-xs text-slate-400">自动生成带 Getter/Setter 的 Java 实体类</span>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-4 items-stretch">
+      <!-- 输入 -->
+      <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-medium text-slate-500">JSON 输入</span>
+          <button @click="input = example" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 示例</button>
+        </div>
+        <textarea
+          v-model="input"
+          placeholder='{"user": {"name": "张三", "age": 25, "tags": ["开发者"]}}'
+          class="w-full h-[440px] p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+        />
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="flex lg:flex-col items-center justify-center gap-2 shrink-0">
+        <CopyButton :text="output" label="复制" />
+        <DownloadButton v-if="output && !output.startsWith('JSON')" :content="output" filename="Pojo.java" label="下载" />
+        <button
+          @click="input = ''"
+          class="h-8 px-3 rounded-lg text-xs text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+        >清空</button>
+      </div>
+
+      <!-- 输出 -->
+      <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-medium text-slate-500">Java POJO 输出</span>
+        </div>
+        <pre
+          v-if="output"
+          class="w-full h-[440px] p-3 rounded-lg bg-slate-50 text-xs font-mono text-slate-700 overflow-auto whitespace-pre border border-slate-100"
+        >{{ output }}</pre>
+        <div
+          v-else
+          class="w-full h-[440px] p-3 rounded-lg bg-slate-50 text-slate-400 border border-slate-100 flex flex-col items-center justify-center gap-2 text-xs"
+        >
+          <component :is="icons.FileCode2" class="w-8 h-8 text-slate-300" />
+          <span>在左侧粘贴 JSON，Java 类将自动生成</span>
         </div>
       </div>
-      <pre class="w-full h-[440px] p-3 rounded-lg bg-slate-50 text-xs font-mono text-slate-700 overflow-auto whitespace-pre">{{ output || '等待输入...' }}</pre>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
+
+const example = `{
+  "user": {
+    "name": "张三",
+    "age": 25,
+    "email": "zhangsan@example.com",
+    "tags": ["开发者", "架构师"]
+  },
+  "active": true,
+  "score": 98.5
+}`
+
 const input = ref('')
 const output = ref('')
 

@@ -1,67 +1,95 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Input -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">图片压缩</h3>
-      <!-- Upload zone with preview -->
-      <div
-        class="relative"
-        @dragover.prevent="dragOver = true"
-        @dragleave.prevent="dragOver = false"
-        @drop.prevent="onDrop"
-      >
-        <label
-          v-if="!original"
-          class="flex flex-col items-center justify-center h-48 border-2 border-dashed rounded-lg cursor-pointer transition"
-          :class="dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
-        >
-          <input type="file" accept="image/*" class="hidden" @change="onFile" />
-          <component :is="icons.Upload" class="w-8 h-8 text-slate-300 mb-2" />
-          <span class="text-sm text-slate-500">点击或拖拽上传图片</span>
-        </label>
-        <div v-else class="relative group rounded-lg overflow-hidden border border-slate-200">
-          <img :src="original.url" class="w-full max-h-48 object-contain bg-slate-50" />
-          <button
-            @click.stop="clearFile"
-            class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100"
-          >
-            <component :is="icons.X" class="w-4 h-4" />
-          </button>
-          <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-3 py-2 text-xs text-white">
-            {{ original.file.name }} · {{ fmtSize(original.size) }} · {{ original.width }}×{{ original.height }}
-          </div>
-        </div>
-      </div>
-      <div v-if="original" class="mt-4 space-y-3">
-        <div>
-          <label class="block text-xs text-slate-500 mb-1">压缩质量: {{ quality }}%</label>
-          <input v-model.number="quality" type="range" min="10" max="100" class="w-full" />
-        </div>
-        <div>
-          <label class="block text-xs text-slate-500 mb-1">最大宽度 (px): {{ maxWidth }}</label>
-          <input v-model.number="maxWidth" type="range" min="100" :max="original.width" class="w-full" />
-        </div>
-        <button @click="compress" class="w-full h-10 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">开始压缩</button>
-      </div>
-    </section>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">图片压缩</h3>
+      <span class="text-xs text-slate-400">本地压缩图片，调整质量和尺寸，支持 JPEG/PNG</span>
+    </div>
 
-    <!-- Output -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">压缩结果</h3>
-      <div v-if="compressed" class="text-center">
-        <img :src="compressed.url" class="max-w-full max-h-80 rounded-lg border border-slate-200 mx-auto" />
-        <div class="mt-4 space-y-2 text-sm">
-          <div class="flex justify-center gap-4">
-            <div>压缩后: <span class="font-mono font-semibold text-indigo-600">{{ fmtSize(compressed.size) }}</span></div>
-            <div>缩减: <span class="font-mono font-semibold" :class="savedPct < 50 ? 'text-green-600' : 'text-orange-600'">{{ savedPct }}%</span></div>
-          </div>
-          <div class="text-xs text-slate-400">{{ compressed.width }} × {{ compressed.height }}{{ compressed.width !== original?.width ? ' (缩放)' : '' }}</div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <!-- Input -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center gap-2 mb-2">
+          <component :is="icons.Upload" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">上传图片</span>
         </div>
-        <button @click="download" class="mt-4 h-10 px-6 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">下载图片</button>
+        <!-- Upload zone with preview -->
+        <div
+          class="relative"
+          @dragover.prevent="dragOver = true"
+          @dragleave.prevent="dragOver = false"
+          @drop.prevent="onDrop"
+        >
+          <label
+            v-if="!original"
+            class="flex flex-col items-center justify-center h-48 border-2 border-dashed rounded-xl cursor-pointer transition"
+            :class="dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
+          >
+            <input type="file" accept="image/*" class="hidden" @change="onFile" />
+            <component :is="icons.ImageUp" class="w-8 h-8 text-slate-300 mb-2" />
+            <span class="text-sm text-slate-500">点击或拖拽上传图片</span>
+          </label>
+          <div v-else class="relative group rounded-lg overflow-hidden border border-slate-200">
+            <img :src="original.url" class="w-full max-h-48 object-contain bg-slate-50" />
+            <button
+              @click.stop="clearFile"
+              class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100"
+            >
+              <component :is="icons.X" class="w-4 h-4" />
+            </button>
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-3 py-2 text-xs text-white">
+              {{ original.file.name }} · {{ fmtSize(original.size) }} · {{ original.width }}×{{ original.height }}
+            </div>
+          </div>
+        </div>
+        <div v-if="original" class="mt-4 space-y-3">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">压缩质量: {{ quality }}%</label>
+            <input v-model.number="quality" type="range" min="10" max="100" class="w-full" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">最大宽度 (px): {{ maxWidth }}</label>
+            <input v-model.number="maxWidth" type="range" min="100" :max="original.width" class="w-full" />
+          </div>
+          <button
+            @click="compress"
+            class="w-full h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition"
+          >
+            <component :is="icons.Compress" class="w-4 h-4" />
+            开始压缩
+          </button>
+        </div>
       </div>
-      <div v-else class="h-full flex items-center justify-center text-slate-400 text-sm">等待上传图片</div>
-    </section>
-  </div>
+
+      <!-- Output -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center gap-2 mb-2">
+          <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">压缩结果</span>
+        </div>
+        <div v-if="compressed" class="text-center">
+          <img :src="compressed.url" class="max-w-full max-h-80 rounded-lg border border-slate-200 mx-auto shadow-sm" />
+          <div class="mt-4 space-y-2 text-sm">
+            <div class="flex justify-center gap-4">
+              <div>压缩后: <span class="font-mono font-semibold text-indigo-600">{{ fmtSize(compressed.size) }}</span></div>
+              <div>缩减: <span class="font-mono font-semibold" :class="savedPct < 50 ? 'text-green-600' : 'text-orange-600'">{{ savedPct }}%</span></div>
+            </div>
+            <div class="text-xs text-slate-400">{{ compressed.width }} × {{ compressed.height }}{{ compressed.width !== original?.width ? ' (缩放)' : '' }}</div>
+          </div>
+          <button
+            @click="download"
+            class="mt-4 h-10 px-6 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 mx-auto transition"
+          >
+            <component :is="icons.Download" class="w-4 h-4" />
+            下载图片
+          </button>
+        </div>
+        <div v-else class="h-64 flex flex-col items-center justify-center text-slate-400 text-xs gap-2 bg-slate-50 rounded-lg border border-slate-100">
+          <component :is="icons.Image" class="w-8 h-8 text-slate-300" />
+          上传图片后点击压缩，结果将显示在此处
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">

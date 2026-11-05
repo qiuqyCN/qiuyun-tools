@@ -7,15 +7,27 @@
         collapsed ? 'w-16 shrink-0' : 'w-64 shrink-0',
       ]"
     >
-      <!-- Logo -->
-      <div class="h-16 flex items-center gap-2.5 px-4 border-b border-slate-100 shrink-0">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shrink-0 shadow-sm">
-          <component :is="icons.Wrench" class="w-4.5 h-4.5 text-white" />
-        </div>
+      <!-- Logo + Home -->
+      <NuxtLink to="/" class="h-16 flex items-center gap-2.5 px-4 border-b border-slate-100 shrink-0 hover:bg-slate-50 transition cursor-pointer group">
+        <img src="/favicon.png" alt="logo" class="w-9 h-9 rounded-xl shrink-0 shadow-sm object-contain" />
         <div v-if="!collapsed" class="min-w-0 leading-tight">
-          <div class="font-semibold text-slate-800 text-[15px]">工具集</div>
-          <div class="text-[11px] text-slate-400 truncate">纯前端开发者工具箱</div>
+          <div class="font-semibold text-slate-800 text-[15px] group-hover:text-indigo-600 transition">开发者工具箱</div>
+          <div class="text-[11px] text-slate-400 truncate">一站式工具箱</div>
         </div>
+      </NuxtLink>
+
+      <!-- Home entry (after Logo, before Search) -->
+      <div class="px-2 pt-2 shrink-0">
+        <NuxtLink
+          to="/"
+          class="flex items-center gap-2 px-2.5 py-2 text-sm text-slate-600 rounded-lg hover:bg-slate-100 hover:text-indigo-600 transition"
+          active-class="bg-indigo-50 text-indigo-600 font-medium"
+          :title="collapsed ? '首页' : undefined"
+          :class="collapsed ? 'justify-center' : ''"
+        >
+          <component :is="icons.Home" class="w-4 h-4 shrink-0" />
+          <span v-if="!collapsed">首页</span>
+        </NuxtLink>
       </div>
 
       <!-- Search -->
@@ -86,7 +98,7 @@
       </main>
       <footer class="border-t border-slate-200 bg-white/60 backdrop-blur-sm">
         <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between text-xs text-slate-400">
-          <span>© {{ new Date().getFullYear() }} 工具集 · 纯前端实现 · 数据不离开浏览器</span>
+          <span>© {{ new Date().getFullYear() }} 开发者工具箱 · 一站式开发者工具箱</span>
           <span class="flex items-center gap-2">
             <component :is="icons.Shield" class="w-3.5 h-3.5" />
             本地安全处理

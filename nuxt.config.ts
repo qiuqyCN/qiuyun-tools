@@ -5,6 +5,15 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   
+  app: {
+    head: {
+      title: '开发者工具箱 · 一站式开发者工具箱',
+      link: [
+        { rel: 'icon', type: 'image/png', href: '/favicon.png' },
+      ],
+    },
+  },
+
   css: ['~/assets/css/tailwind.css'],
   vite: {
     plugins: [

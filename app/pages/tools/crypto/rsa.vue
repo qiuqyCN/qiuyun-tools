@@ -1,7 +1,11 @@
 <template>
-  <div class="space-y-5">
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">RSA 密钥生成器（WebCrypto）</h3>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">RSA 密钥生成器</h3>
+      <span class="text-xs text-slate-400">基于 WebCrypto 本地生成 RSA 密钥对，不上传任何服务器</span>
+    </div>
+
+    <div class="bg-white rounded-xl p-4 border border-slate-200 mb-4">
       <div class="flex items-center gap-4">
         <div>
           <label class="block text-xs text-slate-500 mb-1">密钥长度</label>
@@ -10,17 +14,25 @@
             <option :value="4096">4096 位</option>
           </select>
         </div>
-        <button @click="generate" class="h-10 px-5 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition disabled:opacity-50" :disabled="loading">
+        <button
+          @click="generate"
+          class="h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center gap-1.5 transition disabled:bg-slate-300 disabled:cursor-not-allowed"
+          :disabled="loading"
+        >
+          <component :is="icons.KeyRound" class="w-4 h-4" />
           {{ loading ? '生成中...' : '生成密钥对' }}
         </button>
-        <span class="text-xs text-slate-400">⚠️ 仅在本地生成，不会上传任何服务器</span>
+        <span class="text-xs text-slate-400 flex items-center gap-1">
+          <component :is="icons.Shield" class="w-3.5 h-3.5" />
+          仅在本地生成，不会上传
+        </span>
       </div>
-    </section>
+    </div>
 
-    <section v-if="publicKey" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-semibold text-slate-700">公钥 (Public Key)</h3>
+    <div v-if="publicKey" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-medium text-slate-500">公钥 (Public Key)</span>
           <div class="flex items-center gap-2">
             <CopyButton :text="publicKey" label="复制" />
             <DownloadButton :content="publicKey" filename="public.pem" label="下载" />
@@ -28,9 +40,9 @@
         </div>
         <pre class="p-3 bg-slate-50 rounded-lg text-xs font-mono text-slate-700 overflow-auto max-h-80 whitespace-pre-wrap">{{ publicKey }}</pre>
       </div>
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-semibold text-slate-700">私钥 (Private Key)</h3>
+      <div class="bg-white rounded-xl p-4 border border-slate-200">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-medium text-slate-500">私钥 (Private Key)</span>
           <div class="flex items-center gap-2">
             <CopyButton :text="privateKey" label="复制" />
             <DownloadButton :content="privateKey" filename="private.pem" label="下载" />
@@ -38,11 +50,16 @@
         </div>
         <pre class="p-3 bg-slate-50 rounded-lg text-xs font-mono text-slate-700 overflow-auto max-h-80 whitespace-pre-wrap">{{ privateKey }}</pre>
       </div>
-    </section>
-  </div>
+    </div>
+    <div v-else class="bg-white rounded-xl p-12 border border-slate-200 flex flex-col items-center justify-center gap-2 text-xs text-slate-400">
+      <component :is="icons.Key" class="w-10 h-10 text-slate-300" />
+      <span>点击「生成密钥对」按钮，在本地生成 RSA 2048/4096 密钥</span>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
 const keySize = ref(2048)
 const loading = ref(false)
 const publicKey = ref('')

@@ -1,83 +1,112 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <section class="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
       <h3 class="text-sm font-semibold text-slate-700">图片水印</h3>
-      <!-- Upload zone -->
-      <div
-        class="relative"
-        @dragover.prevent="dragOver = true"
-        @dragleave.prevent="dragOver = false"
-        @drop.prevent="onDrop"
-      >
-        <label
-          v-if="!baseImg"
-          class="flex flex-col items-center justify-center h-36 border-2 border-dashed rounded-lg cursor-pointer transition"
-          :class="dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
+      <span class="text-xs text-slate-400">给图片添加自定义文字水印，支持平铺、位置调整</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="bg-white rounded-xl p-4 border border-slate-200 space-y-4">
+        <div class="flex items-center gap-2 mb-1">
+          <component :is="icons.Upload" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">选择底图</span>
+        </div>
+        <!-- Upload zone -->
+        <div
+          class="relative"
+          @dragover.prevent="dragOver = true"
+          @dragleave.prevent="dragOver = false"
+          @drop.prevent="onDrop"
         >
-          <input type="file" accept="image/*" class="hidden" @change="onFile" />
-          <component :is="icons.Upload" class="w-6 h-6 text-slate-300 mb-1" />
-          <span class="text-sm text-slate-500">选择底图</span>
-        </label>
-        <div v-else class="relative group rounded-lg overflow-hidden border border-slate-200">
-          <img :src="baseImg.src" class="w-full h-36 object-contain bg-slate-50" />
-          <button
-            @click.stop="clearFile"
-            class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100"
+          <label
+            v-if="!baseImg"
+            class="flex flex-col items-center justify-center h-36 border-2 border-dashed rounded-xl cursor-pointer transition"
+            :class="dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
           >
-            <component :is="icons.X" class="w-4 h-4" />
+            <input type="file" accept="image/*" class="hidden" @change="onFile" />
+            <component :is="icons.ImageUp" class="w-6 h-6 text-slate-300 mb-1" />
+            <span class="text-sm text-slate-500">选择底图</span>
+          </label>
+          <div v-else class="relative group rounded-lg overflow-hidden border border-slate-200">
+            <img :src="baseImg.src" class="w-full h-36 object-contain bg-slate-50" />
+            <button
+              @click.stop="clearFile"
+              class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100"
+            >
+              <component :is="icons.X" class="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        <div v-if="baseImg" class="space-y-3 text-xs">
+          <div>
+            <label class="block text-slate-400 mb-1">水印文字</label>
+            <input v-model="text" class="w-full h-9 px-2 rounded-lg border border-slate-200" />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-slate-400 mb-1">字号: {{ fontSize }}</label>
+              <input v-model.number="fontSize" type="range" min="10" max="100" class="w-full" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">透明度: {{ opacity }}</label>
+              <input v-model.number="opacity" type="range" min="10" max="100" class="w-full" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">旋转: {{ angle }}°</label>
+              <input v-model.number="angle" type="range" min="-90" max="90" class="w-full" />
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">颜色</label>
+              <input v-model="color" type="color" class="w-full h-9 rounded-lg border border-slate-200" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">位置</label>
+            <select v-model="position" class="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white">
+              <option value="center">居中</option>
+              <option value="tl">左上</option>
+              <option value="tr">右上</option>
+              <option value="bl">左下</option>
+              <option value="br">右下</option>
+              <option value="tile">平铺</option>
+            </select>
+          </div>
+          <button
+            @click="apply"
+            class="w-full h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition"
+          >
+            <component :is="icons.Watermark" class="w-4 h-4" />
+            应用水印
           </button>
         </div>
       </div>
-      <div v-if="baseImg" class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-500 mb-1">水印文字</label>
-          <input v-model="text" class="w-full h-9 px-2 rounded-lg border border-slate-200" />
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-slate-500 mb-1">字号: {{ fontSize }}</label>
-            <input v-model.number="fontSize" type="range" min="10" max="100" class="w-full" />
-          </div>
-          <div>
-            <label class="block text-slate-500 mb-1">透明度: {{ opacity }}</label>
-            <input v-model.number="opacity" type="range" min="10" max="100" class="w-full" />
-          </div>
-          <div>
-            <label class="block text-slate-500 mb-1">旋转: {{ angle }}°</label>
-            <input v-model.number="angle" type="range" min="-90" max="90" class="w-full" />
-          </div>
-          <div>
-            <label class="block text-slate-500 mb-1">颜色</label>
-            <input v-model="color" type="color" class="w-full h-9 rounded-lg border border-slate-200" />
-          </div>
-        </div>
-        <div>
-          <label class="block text-slate-500 mb-1">位置</label>
-          <select v-model="position" class="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white">
-            <option value="center">居中</option>
-            <option value="tl">左上</option>
-            <option value="tr">右上</option>
-            <option value="bl">左下</option>
-            <option value="br">右下</option>
-            <option value="tile">平铺</option>
-          </select>
-        </div>
-        <button @click="apply" class="w-full h-10 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">应用水印</button>
-      </div>
-    </section>
 
-    <section class="bg-white rounded-xl border border-slate-200 p-5 flex flex-col items-center">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">预览</h3>
-      <div class="flex-1 flex items-center justify-center w-full">
-        <!-- 有水印结果时显示结果 -->
-        <img v-if="resultUrl" :src="resultUrl" class="max-w-full max-h-96 rounded-lg border border-slate-200" />
-        <!-- 无水印结果但已上传时显示原图 -->
-        <img v-else-if="baseImg" :src="baseImg.src" class="max-w-full max-h-96 rounded-lg border border-slate-200 bg-slate-50" />
-        <div v-else class="h-40 flex items-center text-slate-400 text-sm">等待上传</div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 flex flex-col items-center">
+        <div class="flex items-center gap-2 mb-2 w-full">
+          <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
+          <span class="text-xs font-medium text-slate-500">预览</span>
+        </div>
+        <div class="flex-1 flex items-center justify-center w-full">
+          <!-- 有水印结果时显示结果 -->
+          <img v-if="resultUrl" :src="resultUrl" class="max-w-full max-h-96 rounded-lg border border-slate-200 shadow-sm" />
+          <!-- 无水印结果但已上传时显示原图 -->
+          <img v-else-if="baseImg" :src="baseImg.src" class="max-w-full max-h-96 rounded-lg border border-slate-200 bg-slate-50" />
+          <div v-else class="h-48 w-full flex flex-col items-center justify-center text-slate-400 text-xs gap-2 bg-slate-50 rounded-lg border border-slate-100">
+            <component :is="icons.Image" class="w-8 h-8 text-slate-300" />
+            等待上传底图
+          </div>
+        </div>
+        <button
+          v-if="resultUrl"
+          @click="download"
+          class="mt-4 h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center gap-1.5 transition"
+        >
+          <component :is="icons.Download" class="w-4 h-4" />
+          下载
+        </button>
       </div>
-      <button v-if="resultUrl" @click="download" class="mt-4 h-9 px-4 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">下载</button>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">

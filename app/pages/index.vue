@@ -1,9 +1,12 @@
 <template>
   <div class="max-w-6xl mx-auto px-6 lg:px-8 py-8 lg:py-10">
     <!-- Hero -->
-    <header class="mb-10">
-      <h1 class="text-3xl font-bold text-slate-800 mb-2">开发者工具集</h1>
-      <p class="text-slate-500">51 个纯前端开发工具，无需后端、数据不离开浏览器</p>
+    <header class="mb-10 flex items-center gap-5">
+      <img src="/favicon.png" alt="logo" class="w-14 h-14 rounded-2xl shadow-sm object-contain" />
+      <div>
+        <h1 class="text-3xl font-bold text-slate-800 mb-1">开发者工具箱</h1>
+        <p class="text-slate-500">一站式开发者工具箱</p>
+      </div>
     </header>
 
     <!-- Categories -->
@@ -48,4 +51,6 @@
 <script setup lang="ts">
 import { categories } from '~/data/tools'
 import * as icons from 'lucide-vue-next'
+
+const totalTools = computed(() => categories.reduce((s, c) => s + c.tools.length, 0))
 </script>

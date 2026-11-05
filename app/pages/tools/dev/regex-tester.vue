@@ -1,103 +1,124 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Regex Input -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5 lg:col-span-1">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">正则表达式</h3>
-      <div class="flex items-center gap-1">
-        <span class="text-xl text-slate-400 font-mono">/</span>
-        <input
-          v-model="pattern"
-          placeholder="输入正则..."
-          class="flex-1 h-11 px-3 text-sm font-mono rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-        />
-        <span class="text-xl text-slate-400 font-mono">/</span>
-        <input
-          v-model="flags"
-          placeholder="gim"
-          class="w-16 h-11 px-2 text-sm font-mono rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-        />
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">正则测试</h3>
+      <span class="text-xs text-slate-400">实时匹配、分组捕获、常用正则速查</span>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-4 items-stretch">
+      <!-- 左侧：正则输入 + 速查 -->
+      <div class="bg-white rounded-xl p-4 border border-slate-200 flex flex-col gap-4 lg:w-72 shrink-0">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">正则表达式</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <span class="text-xl text-slate-400 font-mono">/</span>
+            <input
+              v-model="pattern"
+              placeholder="输入正则..."
+              class="flex-1 h-11 px-3 text-sm font-mono rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+            />
+            <span class="text-xl text-slate-400 font-mono">/</span>
+            <input
+              v-model="flags"
+              placeholder="gim"
+              class="w-16 h-11 px-2 text-sm font-mono rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+            />
+          </div>
+          <div v-if="regexError" class="mt-2 text-xs text-red-500">{{ regexError }}</div>
+          <div class="mt-3 space-y-1.5 text-xs text-slate-500">
+            <label v-for="f in flagOptions" :key="f.value" class="flex items-center gap-2">
+              <input
+                :checked="flags.includes(f.value)"
+                @change="toggleFlag(f.value)"
+                type="checkbox"
+                class="rounded"
+              />
+              <span class="font-mono font-semibold">{{ f.value }}</span>
+              <span>{{ f.desc }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Quick presets -->
+        <div class="pt-3 border-t border-slate-100">
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-xs font-medium text-slate-600">常用正则速查</div>
+            <button @click="applyPreset(presets[0])" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 示例</button>
+          </div>
+          <div class="grid grid-cols-2 gap-1.5">
+            <button
+              v-for="p in presets"
+              :key="p.name"
+              @click="applyPreset(p)"
+              class="text-[11px] px-2 py-1.5 rounded-md bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 text-left transition truncate"
+              :title="p.pattern"
+            >{{ p.name }}</button>
+          </div>
+        </div>
       </div>
-      <div v-if="regexError" class="mt-2 text-xs text-red-500">{{ regexError }}</div>
-      <div class="mt-4 space-y-2 text-xs text-slate-500">
-        <label v-for="f in flagOptions" :key="f.value" class="flex items-center gap-2">
-          <input
-            :checked="flags.includes(f.value)"
-            @change="toggleFlag(f.value)"
-            type="checkbox"
-            class="rounded"
+
+      <!-- 右侧：测试文本 + 结果 -->
+      <div class="flex-1 flex flex-col gap-4">
+        <div class="bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">测试文本</span>
+          </div>
+          <textarea
+            v-model="testText"
+            placeholder="输入要匹配的文本..."
+            class="w-full h-44 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
           />
-          <span class="font-mono font-semibold">{{ f.value }}</span>
-          <span>{{ f.desc }}</span>
-        </label>
-      </div>
+        </div>
 
-      <!-- Quick presets -->
-      <div class="mt-5 pt-4 border-t border-slate-100">
-        <div class="flex items-center justify-between mb-2">
-          <div class="text-xs font-medium text-slate-600">常用正则速查</div>
+        <div class="bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">匹配结果（{{ matches.length }} 个）</span>
+          </div>
+          <div v-if="matches.length" class="flex flex-wrap gap-1.5">
+            <span
+              v-for="(m, i) in matches"
+              :key="i"
+              class="inline-flex items-center px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 font-mono text-xs border border-indigo-200"
+              :title="'位置: ' + m.index + (m.groups?.length ? ', 分组: ' + m.groups : '')"
+            >{{ m.value }}</span>
+          </div>
+          <div v-else class="py-6 text-center text-slate-400 text-xs">
+            {{ regexError || '没有匹配' }}
+          </div>
         </div>
-        <div class="grid grid-cols-2 gap-1.5">
-          <button
-            v-for="p in presets"
-            :key="p.name"
-            @click="applyPreset(p)"
-            class="text-[11px] px-2 py-1.5 rounded-md bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 text-left transition truncate"
-            :title="p.pattern"
-          >{{ p.name }}</button>
-        </div>
-      </div>
-    </section>
 
-    <!-- Test Text + Results -->
-    <section class="lg:col-span-2 space-y-6">
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 class="text-sm font-semibold text-slate-700 mb-3">测试文本</h3>
-        <textarea
-          v-model="testText"
-          placeholder="输入要匹配的文本..."
-          class="w-full h-44 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-        />
-      </div>
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 class="text-sm font-semibold text-slate-700 mb-3">匹配结果（{{ matches.length }} 个）</h3>
-        <div v-if="matches.length" class="flex flex-wrap gap-1.5">
-          <span
-            v-for="(m, i) in matches"
-            :key="i"
-            class="inline-flex items-center px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 font-mono text-xs border border-indigo-200"
-            :title="'位置: ' + m.index + (m.groups?.length ? ', 分组: ' + m.groups : '')"
-          >{{ m.value }}</span>
+        <!-- Group details -->
+        <div v-if="matches.some(m => m.groups?.length)" class="bg-white rounded-xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">分组详情</span>
+          </div>
+          <table class="w-full text-xs font-mono">
+            <thead>
+              <tr class="text-slate-400 border-b border-slate-100">
+                <th class="text-left py-2">序号</th>
+                <th class="text-left py-2">完整匹配</th>
+                <th class="text-left py-2">分组</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(m, i) in matches.filter(x => x.groups?.length)" :key="i" class="border-b border-slate-50">
+                <td class="py-2 text-slate-500">{{ i + 1 }}</td>
+                <td class="py-2 text-indigo-600">{{ m.value }}</td>
+                <td class="py-2 text-slate-700">{{ m.groups }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div v-else class="py-8 text-center text-slate-400">
-          {{ regexError || '没有匹配' }}
-        </div>
       </div>
-
-      <!-- Group details -->
-      <div v-if="matches.some(m => m.groups?.length)" class="bg-white rounded-xl border border-slate-200 p-5">
-        <h3 class="text-sm font-semibold text-slate-700 mb-3">分组详情</h3>
-        <table class="w-full text-xs font-mono">
-          <thead>
-            <tr class="text-slate-400 border-b border-slate-100">
-              <th class="text-left py-2">序号</th>
-              <th class="text-left py-2">完整匹配</th>
-              <th class="text-left py-2">分组</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(m, i) in matches.filter(x => x.groups?.length)" :key="i" class="border-b border-slate-50">
-              <td class="py-2 text-slate-500">{{ i + 1 }}</td>
-              <td class="py-2 text-indigo-600">{{ m.value }}</td>
-              <td class="py-2 text-slate-700">{{ m.groups }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
+
 const pattern = ref('')
 const flags = ref('g')
 const testText = ref('Hello World 123\nhello@example.com\nphone: 138-0000-0000')

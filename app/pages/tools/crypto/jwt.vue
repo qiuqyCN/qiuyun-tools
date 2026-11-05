@@ -1,56 +1,74 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Input -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">JWT Token</h3>
-      <textarea
-        v-model="token"
-        placeholder="输入 JWT Token..."
-        class="w-full h-48 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-      />
-      <div v-if="error" class="mt-3 text-sm text-red-500">{{ error }}</div>
-    </section>
+  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+    <div class="flex items-center gap-2 mb-4">
+      <h3 class="text-sm font-semibold text-slate-700">JWT 解析器</h3>
+      <span class="text-xs text-slate-400">在线解析 JWT Token 的 Header、Payload 与签名</span>
+    </div>
 
-    <!-- Result -->
-    <section class="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 class="text-sm font-semibold text-slate-700 mb-3">解析结果</h3>
-      <template v-if="header && payload">
-        <div class="space-y-4">
-          <div>
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="text-xs text-slate-500">Header</span>
-              <CopyButton :text="JSON.stringify(header, null, 2)" label="复制" />
-            </div>
-            <pre class="p-3 bg-slate-50 rounded-lg text-xs font-mono text-slate-700 overflow-auto max-h-40">{{ headerStr }}</pre>
-          </div>
-          <div>
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="text-xs text-slate-500">Payload</span>
-              <CopyButton :text="JSON.stringify(payload, null, 2)" label="复制" />
-            </div>
-            <pre class="p-3 bg-indigo-50 rounded-lg text-xs font-mono text-indigo-900 overflow-auto max-h-60">{{ payloadStr }}</pre>
-          </div>
-          <div v-if="signature" class="text-xs text-slate-400">
-            Signature: <span class="font-mono break-all">{{ signature.substring(0, 32) }}...</span>
-          </div>
-          <!-- Expiration check -->
-          <div v-if="payload.exp" class="pt-2 border-t border-slate-100">
-            <div class="text-xs text-slate-500">过期时间</div>
-            <div
-              class="text-sm font-medium"
-              :class="isExpired ? 'text-red-500' : 'text-green-600'"
-            >
-              {{ expDate }} {{ isExpired ? '（已过期）' : '（未过期）' }}
-            </div>
-          </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <!-- Input -->
+      <div class="bg-white rounded-xl border border-slate-200 p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-medium text-slate-500">JWT Token</span>
         </div>
-      </template>
-      <div v-else class="py-12 text-center text-slate-400">等待输入有效 JWT Token</div>
-    </section>
-  </div>
+        <textarea
+          v-model="token"
+          placeholder="输入 JWT Token..."
+          class="w-full h-48 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+        />
+        <div v-if="error" class="mt-3 text-sm text-red-500 flex items-center gap-1.5">
+          <component :is="icons.AlertCircle" class="w-4 h-4" />
+          {{ error }}
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div class="bg-white rounded-xl border border-slate-200 p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-medium text-slate-500">解析结果</span>
+        </div>
+        <template v-if="header && payload">
+          <div class="space-y-4">
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs text-slate-500">Header</span>
+                <CopyButton :text="JSON.stringify(header, null, 2)" label="复制" />
+              </div>
+              <pre class="p-3 bg-slate-50 rounded-lg text-xs font-mono text-slate-700 overflow-auto max-h-40">{{ headerStr }}</pre>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs text-slate-500">Payload</span>
+                <CopyButton :text="JSON.stringify(payload, null, 2)" label="复制" />
+              </div>
+              <pre class="p-3 bg-indigo-50 rounded-lg text-xs font-mono text-indigo-900 overflow-auto max-h-60">{{ payloadStr }}</pre>
+            </div>
+            <div v-if="signature" class="text-xs text-slate-400">
+              Signature: <span class="font-mono break-all">{{ signature.substring(0, 32) }}...</span>
+            </div>
+            <!-- Expiration check -->
+            <div v-if="payload.exp" class="pt-2 border-t border-slate-100">
+              <div class="text-xs text-slate-500">过期时间</div>
+              <div
+                class="text-sm font-medium"
+                :class="isExpired ? 'text-red-500' : 'text-green-600'"
+              >
+                {{ expDate }} {{ isExpired ? '（已过期）' : '（未过期）' }}
+              </div>
+            </div>
+          </div>
+        </template>
+        <div v-else class="h-48 bg-slate-50 text-slate-400 rounded-lg flex flex-col items-center justify-center text-xs gap-2 border border-slate-100">
+          <component :is="icons.Key" class="w-8 h-8 text-slate-300" />
+          <span>在左侧粘贴 JWT Token，自动解析三段数据</span>
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import * as icons from 'lucide-vue-next'
 const token = ref('')
 const error = ref('')
 
