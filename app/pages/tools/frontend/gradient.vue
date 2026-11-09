@@ -1,27 +1,27 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">渐变生成器</h3>
-      <span class="text-xs text-slate-400">线性/径向/圆锥渐变可视化编辑器，支持多色停靠点</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.frontend/gradient.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.frontend.gradient.pageDesc') }}</span>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div class="bg-white rounded-xl p-4 border border-slate-200 lg:col-span-1 space-y-3">
-        <div class="text-xs font-medium text-slate-500 mb-1">渐变配置</div>
+        <div class="text-xs font-medium text-slate-500 mb-1">{{ $t('ui.frontend.gradient.configLabel') }}</div>
         <div>
-          <label class="block text-xs text-slate-400 mb-1">类型</label>
+          <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.gradient.typeLabel') }}</label>
           <select v-model="type" class="w-full h-10 px-3 rounded-lg border border-slate-200 bg-white text-sm">
-            <option value="linear">线性渐变</option>
-            <option value="radial">径向渐变</option>
-            <option value="conic">圆锥渐变</option>
+            <option value="linear">{{ $t('ui.frontend.gradient.typeLinear') }}</option>
+            <option value="radial">{{ $t('ui.frontend.gradient.typeRadial') }}</option>
+            <option value="conic">{{ $t('ui.frontend.gradient.typeConic') }}</option>
           </select>
         </div>
         <div v-if="type === 'linear'">
-          <label class="block text-xs text-slate-400 mb-1">角度: {{ angle }}°</label>
+          <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.gradient.fieldAngle', { angle }) }}</label>
           <input v-model.number="angle" type="range" min="0" max="360" class="w-full" />
         </div>
         <div v-else-if="type === 'radial'">
-          <label class="block text-xs text-slate-400 mb-1">位置</label>
+          <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.gradient.positionLabel') }}</label>
           <div class="grid grid-cols-2 gap-2 text-xs">
             <div>X {{ cx }}% <input v-model.number="cx" type="range" min="0" max="100" class="w-full" /></div>
             <div>Y {{ cy }}% <input v-model.number="cy" type="range" min="0" max="100" class="w-full" /></div>
@@ -31,9 +31,9 @@
         <!-- stops -->
         <div class="pt-2 border-t border-slate-100">
           <div class="flex items-center justify-between text-xs font-medium text-slate-500 mb-2">
-            <span>颜色停靠点</span>
+            <span>{{ $t('ui.frontend.gradient.stopsLabel') }}</span>
             <button v-if="stops.length < 6" @click="addStop" class="text-indigo-500 hover:text-indigo-600 hover:underline flex items-center gap-0.5">
-              <component :is="icons.Plus" class="w-3 h-3" />添加
+              <component :is="icons.Plus" class="w-3 h-3" />{{ $t('ui.frontend.gradient.btnAddStop') }}
             </button>
           </div>
           <div v-for="(s, i) in stops" :key="i" class="flex items-center gap-2 mb-2">
@@ -51,21 +51,21 @@
         <div class="bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center gap-2 mb-2">
             <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
-            <span class="text-xs font-medium text-slate-500">预览</span>
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.frontend.gradient.previewLabel') }}</span>
           </div>
           <div class="h-48 rounded-xl shadow-sm border border-slate-100" :style="{ background: css }"></div>
         </div>
         <div class="bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center justify-between text-xs font-medium text-slate-500 mb-1">
             <span class="flex items-center gap-1"><component :is="icons.Code" class="w-3.5 h-3.5" />CSS</span>
-            <CopyButton :text="css" label="复制" />
+            <CopyButton :text="css" :label="$t('common.copy')" />
           </div>
           <pre class="p-3 rounded-lg bg-slate-900 text-indigo-300 text-xs font-mono whitespace-pre-wrap">{{ 'background: ' + css + ';' }}</pre>
         </div>
         <div class="bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center gap-2 mb-2">
             <component :is="icons.Sparkles" class="w-4 h-4 text-indigo-400" />
-            <span class="text-xs font-medium text-slate-500">预设</span>
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.frontend.gradient.presetsLabel') }}</span>
           </div>
           <div class="grid grid-cols-3 md:grid-cols-5 gap-3">
             <button

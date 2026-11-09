@@ -11,52 +11,7 @@ export interface ToolCategory {
   tools: ToolItem[]
 }
 
-// 直接 import locale 文件,SSR 和客户端都能正确获取(不依赖 useI18n.tm 的生命周期)
-import zhCNLocales from '../locales/zh-CN'
-import enLocales from '../locales/en'
-
-const localeMessages: Record<string, any> = {
-  'zh-CN': zhCNLocales,
-  en: enLocales,
-}
-
-/**
- * 获取当前 locale 的 messages 对象
- * @param locale 当前语言代码,默认 zh-CN
- */
-export function getLocaleMessages(locale: string = 'zh-CN'): any {
-  return localeMessages[locale] ?? localeMessages['zh-CN']
-}
-
-/**
- * 获取工具/分类的翻译文案
- */
-export function getToolText(
-  categoryId: string,
-  toolId: string,
-  locale: string = 'zh-CN'
-): { name: string; desc: string } {
-  const msgs = getLocaleMessages(locale)
-  const toolKey = `${categoryId}/${toolId}`
-  return msgs.tools?.[toolKey] ?? { name: toolId, desc: '' }
-}
-
-export function getCategoryName(categoryId: string, locale: string = 'zh-CN'): string {
-  const msgs = getLocaleMessages(locale)
-  return msgs.categories?.[categoryId]?.name ?? categoryId
-}
-
-export function getSeoKeywordsDirect(
-  categoryId: string,
-  toolId: string,
-  locale: string = 'zh-CN'
-): string {
-  const msgs = getLocaleMessages(locale)
-  const toolKey = `${categoryId}/${toolId}`
-  return msgs.seoKeywords?.[toolKey] ?? ''
-}
-
-// 基础工具定义(不含多语言文案,文案从 locales 获取)
+// 基础工具定义(不含多语言文案,文案统一走 i18n 的 $t)
 export const baseCategories: ToolCategory[] = [
   {
     id: 'dev',
@@ -160,95 +115,7 @@ export const baseCategories: ToolCategory[] = [
   },
 ]
 
-// ============ 兼容性导出 ============
-export interface ToolItemWithText extends ToolItem {
-  name: string
-  desc: string
-}
-
-export interface ToolCategoryWithText extends ToolCategory {
-  name: string
-  tools: ToolItemWithText[]
-}
-
-/**
- * 获取带多语言文案的分类列表(直接读 locale 文件,SSR/客户端都工作)
- * @param locale 当前语言代码,'zh-CN' | 'en'
- */
-export function getCategories(locale: string = 'zh-CN'): ToolCategoryWithText[] {
-  const msgs = getLocaleMessages(locale)
-  return baseCategories.map(cat => ({
-    ...cat,
-    name: msgs.categories?.[cat.id]?.name ?? cat.id,
-    tools: cat.tools.map(tool => {
-      const toolKey = `${cat.id}/${tool.id}`
-      const toolText = msgs.tools?.[toolKey]
-      return {
-        ...tool,
-        name: toolText?.name ?? tool.id,
-        desc: toolText?.desc ?? '',
-      }
-    }),
-  }))
-}
-
-/**
- * 扁平化查找工具(带多语言文案)
- */
-export function findTool(
-  toolId: string,
-  locale: string = 'zh-CN'
-): { tool: ToolItemWithText; category: ToolCategoryWithText } | null {
-  const msgs = getLocaleMessages(locale)
-  for (const cat of baseCategories) {
-    const tool = cat.tools.find(t => t.id === toolId)
-    if (tool) {
-      const toolKey = `${cat.id}/${tool.id}`
-      const toolText = msgs.tools?.[toolKey]
-      return {
-        tool: {
-          ...tool,
-          name: toolText?.name ?? tool.id,
-          desc: toolText?.desc ?? '',
-        },
-        category: {
-          ...cat,
-          name: msgs.categories?.[cat.id]?.name ?? cat.id,
-        },
-      }
-    }
-  }
-  return null
-}
-
-/**
- * 查找分类(带多语言文案)
- */
-export function findCategory(
-  categoryId: string,
-  locale: string = 'zh-CN'
-): ToolCategoryWithText | null {
-  const cat = baseCategories.find(c => c.id === categoryId)
-  if (!cat) return null
-  const msgs = getLocaleMessages(locale)
-  return {
-    ...cat,
-    name: msgs.categories?.[cat.id]?.name ?? cat.id,
-  }
-}
-
-/**
- * 获取 SEO 关键词
- */
-export function getSeoKeywords(
-  categoryId: string,
-  toolId: string,
-  locale: string = 'zh-CN'
-): string {
-  return getSeoKeywordsDirect(categoryId, toolId, locale)
-}
-
-// ============ 基础函数(不带翻译,供 SSR/非组件使用) ============
+// ============ 基础函数(不带翻译,文案由调用方通过 $t 提供) ============
 
 export function getBaseToolById(toolId: string): { tool: ToolItem; category: ToolCategory } | null {
   for (const cat of baseCategories) {

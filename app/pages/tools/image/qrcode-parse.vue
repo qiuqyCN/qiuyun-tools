@@ -1,15 +1,15 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">二维码解析</h3>
-      <span class="text-xs text-slate-400">上传含二维码的图片，自动识别解码</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('ui.image.qrcode-parse.title') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.image.qrcode-parse.subtitle') }}</span>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-2">
           <component :is="icons.Upload" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">上传图片识别</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.image.qrcode-parse.uploadLabel') }}</span>
         </div>
         <!-- Upload zone -->
         <div
@@ -24,7 +24,7 @@
           >
             <input type="file" accept="image/*" class="hidden" @change="onFile" />
             <component :is="icons.Scan" class="w-8 h-8 text-slate-300 mb-2" />
-            <span class="text-sm text-slate-500">选择含二维码的图片</span>
+            <span class="text-sm text-slate-500">{{ $t('ui.image.qrcode-parse.uploadHint') }}</span>
           </label>
         </div>
         <div v-if="src" class="mt-3">
@@ -35,16 +35,16 @@
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-2">
           <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">识别结果</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.image.qrcode-parse.resultTitle') }}</span>
         </div>
         <div v-if="result" class="space-y-3">
-          <div class="text-xs text-slate-400">解码内容</div>
+          <div class="text-xs text-slate-400">{{ $t('ui.image.qrcode-parse.decodedLabel') }}</div>
           <pre class="p-3 bg-indigo-50 rounded-lg text-sm font-mono text-indigo-900 break-all whitespace-pre-wrap border border-indigo-100">{{ result }}</pre>
           <div class="flex items-center gap-2">
-            <CopyButton :text="result" label="复制" />
+            <CopyButton :text="result" :label="$t('common.copy')" />
             <a v-if="isUrl" :href="result" target="_blank" class="text-xs px-3 py-1.5 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium flex items-center gap-1.5 shadow-sm transition">
               <component :is="icons.ExternalLink" class="w-3.5 h-3.5" />
-              打开链接
+              {{ $t('ui.image.qrcode-parse.btnOpenLink') }}
             </a>
           </div>
         </div>
@@ -54,7 +54,7 @@
         </div>
         <div v-else class="h-48 flex flex-col items-center justify-center text-slate-400 text-xs gap-2 bg-slate-50 rounded-lg border border-slate-100">
           <component :is="icons.Search" class="w-8 h-8 text-slate-300" />
-          上传图片后在此显示识别结果
+          {{ $t('ui.image.qrcode-parse.emptyHint') }}
         </div>
       </div>
 
@@ -66,6 +66,8 @@
 <script setup lang="ts">
 import * as icons from 'lucide-vue-next'
 import jsQR from 'jsqr'
+
+const { t } = useI18n()
 
 const src = ref('')
 const result = ref('')
@@ -117,6 +119,6 @@ async function decodeQr(url: string) {
   const imgData = ctx.getImageData(0, 0, w, h)
   const code = jsQR(imgData.data, w, h)
   if (code) result.value = code.data
-  else error.value = '未识别到二维码'
+  else error.value = t('ui.image.qrcode-parse.errNotRecognized')
 }
 </script>

@@ -1,8 +1,8 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">SVG 编辑器</h3>
-      <span class="text-xs text-slate-400">在线编辑 SVG 源代码，实时预览并导出</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('ui.image.svg-editor.title') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.image.svg-editor.subtitle') }}</span>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -10,17 +10,17 @@
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
             <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
-            <span class="text-xs font-medium text-slate-500">SVG 预览</span>
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.image.svg-editor.previewTitle') }}</span>
           </div>
           <div class="flex items-center gap-1">
             <button @click="loadPreset('star')" class="h-8 px-3 rounded-lg bg-slate-50 hover:bg-slate-100 text-xs text-slate-600 border border-slate-100 transition flex items-center gap-1">
-              <component :is="icons.Star" class="w-3.5 h-3.5" />星形
+              <component :is="icons.Star" class="w-3.5 h-3.5" />{{ $t('ui.image.svg-editor.presetStar') }}
             </button>
             <button @click="loadPreset('flower')" class="h-8 px-3 rounded-lg bg-slate-50 hover:bg-slate-100 text-xs text-slate-600 border border-slate-100 transition flex items-center gap-1">
-              <component :is="icons.Sparkles" class="w-3.5 h-3.5" />花朵
+              <component :is="icons.Sparkles" class="w-3.5 h-3.5" />{{ $t('ui.image.svg-editor.presetFlower') }}
             </button>
             <button @click="loadPreset('gradient')" class="h-8 px-3 rounded-lg bg-slate-50 hover:bg-slate-100 text-xs text-slate-600 border border-slate-100 transition flex items-center gap-1">
-              <component :is="icons.GraduationCap" class="w-3.5 h-3.5" />渐变
+              <component :is="icons.GraduationCap" class="w-3.5 h-3.5" />{{ $t('ui.image.svg-editor.presetGradient') }}
             </button>
           </div>
         </div>
@@ -29,7 +29,7 @@
         </div>
         <div class="mt-3 text-xs text-slate-400 flex items-center gap-1.5">
           <component :is="icons.Info" class="w-3.5 h-3.5" />
-          提示：这是一个简单的 SVG 源代码编辑器，支持预览和导出
+          {{ $t('ui.image.svg-editor.tipText') }}
         </div>
       </div>
 
@@ -37,16 +37,16 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <component :is="icons.Code" class="w-4 h-4 text-indigo-400" />
-            <span class="text-xs font-medium text-slate-500">SVG 源码</span>
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.image.svg-editor.sourceTitle') }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <CopyButton :text="svg" label="复制" />
+            <CopyButton :text="svg" :label="$t('common.copy')" />
             <button
               @click="download"
               class="h-9 px-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium shadow-sm flex items-center gap-1.5 transition"
             >
               <component :is="icons.Download" class="w-3.5 h-3.5" />
-              下载 SVG
+              {{ $t('ui.image.svg-editor.btnDownloadSvg') }}
             </button>
           </div>
         </div>

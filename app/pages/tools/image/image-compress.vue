@@ -1,8 +1,8 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">图片压缩</h3>
-      <span class="text-xs text-slate-400">本地压缩图片，调整质量和尺寸，支持 JPEG/PNG</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('ui.image.image-compress.title') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.image.image-compress.subtitle') }}</span>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -10,7 +10,7 @@
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-2">
           <component :is="icons.Upload" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">上传图片</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.image.image-compress.uploadLabel') }}</span>
         </div>
         <!-- Upload zone with preview -->
         <div
@@ -26,7 +26,7 @@
           >
             <input type="file" accept="image/*" class="hidden" @change="onFile" />
             <component :is="icons.ImageUp" class="w-8 h-8 text-slate-300 mb-2" />
-            <span class="text-sm text-slate-500">点击或拖拽上传图片</span>
+            <span class="text-sm text-slate-500">{{ $t('ui.image.image-compress.uploadHint') }}</span>
           </label>
           <div v-else class="relative group rounded-lg overflow-hidden border border-slate-200">
             <img :src="original.url" class="w-full max-h-48 object-contain bg-slate-50" />
@@ -43,19 +43,19 @@
         </div>
         <div v-if="original" class="mt-4 space-y-3">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">压缩质量: {{ quality }}%</label>
+            <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.image-compress.qualityLabel', { n: quality }) }}</label>
             <input v-model.number="quality" type="range" min="10" max="100" class="w-full" />
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">最大宽度 (px): {{ maxWidth }}</label>
+            <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.image-compress.maxWidthLabel', { n: maxWidth }) }}</label>
             <input v-model.number="maxWidth" type="range" min="100" :max="original.width" class="w-full" />
           </div>
           <button
             @click="compress"
             class="w-full h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition"
           >
-            <component :is="icons.Compress" class="w-4 h-4" />
-            开始压缩
+            <component :is="icons.Minimize2" class="w-4 h-4" />
+            {{ $t('ui.image.image-compress.btnCompress') }}
           </button>
         </div>
       </div>
@@ -64,28 +64,28 @@
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-2">
           <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">压缩结果</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.image.image-compress.resultTitle') }}</span>
         </div>
         <div v-if="compressed" class="text-center">
           <img :src="compressed.url" class="max-w-full max-h-80 rounded-lg border border-slate-200 mx-auto shadow-sm" />
           <div class="mt-4 space-y-2 text-sm">
             <div class="flex justify-center gap-4">
-              <div>压缩后: <span class="font-mono font-semibold text-indigo-600">{{ fmtSize(compressed.size) }}</span></div>
-              <div>缩减: <span class="font-mono font-semibold" :class="savedPct < 50 ? 'text-green-600' : 'text-orange-600'">{{ savedPct }}%</span></div>
+              <div>{{ $t('ui.image.image-compress.compressedLabel') }}<span class="font-mono font-semibold text-indigo-600">{{ fmtSize(compressed.size) }}</span></div>
+              <div>{{ $t('ui.image.image-compress.reducedLabel') }}<span class="font-mono font-semibold" :class="savedPct < 50 ? 'text-green-600' : 'text-orange-600'">{{ savedPct }}%</span></div>
             </div>
-            <div class="text-xs text-slate-400">{{ compressed.width }} × {{ compressed.height }}{{ compressed.width !== original?.width ? ' (缩放)' : '' }}</div>
+            <div class="text-xs text-slate-400">{{ compressed.width }} × {{ compressed.height }}{{ compressed.width !== original?.width ? $t('ui.image.image-compress.scaledSuffix') : '' }}</div>
           </div>
           <button
             @click="download"
             class="mt-4 h-10 px-6 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 mx-auto transition"
           >
             <component :is="icons.Download" class="w-4 h-4" />
-            下载图片
+            {{ $t('ui.image.image-compress.btnDownload') }}
           </button>
         </div>
         <div v-else class="h-64 flex flex-col items-center justify-center text-slate-400 text-xs gap-2 bg-slate-50 rounded-lg border border-slate-100">
           <component :is="icons.Image" class="w-8 h-8 text-slate-300" />
-          上传图片后点击压缩，结果将显示在此处
+          {{ $t('ui.image.image-compress.emptyHint') }}
         </div>
       </div>
     </div>

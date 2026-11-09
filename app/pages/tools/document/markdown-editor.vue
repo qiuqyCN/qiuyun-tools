@@ -1,15 +1,15 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">Markdown 编辑器</h3>
-      <span class="text-xs text-slate-400">实时预览 Markdown 渲染效果，支持快捷工具栏</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.document/markdown-editor.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.document.markdown-editor.pageDesc') }}</span>
     </div>
 
     <div class="flex h-[calc(100vh-180px)] gap-4">
       <div class="flex-1 bg-white rounded-xl border border-slate-200 flex flex-col">
         <div class="flex items-center gap-2 px-4 py-2 border-b border-slate-100">
           <component :is="icons.Edit3" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">编辑器</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.document.markdown-editor.editorLabel') }}</span>
           <div class="ml-auto flex items-center gap-1">
             <button v-for="b in toolbar" :key="b.label" @click="insert(b.cmd)" class="px-2 py-1 rounded hover:bg-slate-100 font-mono text-xs text-slate-600 transition">{{ b.label }}</button>
           </div>
@@ -18,14 +18,14 @@
           v-model="md"
           ref="editorRef"
           @keydown.tab.prevent="handleTab"
-          placeholder="# Hello World\n\n开始输入 Markdown..."
+          :placeholder="$t('ui.document.markdown-editor.placeholder')"
           class="flex-1 w-full p-4 text-sm font-mono resize-none focus:outline-none"
         />
       </div>
       <div class="flex-1 bg-white rounded-xl border border-slate-200 p-5 overflow-auto">
         <div class="flex items-center gap-2 mb-2">
           <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">预览</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.document.markdown-editor.previewLabel') }}</span>
         </div>
         <div class="prose max-w-none" v-html="html" />
       </div>
@@ -37,7 +37,9 @@
 import * as icons from 'lucide-vue-next'
 import { marked } from 'marked'
 
-const md = ref('# 欢迎使用 Markdown 编辑器\n\n这是一个 **实时预览** 的编辑器。\n\n## 功能\n\n- 支持常见 Markdown 语法\n- 左右分栏预览\n- 工具栏快捷操作\n\n> 开始写作吧！')
+const { t } = useI18n()
+
+const md = ref(t('ui.document.markdown-editor.defaultContent'))
 const editorRef = ref<HTMLTextAreaElement | null>(null)
 
 marked.setOptions({ breaks: true, gfm: true })

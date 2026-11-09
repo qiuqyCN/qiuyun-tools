@@ -1,8 +1,8 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">设备信息检测</h3>
-      <span class="text-xs text-slate-400">获取当前浏览器和设备的详细信息</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.dev/device-info.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.dev.device-info.pageDesc') }}</span>
     </div>
 
     <div class="space-y-4">
@@ -10,17 +10,17 @@
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-3">
           <component :is="icons.Window" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">基本信息</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.device-info.sectionBasic') }}</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5">
-          <InfoRow label="浏览器" :value="browser" />
-          <InfoRow label="浏览器版本" :value="browserVersion" />
-          <InfoRow label="操作系统" :value="os" />
-          <InfoRow label="平台" :value="platform" />
-          <InfoRow label="语言" :value="language" />
-          <InfoRow label="时区" :value="timezone" />
-          <InfoRow label="在线状态" :value="online ? '在线' : '离线'" />
-          <InfoRow label="Cookie" :value="cookieEnabled ? '已启用' : '已禁用'" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldBrowser')" :value="browser" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldBrowserVersion')" :value="browserVersion" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldOs')" :value="os" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldPlatform')" :value="platform" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldLanguage')" :value="language" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldTimezone')" :value="timezone" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldOnlineStatus')" :value="online ? $t('ui.dev.device-info.statusOnline') : $t('ui.dev.device-info.statusOffline')" />
+          <InfoRow label="Cookie" :value="cookieEnabled ? $t('ui.dev.device-info.statusEnabled') : $t('ui.dev.device-info.statusDisabled')" />
         </div>
       </div>
 
@@ -28,16 +28,16 @@
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-3">
           <component :is="icons.Monitor" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">屏幕与视口</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.device-info.sectionScreen') }}</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5">
-          <InfoRow label="屏幕分辨率" :value="screenSize" />
-          <InfoRow label="可用区域" :value="availSize" />
-          <InfoRow label="屏幕色深" :value="colorDepth + ' bit'" />
-          <InfoRow label="像素比" :value="pixelRatio + 'x'" />
-          <InfoRow label="视口尺寸" :value="viewport" />
-          <InfoRow label="移动设备" :value="isMobile ? '是' : '否'" />
-          <InfoRow label="支持触摸" :value="touchSupport ? '是' : '否'" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldScreenResolution')" :value="screenSize" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldAvailableArea')" :value="availSize" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldColorDepth')" :value="colorDepth + ' bit'" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldPixelRatio')" :value="pixelRatio + 'x'" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldViewport')" :value="viewport" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldMobile')" :value="isMobile ? $t('ui.dev.device-info.yes') : $t('ui.dev.device-info.no')" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldTouchSupport')" :value="touchSupport ? $t('ui.dev.device-info.yes') : $t('ui.dev.device-info.no')" />
         </div>
       </div>
 
@@ -45,12 +45,12 @@
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-3">
           <component :is="icons.Cpu" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">硬件信息</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.device-info.sectionHardware') }}</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5">
-          <InfoRow label="CPU 核心数" :value="cpuCores" />
-          <InfoRow label="内存" :value="memory" />
-          <InfoRow label="最大并发连接" :value="maxConn" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldCpuCores')" :value="cpuCores" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldMemory')" :value="memory" />
+          <InfoRow :label="$t('ui.dev.device-info.fieldMaxConnections')" :value="maxConn" />
           <InfoRow label="WebGL" :value="webglVendor" />
         </div>
       </div>
@@ -59,12 +59,12 @@
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-3">
           <component :is="icons.Palette" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">Canvas 渲染测试</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.device-info.sectionCanvas') }}</span>
         </div>
         <div class="flex gap-6 items-center">
           <canvas ref="canvasRef" width="200" height="60" class="rounded-lg border border-slate-200" />
           <div class="text-xs text-slate-500 space-y-1">
-            <div class="flex items-center gap-1"><component :is="icons.Check" v-if="canvas2d" class="w-3 h-3 text-green-500" /><component :is="icons.X" v-else class="w-3 h-3 text-red-500" />Canvas 2D: {{ canvas2d ? '支持' : '不支持' }}</div>
+            <div class="flex items-center gap-1"><component :is="icons.Check" v-if="canvas2d" class="w-3 h-3 text-green-500" /><component :is="icons.X" v-else class="w-3 h-3 text-red-500" />Canvas 2D: {{ canvas2d ? $t('ui.dev.device-info.statusSupported') : $t('ui.dev.device-info.statusUnsupported') }}</div>
             <div>Canvas Text: {{ canvasText || '-' }}</div>
           </div>
         </div>
@@ -75,6 +75,7 @@
 
 <script setup lang="ts">
 import * as icons from 'lucide-vue-next'
+const { t } = useI18n()
 const browser = ref('-')
 const browserVersion = ref('')
 const os = ref('-')
@@ -93,8 +94,8 @@ const isMobile = ref(false)
 const touchSupport = ref(false)
 
 const cpuCores = ref('-')
-const memory = ref('不可用（隐私保护）')
-const maxConn = ref('不可用')
+const memory = ref(t('ui.dev.device-info.valMemoryUnavailable'))
+const maxConn = ref(t('ui.dev.device-info.valUnavailable'))
 const webglVendor = ref('')
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
@@ -139,12 +140,12 @@ onMounted(() => {
     const gl = document.createElement('canvas').getContext('webgl') as WebGLRenderingContext | null
     if (gl) {
       const ext = gl.getExtension('WEBGL_debug_renderer_info')
-      webglVendor.value = ext ? String(gl.getParameter(ext.UNMASKED_VENDOR_WEBGL)) : '支持'
+      webglVendor.value = ext ? String(gl.getParameter(ext.UNMASKED_VENDOR_WEBGL)) : t('ui.dev.device-info.statusSupported')
     } else {
-      webglVendor.value = '不支持'
+      webglVendor.value = t('ui.dev.device-info.statusUnsupported')
     }
   } catch {
-    webglVendor.value = '不可用'
+    webglVendor.value = t('ui.dev.device-info.valUnavailable')
   }
 
   // Canvas 2D test
@@ -160,8 +161,9 @@ onMounted(() => {
       ctx.fill()
       ctx.fillStyle = '#334155'
       ctx.font = '12px sans-serif'
-      ctx.fillText('Canvas 测试', 140, 35)
-      canvasText.value = ctx.measureText('Canvas 测试').width.toFixed(1) + ' px'
+      const canvasLabel = t('ui.dev.device-info.canvasTestText')
+      ctx.fillText(canvasLabel, 140, 35)
+      canvasText.value = ctx.measureText(canvasLabel).width.toFixed(1) + ' px'
     }
   }
 

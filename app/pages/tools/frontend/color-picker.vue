@@ -1,15 +1,15 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">颜色选择器</h3>
-      <span class="text-xs text-slate-400">选色并查看 HEX/RGB/HSL 转换与调色板</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.frontend/color-picker.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.frontend.color-picker.pageDesc') }}</span>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-3">
           <component :is="icons.Pipette" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">颜色选择</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.frontend.color-picker.pickerLabel') }}</span>
         </div>
         <div class="flex items-start gap-4">
           <input v-model="color" type="color" class="w-24 h-24 rounded-lg border border-slate-200 cursor-pointer" />
@@ -26,7 +26,7 @@
           </div>
         </div>
         <div class="mt-5">
-          <div class="text-xs font-medium text-slate-500 mb-2">调色板</div>
+          <div class="text-xs font-medium text-slate-500 mb-2">{{ $t('ui.frontend.color-picker.paletteLabel') }}</div>
           <div class="grid grid-cols-9 gap-1.5 text-center">
             <div
               v-for="(c, i) in palette"
@@ -44,7 +44,7 @@
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-3">
           <component :is="icons.Palette" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">语义卡片颜色</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.frontend.color-picker.semanticLabel') }}</span>
         </div>
         <div class="space-y-2.5">
           <div
@@ -69,6 +69,7 @@ import * as icons from 'lucide-vue-next'
 import InfoRow from '~/components/InfoRow.vue'
 import chroma from 'chroma-js'
 
+const { t } = useI18n()
 const color = ref('#6366f1')
 const hex = computed({ get: () => color.value.toUpperCase(), set: v => { try { chroma(v); color.value = v } catch {} } })
 const rgb = computed(() => chroma(color.value).rgb().join(', '))
@@ -79,10 +80,10 @@ const palette = computed(() => chroma.scale(['#ffffff', color.value, '#000000'])
 const semantic = computed(() => {
   const base = chroma(color.value)
   return [
-    { name: '背景', bg: base.luminance(0.97).hex(), text: base.luminance(0.55).hex() },
-    { name: '主色', bg: base.hex(), text: base.luminance() > 0.5 ? '#000000' : '#ffffff' },
-    { name: '辅助', bg: base.brighten(0.6).hex(), text: base.brighten(0.1).hex() },
-    { name: '暗色', bg: base.darken(0.6).hex(), text: base.darken(0.15).hex() },
+    { name: t('ui.frontend.color-picker.semanticBg'), bg: base.luminance(0.97).hex(), text: base.luminance(0.55).hex() },
+    { name: t('ui.frontend.color-picker.semanticPrimary'), bg: base.hex(), text: base.luminance() > 0.5 ? '#000000' : '#ffffff' },
+    { name: t('ui.frontend.color-picker.semanticSecondary'), bg: base.brighten(0.6).hex(), text: base.brighten(0.1).hex() },
+    { name: t('ui.frontend.color-picker.semanticDark'), bg: base.darken(0.6).hex(), text: base.darken(0.15).hex() },
   ]
 })
 </script>

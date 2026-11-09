@@ -1,44 +1,44 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">代码美化</h3>
-      <span class="text-xs text-slate-400">支持 JS/TS/HTML/CSS/JSON/Markdown/YAML</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.dev/code-beautify.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.dev.code-beautify.pageDesc') }}</span>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-4 items-stretch">
       <!-- 控制面板 -->
       <div class="bg-white rounded-xl p-4 border border-slate-200 flex lg:flex-col gap-3 lg:gap-3 flex-wrap shrink-0 lg:w-56">
         <div class="w-full">
-          <label class="block text-xs text-slate-500 mb-1">语言</label>
+          <label class="block text-xs text-slate-500 mb-1">{{ $t('ui.dev.code-beautify.langLabel') }}</label>
           <select v-model="lang" class="w-full h-9 px-2 text-sm rounded-lg border border-slate-200 bg-white">
             <option v-for="l in langs" :key="l.value" :value="l.value">{{ l.label }}</option>
           </select>
         </div>
         <div class="w-full">
-          <label class="block text-xs text-slate-500 mb-1">缩进</label>
+          <label class="block text-xs text-slate-500 mb-1">{{ $t('ui.dev.code-beautify.indentLabel') }}</label>
           <select v-model.number="tabWidth" class="w-full h-9 px-2 text-sm rounded-lg border border-slate-200 bg-white">
-            <option :value="2">2 空格</option>
-            <option :value="4">4 空格</option>
-            <option :value="8">8 空格</option>
-            <option :value="0">Tab</option>
+            <option :value="2">{{ $t('ui.dev.code-beautify.indent2') }}</option>
+            <option :value="4">{{ $t('ui.dev.code-beautify.indent4') }}</option>
+            <option :value="8">{{ $t('ui.dev.code-beautify.indent8') }}</option>
+            <option :value="0">{{ $t('ui.dev.code-beautify.indentTab') }}</option>
           </select>
         </div>
         <div class="w-full space-y-1.5 text-xs text-slate-500">
-          <label class="flex items-center gap-1.5"><input v-model="singleQuote" type="checkbox" class="rounded" />单引号</label>
-          <label class="flex items-center gap-1.5"><input v-model="semi" type="checkbox" class="rounded" />分号</label>
-          <label class="flex items-center gap-1.5"><input v-model="trailingComma" type="checkbox" class="rounded" />尾随逗号</label>
+          <label class="flex items-center gap-1.5"><input v-model="singleQuote" type="checkbox" class="rounded" />{{ $t('ui.dev.code-beautify.singleQuote') }}</label>
+          <label class="flex items-center gap-1.5"><input v-model="semi" type="checkbox" class="rounded" />{{ $t('ui.dev.code-beautify.semi') }}</label>
+          <label class="flex items-center gap-1.5"><input v-model="trailingComma" type="checkbox" class="rounded" />{{ $t('ui.dev.code-beautify.trailingComma') }}</label>
         </div>
-        <button @click="input = example" class="w-full text-xs text-indigo-500 hover:text-indigo-600 hover:underline text-center">📝 示例</button>
+        <button @click="input = example" class="w-full text-xs text-indigo-500 hover:text-indigo-600 hover:underline text-center">📝 {{ $t('common.example') }}</button>
       </div>
 
       <!-- 输入 -->
       <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-medium text-slate-500">源代码</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.code-beautify.inputLabel') }}</span>
         </div>
         <textarea
           v-model="input"
-          placeholder="粘贴代码..."
+          :placeholder="$t('ui.dev.code-beautify.placeholder')"
           class="w-full h-[400px] p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
         />
       </div>
@@ -51,7 +51,7 @@
           class="h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-medium shadow-sm flex items-center gap-1.5 transition"
         >
           <component :is="icons.MagicWand" class="w-4 h-4" />
-          格式化
+          {{ $t('ui.dev.code-beautify.btnFormat') }}
         </button>
         <button
           @click="minify"
@@ -59,20 +59,20 @@
           class="h-10 px-5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed text-slate-600 text-sm font-medium flex items-center gap-1.5 transition"
         >
           <component :is="icons.Compress" class="w-4 h-4" />
-          压缩
+          {{ $t('ui.dev.code-beautify.btnMinify') }}
         </button>
         <button
           @click="input = ''; output = ''; errMsg = ''"
           class="h-8 px-3 rounded-lg text-xs text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
-        >清空</button>
+        >{{ $t('common.clear') }}</button>
         <div v-if="errMsg" class="text-[11px] text-red-500 max-w-[120px] text-center">{{ errMsg }}</div>
       </div>
 
       <!-- 输出 -->
       <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-medium text-slate-500">输出</span>
-          <CopyButton :text="output" label="复制" />
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.code-beautify.outputLabel') }}</span>
+          <CopyButton :text="output" :label="$t('common.copy')" />
         </div>
         <pre
           v-if="output"
@@ -83,7 +83,7 @@
           class="w-full h-[400px] p-3 rounded-lg bg-slate-50 text-slate-400 border border-slate-100 flex flex-col items-center justify-center gap-2 text-xs"
         >
           <component :is="icons.Code2" class="w-8 h-8 text-slate-300" />
-          <span>在左侧粘贴代码，点击格式化或压缩</span>
+          <span>{{ $t('ui.dev.code-beautify.emptyHint') }}</span>
         </div>
       </div>
     </div>
@@ -100,6 +100,8 @@ import postcss from 'prettier/plugins/postcss'
 import typescript from 'prettier/plugins/typescript'
 import markdown from 'prettier/plugins/markdown'
 import yaml from 'prettier/plugins/yaml'
+
+const { t } = useI18n()
 
 const example = `function hello(name){console.log("hello",name);const obj={a:1,b:2,c:[1,2,3]};return obj;}`
 
@@ -161,7 +163,7 @@ async function runFormat(printWidth = 80) {
     })
     output.value = result
   } catch (e: any) {
-    errMsg.value = e?.message || '格式化失败'
+    errMsg.value = e?.message || t('ui.dev.code-beautify.errFormatFailed')
   }
 }
 

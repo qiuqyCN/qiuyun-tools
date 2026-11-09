@@ -1,8 +1,8 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">PDF 合并</h3>
-      <span class="text-xs text-slate-400">在线合并多个 PDF 文件，拖拽上传，本地处理</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.document/pdf-merge.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.document.pdf-merge.pageDesc') }}</span>
     </div>
 
     <div class="bg-white rounded-xl p-4 border border-slate-200 max-w-2xl mx-auto">
@@ -16,7 +16,7 @@
         :class="dragOver ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-indigo-400'"
       >
         <component :is="icons.Upload" class="w-8 h-8 text-slate-300 mb-2" />
-        <span class="text-sm text-slate-500">点击或拖拽 PDF 文件（支持多选）</span>
+        <span class="text-sm text-slate-500">{{ $t('ui.document.pdf-merge.uploadHint') }}</span>
       </div>
       <input ref="fileRef" type="file" accept="application/pdf" multiple class="hidden" @change="onSelect" />
 
@@ -40,7 +40,7 @@
 
       <div class="mt-3 text-xs text-slate-500 flex items-start gap-1.5 p-3 bg-amber-50 rounded-lg border border-amber-100">
         <component :is="icons.AlertCircle" class="w-3.5 h-3.5 mt-0.5 shrink-0 text-amber-500" />
-        <span>大文件合并可能消耗较多内存，建议不超过 10 个文件 / 共 30MB 以内</span>
+        <span>{{ $t('ui.document.pdf-merge.warning') }}</span>
       </div>
 
       <button
@@ -49,20 +49,20 @@
         class="w-full mt-4 h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition disabled:bg-slate-300 disabled:cursor-not-allowed"
       >
         <component :is="icons.Merge" class="w-4 h-4" />
-        {{ loading ? '合并中...' : `合并 ${files.length} 个 PDF` }}
+        {{ loading ? $t('ui.document.pdf-merge.btnMerging') : $t('ui.document.pdf-merge.btnMerge', { count: files.length }) }}
       </button>
 
       <div v-if="resultUrl" class="mt-4 p-4 bg-green-50 rounded-lg border border-green-100 flex items-center justify-between">
         <div class="flex items-center gap-2 text-green-700 text-sm">
           <component :is="icons.CheckCircle" class="w-4 h-4" />
-          合并成功 · {{ fmtSize(resultBlob!.size) }}
+          {{ $t('ui.document.pdf-merge.successMsg', { size: fmtSize(resultBlob!.size) }) }}
         </div>
         <button
           @click="download"
           class="h-9 px-4 rounded-xl bg-green-500 hover:bg-green-600 text-white text-xs font-medium shadow-sm flex items-center gap-1.5 transition"
         >
           <component :is="icons.Download" class="w-3.5 h-3.5" />
-          下载
+          {{ $t('ui.document.pdf-merge.btnDownload') }}
         </button>
       </div>
     </div>
@@ -72,6 +72,8 @@
 <script setup lang="ts">
 import * as icons from 'lucide-vue-next'
 import { PDFDocument } from 'pdf-lib'
+
+const { t } = useI18n()
 
 const fileRef = ref<HTMLInputElement | null>(null)
 const files = ref<File[]>([])
@@ -114,7 +116,7 @@ async function doMerge() {
     resultBlob = new Blob([bytes], { type: 'application/pdf' })
     resultUrl.value = URL.createObjectURL(resultBlob)
   } catch (e: any) {
-    alert('合并失败: ' + e?.message)
+    alert(`${t('ui.document.pdf-merge.errMergeFailed')}: ${e?.message}`)
   } finally {
     loading.value = false
   }

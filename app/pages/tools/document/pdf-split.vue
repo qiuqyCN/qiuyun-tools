@@ -1,8 +1,8 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">PDF 拆分</h3>
-      <span class="text-xs text-slate-400">按页码范围、间隔或提取指定页面拆分 PDF</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.document/pdf-split.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.document.pdf-split.pageDesc') }}</span>
     </div>
 
     <div class="bg-white rounded-xl p-4 border border-slate-200 max-w-2xl mx-auto space-y-4">
@@ -17,17 +17,17 @@
       >
         <template v-if="!file">
           <component :is="icons.FileUp" class="w-8 h-8 text-slate-300 mb-2" />
-          <span class="text-sm text-slate-500">点击或拖拽一个 PDF 文件</span>
+          <span class="text-sm text-slate-500">{{ $t('ui.document.pdf-split.uploadHint') }}</span>
         </template>
         <div v-else class="w-full h-full flex items-center gap-4 px-5">
           <component :is="icons.FileText" class="w-10 h-10 text-indigo-400 shrink-0" />
           <div class="flex-1 min-w-0">
             <div class="text-sm font-medium text-slate-700 truncate">{{ file.name }}</div>
             <div class="text-xs text-slate-400 mt-0.5">
-              {{ fmtSize(file.size) }} · 共
-              <span v-if="pages === null" class="text-slate-300">加载中...</span>
+              {{ fmtSize(file.size) }} · {{ $t('ui.document.pdf-split.totalPagesLabel') }}
+              <span v-if="pages === null" class="text-slate-300">{{ $t('common.loading') }}</span>
               <span v-else class="font-semibold text-indigo-600">{{ pages }}</span>
-              页
+              {{ $t('ui.document.pdf-split.pageUnit') }}
             </div>
           </div>
           <button @click.stop="clearFile" class="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-red-500 flex items-center justify-center transition">
@@ -41,7 +41,7 @@
       <div v-if="file && pages !== null" class="pt-3 border-t border-slate-100 space-y-4">
         <div class="text-xs font-medium text-slate-600 flex items-center gap-1.5">
           <component :is="icons.Settings2" class="w-3.5 h-3.5" />
-          拆分方式
+          {{ $t('ui.document.pdf-split.splitModeLabel') }}
         </div>
         <div class="flex flex-wrap gap-2">
           <button
@@ -54,41 +54,41 @@
         </div>
 
         <div v-if="mode === 'range'">
-          <label class="block text-xs text-slate-500 mb-1">页码范围（从 1 开始）</label>
+          <label class="block text-xs text-slate-500 mb-1">{{ $t('ui.document.pdf-split.pageRangeLabel') }}</label>
           <input
             v-model="range"
-            :placeholder="`例: 1-3, 5, 7-${pages}`"
+            :placeholder="$t('ui.document.pdf-split.pageRangePlaceholder', { max: pages })"
             class="w-full h-10 px-3 text-sm rounded-lg border border-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
           />
-          <div class="mt-1 text-xs text-slate-400">逗号分隔多个范围，每个范围生成一个 PDF</div>
+          <div class="mt-1 text-xs text-slate-400">{{ $t('ui.document.pdf-split.pageRangeHint') }}</div>
         </div>
 
         <div v-if="mode === 'every'">
-          <label class="block text-xs text-slate-500 mb-1">每 N 页拆分一个文件</label>
+          <label class="block text-xs text-slate-500 mb-1">{{ $t('ui.document.pdf-split.everyNLabel') }}</label>
           <div class="flex items-center gap-3">
             <input v-model.number="everyN" type="number" min="1" :max="pages" class="w-24 h-10 px-3 text-sm rounded-lg border border-slate-200 font-mono" />
             <span class="text-xs text-slate-500">
-              页 / 文件 · 预计生成
+              {{ $t('ui.document.pdf-split.everyUnit') }} · {{ $t('ui.document.pdf-split.everyEstimate') }}
               <span class="font-mono font-semibold text-indigo-600">{{ Math.ceil(pages / everyN) }}</span>
-              个文件
+              {{ $t('ui.document.pdf-split.filesUnit') }}
             </span>
           </div>
         </div>
 
         <div v-if="mode === 'extract'">
-          <label class="block text-xs text-slate-500 mb-1">提取指定页面</label>
+          <label class="block text-xs text-slate-500 mb-1">{{ $t('ui.document.pdf-split.extractLabel') }}</label>
           <input
             v-model="extract"
-            :placeholder="`例: 1, 3, 5-8`"
+            :placeholder="$t('ui.document.pdf-split.extractPlaceholder')"
             class="w-full h-10 px-3 text-sm rounded-lg border border-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
           />
-          <div class="mt-1 text-xs text-slate-400">将这些页面合并为一个新 PDF</div>
+          <div class="mt-1 text-xs text-slate-400">{{ $t('ui.document.pdf-split.extractHint') }}</div>
         </div>
 
         <!-- Progress -->
         <div v-if="loading" class="space-y-2">
           <div class="flex items-center justify-between text-xs text-slate-600">
-            <span class="flex items-center gap-1"><component :is="icons.Loader2" class="w-3.5 h-3.5 animate-spin" />正在拆分...</span>
+            <span class="flex items-center gap-1"><component :is="icons.Loader2" class="w-3.5 h-3.5 animate-spin" />{{ $t('ui.document.pdf-split.splittingLabel') }}</span>
             <span class="font-mono">{{ progress }}%</span>
           </div>
           <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -102,28 +102,28 @@
           class="w-full h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition disabled:bg-slate-300 disabled:cursor-not-allowed"
         >
           <component :is="icons.Scissors" class="w-4 h-4" />
-          {{ loading ? `拆分中 ${progress}%...` : '开始拆分' }}
+          {{ loading ? $t('ui.document.pdf-split.btnSplitting', { progress }) : $t('ui.document.pdf-split.btnSplit') }}
         </button>
 
         <!-- Results -->
         <div v-if="results.length" class="pt-4 border-t border-slate-100 space-y-3">
           <div class="text-xs font-medium text-slate-600 flex items-center gap-1.5">
             <component :is="icons.CheckCircle" class="w-3.5 h-3.5 text-green-500" />
-            拆分结果（{{ results.length }} 个文件）
+            {{ $t('ui.document.pdf-split.resultsLabel', { count: results.length }) }}
           </div>
           <div class="space-y-2">
             <div v-for="(r, i) in results" :key="i" class="flex items-center gap-3 p-3 rounded-lg bg-slate-50 text-sm group border border-slate-100">
               <component :is="icons.FileText" class="w-4 h-4 text-indigo-400 shrink-0" />
               <div class="flex-1 min-w-0">
                 <div class="text-slate-700 truncate">{{ r.name }}</div>
-                <div class="text-xs text-slate-400 mt-0.5">{{ r.pageCount }} 页 · {{ fmtSize(r.size) }}</div>
+                <div class="text-xs text-slate-400 mt-0.5">{{ r.pageCount }} {{ $t('ui.document.pdf-split.pageUnit') }} · {{ fmtSize(r.size) }}</div>
               </div>
               <button
                 @click="download(r)"
                 class="h-9 px-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium shadow-sm flex items-center gap-1 transition shrink-0"
               >
                 <component :is="icons.Download" class="w-3.5 h-3.5" />
-                下载
+                {{ $t('ui.document.pdf-split.btnDownload') }}
               </button>
             </div>
           </div>
@@ -133,7 +133,7 @@
             class="w-full h-10 px-5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 text-sm font-medium flex items-center justify-center gap-1.5 transition"
           >
             <component :is="icons.Download" class="w-4 h-4" />
-            下载全部（逐个保存）
+            {{ $t('ui.document.pdf-split.btnDownloadAll') }}
           </button>
         </div>
       </div>
@@ -145,15 +145,17 @@
 import * as icons from 'lucide-vue-next'
 import { PDFDocument } from 'pdf-lib'
 
+const { t } = useI18n()
+
 const fileRef = ref<HTMLInputElement | null>(null)
 const file = ref<File | null>(null)
 const pages = ref<number | null>(null)
 const dragOver = ref(false)
 
 const modes = [
-  { value: 'range', label: '按范围拆分' },
-  { value: 'every', label: '每 N 页拆分' },
-  { value: 'extract', label: '提取指定页面' },
+  { value: 'range', label: t('ui.document.pdf-split.modeRange') },
+  { value: 'every', label: t('ui.document.pdf-split.modeEvery') },
+  { value: 'extract', label: t('ui.document.pdf-split.modeExtract') },
 ]
 const mode = ref<'range' | 'every' | 'extract'>('range')
 const range = ref('')
@@ -222,7 +224,7 @@ async function loadFile(f: File) {
     pages.value = pdf.getPageCount()
     range.value = `1-${pages.value}`
   } catch (e: any) {
-    alert('PDF 加载失败: ' + e?.message)
+    alert(`${t('ui.document.pdf-split.errLoadFailed')}: ${e?.message}`)
     clearFile()
   }
 }
@@ -292,7 +294,7 @@ async function doSplit() {
       progress.value = Math.round(((gi + 1) / groups.length) * 100)
     }
   } catch (e: any) {
-    alert('拆分失败: ' + e?.message)
+    alert(`${t('ui.document.pdf-split.errSplitFailed')}: ${e?.message}`)
   } finally {
     loading.value = false
   }

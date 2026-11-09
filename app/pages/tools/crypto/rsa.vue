@@ -1,17 +1,17 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">RSA 密钥生成器</h3>
-      <span class="text-xs text-slate-400">基于 WebCrypto 本地生成 RSA 密钥对，不上传任何服务器</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.crypto/rsa.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.crypto.rsa.subtitle') }}</span>
     </div>
 
     <div class="bg-white rounded-xl p-4 border border-slate-200 mb-4">
       <div class="flex items-center gap-4">
         <div>
-          <label class="block text-xs text-slate-500 mb-1">密钥长度</label>
+          <label class="block text-xs text-slate-500 mb-1">{{ $t('ui.crypto.rsa.keySizeLabel') }}</label>
           <select v-model.number="keySize" class="h-10 px-3 text-sm rounded-lg border border-slate-200 bg-white">
-            <option :value="2048">2048 位</option>
-            <option :value="4096">4096 位</option>
+            <option :value="2048">{{ $t('ui.crypto.rsa.option2048') }}</option>
+            <option :value="4096">{{ $t('ui.crypto.rsa.option4096') }}</option>
           </select>
         </div>
         <button
@@ -20,11 +20,11 @@
           :disabled="loading"
         >
           <component :is="icons.KeyRound" class="w-4 h-4" />
-          {{ loading ? '生成中...' : '生成密钥对' }}
+          {{ loading ? $t('ui.crypto.rsa.btnGenerating') : $t('ui.crypto.rsa.btnGenerate') }}
         </button>
         <span class="text-xs text-slate-400 flex items-center gap-1">
           <component :is="icons.Shield" class="w-3.5 h-3.5" />
-          仅在本地生成，不会上传
+          {{ $t('ui.crypto.rsa.localOnly') }}
         </span>
       </div>
     </div>
@@ -32,20 +32,20 @@
     <div v-if="publicKey" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-medium text-slate-500">公钥 (Public Key)</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.crypto.rsa.publicKeyLabel') }}</span>
           <div class="flex items-center gap-2">
-            <CopyButton :text="publicKey" label="复制" />
-            <DownloadButton :content="publicKey" filename="public.pem" label="下载" />
+            <CopyButton :text="publicKey" :label="$t('common.copy')" />
+            <DownloadButton :content="publicKey" filename="public.pem" :label="$t('ui.crypto.rsa.btnDownload')" />
           </div>
         </div>
         <pre class="p-3 bg-slate-50 rounded-lg text-xs font-mono text-slate-700 overflow-auto max-h-80 whitespace-pre-wrap">{{ publicKey }}</pre>
       </div>
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-medium text-slate-500">私钥 (Private Key)</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.crypto.rsa.privateKeyLabel') }}</span>
           <div class="flex items-center gap-2">
-            <CopyButton :text="privateKey" label="复制" />
-            <DownloadButton :content="privateKey" filename="private.pem" label="下载" />
+            <CopyButton :text="privateKey" :label="$t('common.copy')" />
+            <DownloadButton :content="privateKey" filename="private.pem" :label="$t('ui.crypto.rsa.btnDownload')" />
           </div>
         </div>
         <pre class="p-3 bg-slate-50 rounded-lg text-xs font-mono text-slate-700 overflow-auto max-h-80 whitespace-pre-wrap">{{ privateKey }}</pre>
@@ -53,13 +53,16 @@
     </div>
     <div v-else class="bg-white rounded-xl p-12 border border-slate-200 flex flex-col items-center justify-center gap-2 text-xs text-slate-400">
       <component :is="icons.Key" class="w-10 h-10 text-slate-300" />
-      <span>点击「生成密钥对」按钮，在本地生成 RSA 2048/4096 密钥</span>
+      <span>{{ $t('ui.crypto.rsa.emptyHint') }}</span>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import * as icons from 'lucide-vue-next'
+
+const { t } = useI18n()
+
 const keySize = ref(2048)
 const loading = ref(false)
 const publicKey = ref('')
@@ -87,7 +90,7 @@ function pkcs8ToPem(buf: ArrayBuffer): string {
 
 async function generate() {
   if (!globalThis.crypto?.subtle) {
-    alert('当前浏览器不支持 WebCrypto API')
+    alert(t('ui.crypto.rsa.errWebCrypto'))
     return
   }
   loading.value = true
@@ -102,7 +105,7 @@ async function generate() {
     publicKey.value = spkiToPem(pubBuf)
     privateKey.value = pkcs8ToPem(privBuf)
   } catch (e: any) {
-    alert('生成失败: ' + (e?.message || e))
+    alert(t('ui.crypto.rsa.errGenerate') + ': ' + (e?.message || e))
   } finally {
     loading.value = false
   }

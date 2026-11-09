@@ -1,34 +1,34 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">Favicon 生成器</h3>
-      <span class="text-xs text-slate-400">在线生成网站图标，支持 PNG 和 ICO 格式导出</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.frontend/favicon.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.frontend.favicon.pageDesc') }}</span>
     </div>
 
     <div class="bg-white rounded-xl p-4 border border-slate-200">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <div class="space-y-3">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">文字（最多2个字符）</label>
+            <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.favicon.textLabel') }}</label>
             <input v-model="text" maxlength="2" class="w-full h-10 px-3 text-lg rounded-lg border border-slate-200 font-bold text-center focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400" />
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-400 mb-1">背景色</label>
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.favicon.bgColorLabel') }}</label>
               <input v-model="bgColor" type="color" class="w-full h-10 rounded-lg border border-slate-200" />
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">文字颜色</label>
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.favicon.fgColorLabel') }}</label>
               <input v-model="fgColor" type="color" class="w-full h-10 rounded-lg border border-slate-200" />
             </div>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-400 mb-1">圆角: {{ radius }}%</label>
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.favicon.fieldRadius', { radius }) }}</label>
               <input v-model.number="radius" type="range" min="0" max="100" class="w-full" />
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">阴影: {{ shadow }}</label>
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.favicon.fieldShadow', { shadow }) }}</label>
               <input v-model.number="shadow" type="range" min="0" max="30" class="w-full" />
             </div>
           </div>
@@ -43,14 +43,14 @@
               class="w-32 h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition"
             >
               <component :is="icons.Download" class="w-4 h-4" />
-              下载 PNG
+              {{ $t('ui.frontend.favicon.btnDownloadPng') }}
             </button>
             <button
               @click="download('ico')"
               class="w-32 h-10 px-5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 text-sm font-medium flex items-center justify-center gap-1.5 transition"
             >
               <component :is="icons.Download" class="w-4 h-4" />
-              下载 ICO
+              {{ $t('ui.frontend.favicon.btnDownloadIco') }}
             </button>
           </div>
         </div>

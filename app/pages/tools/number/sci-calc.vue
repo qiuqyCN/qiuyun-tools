@@ -1,21 +1,21 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">科学计算器</h3>
-      <span class="text-xs text-slate-400">支持常见数学函数与历史记录</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.number/sci-calc.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.number.sci-calc.subtitle') }}</span>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-4 items-stretch">
       <!-- 主计算器 -->
       <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col gap-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-medium text-slate-500">表达式输入</span>
-          <button @click="expr = example" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 示例</button>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.number.sci-calc.inputLabel') }}</span>
+          <button @click="expr = example" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 {{ $t('common.example') }}</button>
         </div>
         <input
           v-model="expr"
           @keyup.enter="calc"
-          placeholder="输入表达式，如 sin(30) + sqrt(16)"
+          :placeholder="$t('ui.number.sci-calc.placeholder')"
           class="w-full h-12 px-4 text-lg rounded-lg border border-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
         />
         <div class="text-right">
@@ -31,21 +31,21 @@
           </button>
         </div>
         <div class="flex gap-2">
-          <button @click="expr = ''" class="flex-1 h-10 text-sm rounded-lg bg-slate-100 hover:bg-slate-200 transition">清空</button>
+          <button @click="expr = ''" class="flex-1 h-10 text-sm rounded-lg bg-slate-100 hover:bg-slate-200 transition">{{ $t('common.clear') }}</button>
           <button
             @click="calc"
             :disabled="!expr.trim()"
             class="flex-1 h-10 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition"
           >
             <component :is="icons.Calculator" class="w-4 h-4" />
-            计算 (Enter)
+            {{ $t('ui.number.sci-calc.btnCalc') }}
           </button>
         </div>
       </div>
 
       <!-- 历史记录 + 帮助 -->
       <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col gap-3">
-        <span class="text-xs font-medium text-slate-500">历史记录</span>
+        <span class="text-xs font-medium text-slate-500">{{ $t('ui.number.sci-calc.historyLabel') }}</span>
         <div v-if="history.length" class="space-y-1.5 max-h-48 overflow-auto">
           <div
             v-for="(h, i) in history"
@@ -57,16 +57,16 @@
             <div class="text-indigo-600 font-semibold">= {{ h.result }}</div>
           </div>
         </div>
-        <div v-else class="py-4 text-center text-xs text-slate-400">暂无历史</div>
+        <div v-else class="py-4 text-center text-xs text-slate-400">{{ $t('ui.number.sci-calc.emptyHistory') }}</div>
 
         <div class="pt-3 border-t border-slate-100">
-          <span class="text-xs font-medium text-slate-500">支持的函数 / 常量</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.number.sci-calc.functionsLabel') }}</span>
           <div class="text-xs text-slate-500 space-y-1 font-mono mt-2">
             <div>sin / cos / tan / asin / acos / atan</div>
             <div>log / log10 / sqrt / abs / pow / exp</div>
             <div>ceil / floor / round</div>
             <div>PI / E</div>
-            <div>使用 `deg()` 将角度转弧度，如 sin(deg(30))</div>
+            <div>{{ $t('ui.number.sci-calc.degHint') }}</div>
           </div>
         </div>
       </div>
@@ -76,6 +76,8 @@
 
 <script setup lang="ts">
 import * as icons from 'lucide-vue-next'
+
+const { t } = useI18n()
 
 const example = `sin(deg(30)) + sqrt(16) * 2`
 
@@ -118,10 +120,10 @@ function calc() {
       history.value.unshift({ expr: e, result: String(result.value) })
       if (history.value.length > 10) history.value.pop()
     } else {
-      error.value = '计算结果无效'
+      error.value = t('ui.number.sci-calc.errInvalidResult')
     }
   } catch (err: any) {
-    error.value = '表达式错误: ' + (err?.message || '')
+    error.value = t('ui.number.sci-calc.errExpression', { error: err?.message || '' })
   }
 }
 </script>

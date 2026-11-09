@@ -1,19 +1,19 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">配色方案生成</h3>
-      <span class="text-xs text-slate-400">基于色轮理论自动生成和谐配色方案</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.frontend/color-scheme.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.frontend.color-scheme.pageDesc') }}</span>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div class="bg-white rounded-xl p-4 border border-slate-200 lg:col-span-1 space-y-3">
-        <div class="text-xs font-medium text-slate-500 mb-1">配色配置</div>
+        <div class="text-xs font-medium text-slate-500 mb-1">{{ $t('ui.frontend.color-scheme.configLabel') }}</div>
         <div>
-          <label class="block text-xs text-slate-400 mb-1">基色</label>
+          <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.color-scheme.baseColorLabel') }}</label>
           <input v-model="baseColor" type="color" class="w-full h-10 rounded-lg border border-slate-200 cursor-pointer" />
         </div>
         <div>
-          <label class="block text-xs text-slate-400 mb-1">方案类型</label>
+          <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.color-scheme.schemeTypeLabel') }}</label>
           <select v-model="scheme" class="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white text-sm">
             <option v-for="s in schemes" :key="s.id" :value="s.id">{{ s.label }}</option>
           </select>
@@ -21,7 +21,7 @@
         <div class="text-xs p-3 bg-slate-50 rounded-lg border border-slate-100">
           <div class="font-medium text-slate-600 mb-1 flex items-center gap-1">
             <component :is="icons.Lightbulb" class="w-3.5 h-3.5" />
-            说明
+            {{ $t('ui.frontend.color-scheme.hintLabel') }}
           </div>
           <div class="text-slate-400">{{ schemes.find(s => s.id === scheme)?.desc }}</div>
         </div>
@@ -30,7 +30,7 @@
           class="w-full h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition"
         >
           <component :is="icons.RefreshCw" class="w-4 h-4" />
-          重新生成
+          {{ $t('ui.frontend.color-scheme.btnRefresh') }}
         </button>
       </div>
 
@@ -38,7 +38,7 @@
         <div class="bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center gap-2 mb-3">
             <component :is="icons.Palette" class="w-4 h-4 text-indigo-400" />
-            <span class="text-xs font-medium text-slate-500">方案预览（{{ schemeColors.length }} 色）</span>
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.frontend.color-scheme.previewCount', { count: schemeColors.length }) }}</span>
           </div>
           <div class="grid grid-cols-5 gap-3">
             <div
@@ -56,16 +56,16 @@
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2">
               <component :is="icons.GripVertical" class="w-4 h-4 text-indigo-400" />
-              <span class="text-xs font-medium text-slate-500">渐变预览</span>
+              <span class="text-xs font-medium text-slate-500">{{ $t('ui.frontend.color-scheme.gradientPreviewLabel') }}</span>
             </div>
-            <CopyButton :text="schemeColors.join(', ')" label="复制全部 HEX" />
+            <CopyButton :text="schemeColors.join(', ')" :label="$t('ui.frontend.color-scheme.btnCopyAll')" />
           </div>
           <div class="h-20 rounded-lg shadow-sm border border-slate-100" :style="{ background: `linear-gradient(90deg, ${schemeColors.join(', ')})` }"></div>
         </div>
         <div class="bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center gap-2 mb-2">
             <component :is="icons.CurlyBraces" class="w-4 h-4 text-indigo-400" />
-            <span class="text-xs font-medium text-slate-500">Tailwind / CSS 变量</span>
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.frontend.color-scheme.cssVarsLabel') }}</span>
           </div>
           <pre class="p-3 rounded-lg bg-slate-900 text-indigo-300 text-xs font-mono whitespace-pre-wrap">{{ cssVars }}</pre>
         </div>
@@ -78,16 +78,17 @@
 import * as icons from 'lucide-vue-next'
 import chroma from 'chroma-js'
 
+const { t } = useI18n()
 const baseColor = ref('#6366f1')
 const scheme = ref('analogous')
 
-const schemes = [
-  { id: 'analogous', label: '类似色', desc: '色相环上相邻的颜色，和谐统一' },
-  { id: 'complementary', label: '互补色', desc: '色相环上正对的颜色，对比强烈' },
-  { id: 'triadic', label: '三色方案', desc: '色相环上等距三角，丰富平衡' },
-  { id: 'tetradic', label: '四色方案', desc: '色相环上矩形四角，变化丰富' },
-  { id: 'monochromatic', label: '单色调', desc: '同色相不同明度，统一雅致' },
-]
+const schemes = computed(() => [
+  { id: 'analogous', label: t('ui.frontend.color-scheme.schemeAnalogous'), desc: t('ui.frontend.color-scheme.descAnalogous') },
+  { id: 'complementary', label: t('ui.frontend.color-scheme.schemeComplementary'), desc: t('ui.frontend.color-scheme.descComplementary') },
+  { id: 'triadic', label: t('ui.frontend.color-scheme.schemeTriadic'), desc: t('ui.frontend.color-scheme.descTriadic') },
+  { id: 'tetradic', label: t('ui.frontend.color-scheme.schemeTetradic'), desc: t('ui.frontend.color-scheme.descTetradic') },
+  { id: 'monochromatic', label: t('ui.frontend.color-scheme.schemeMonochromatic'), desc: t('ui.frontend.color-scheme.descMonochromatic') },
+])
 
 const schemeColors = computed(() => {
   const base = chroma(baseColor.value)

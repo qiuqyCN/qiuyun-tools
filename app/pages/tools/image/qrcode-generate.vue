@@ -1,8 +1,8 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">二维码生成</h3>
-      <span class="text-xs text-slate-400">支持文本、WiFi、Email、vCard 等多种类型，可自定义样式和 Logo</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('ui.image.qrcode-generate.title') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.image.qrcode-generate.subtitle') }}</span>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -10,7 +10,7 @@
       <div class="bg-white rounded-xl p-4 border border-slate-200 space-y-4">
         <div class="flex items-center gap-2 mb-1">
           <component :is="icons.Settings" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">内容类型</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.image.qrcode-generate.contentTypeLabel') }}</span>
         </div>
 
         <!-- Content type tabs -->
@@ -28,10 +28,10 @@
 
         <!-- Custom text -->
         <div v-if="activeType === 'text'">
-          <label class="block text-xs text-slate-400 mb-1">内容</label>
+          <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.contentLabel') }}</label>
           <textarea
             v-model="form.text"
-            placeholder="输入文字或 URL..."
+            :placeholder="$t('ui.image.qrcode-generate.contentPlaceholder')"
             class="w-full h-24 p-3 text-sm rounded-lg border border-slate-200 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 font-mono"
           />
         </div>
@@ -39,42 +39,42 @@
         <!-- WiFi -->
         <div v-if="activeType === 'wifi'" class="space-y-3">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">SSID（网络名称）</label>
+            <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.ssidLabel') }}</label>
             <input v-model="form.ssid" class="w-full h-9 px-3 text-sm rounded-lg border border-slate-200" placeholder="MyHomeWiFi" />
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-400 mb-1">加密方式</label>
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.encryptionLabel') }}</label>
               <select v-model="form.encryption" class="w-full h-9 px-2 text-sm rounded-lg border border-slate-200 bg-white">
                 <option value="WPA">WPA / WPA2</option>
                 <option value="WEP">WEP</option>
-                <option value="nopass">开放网络</option>
+                <option value="nopass">{{ $t('ui.image.qrcode-generate.encryptionOpen') }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">密码</label>
-              <input v-model="form.password" class="w-full h-9 px-3 text-sm rounded-lg border border-slate-200" placeholder="留空表示开放" />
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.passwordLabel') }}</label>
+              <input v-model="form.password" class="w-full h-9 px-3 text-sm rounded-lg border border-slate-200" :placeholder="$t('ui.image.qrcode-generate.passwordPlaceholder')" />
             </div>
           </div>
           <label class="flex items-center gap-2 text-xs text-slate-600">
             <input v-model="form.hidden" type="checkbox" class="rounded" />
-            隐藏网络（不广播 SSID）
+            {{ $t('ui.image.qrcode-generate.hiddenNetwork') }}
           </label>
         </div>
 
         <!-- Email -->
         <div v-if="activeType === 'email'" class="space-y-3">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">收件人</label>
+            <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.recipientLabel') }}</label>
             <input v-model="form.to" class="w-full h-9 px-3 text-sm rounded-lg border border-slate-200" placeholder="someone@example.com" />
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">主题</label>
-            <input v-model="form.subject" class="w-full h-9 px-3 text-sm rounded-lg border border-slate-200" placeholder="可选" />
+            <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.subjectLabel') }}</label>
+            <input v-model="form.subject" class="w-full h-9 px-3 text-sm rounded-lg border border-slate-200" :placeholder="$t('ui.image.qrcode-generate.optionalPlaceholder')" />
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">正文</label>
-            <textarea v-model="form.body" class="w-full h-20 p-3 text-sm rounded-lg border border-slate-200 resize-none" placeholder="可选" />
+            <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.bodyLabel') }}</label>
+            <textarea v-model="form.body" class="w-full h-20 p-3 text-sm rounded-lg border border-slate-200 resize-none" :placeholder="$t('ui.image.qrcode-generate.optionalPlaceholder')" />
           </div>
         </div>
 
@@ -82,21 +82,21 @@
         <div v-if="activeType === 'vcard'" class="space-y-3">
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-400 mb-1">姓名</label>
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.nameLabel') }}</label>
               <input v-model="form.name" class="w-full h-9 px-3 text-sm rounded-lg border border-slate-200" />
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">电话</label>
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.phoneLabel') }}</label>
               <input v-model="form.phone" class="w-full h-9 px-3 text-sm rounded-lg border border-slate-200" />
             </div>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-400 mb-1">邮箱</label>
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.emailLabel') }}</label>
               <input v-model="form.email" class="w-full h-9 px-3 text-sm rounded-lg border border-slate-200" />
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">公司</label>
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.companyLabel') }}</label>
               <input v-model="form.org" class="w-full h-9 px-3 text-sm rounded-lg border border-slate-200" />
             </div>
           </div>
@@ -105,12 +105,12 @@
         <!-- SMS -->
         <div v-if="activeType === 'sms'" class="space-y-3">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">手机号码</label>
+            <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.phoneNumberLabel') }}</label>
             <input v-model="form.smsPhone" class="w-full h-9 px-3 text-sm rounded-lg border border-slate-200" placeholder="13800000000" />
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">短信内容</label>
-            <textarea v-model="form.smsBody" class="w-full h-20 p-3 text-sm rounded-lg border border-slate-200 resize-none" placeholder="可选" />
+            <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.smsBodyLabel') }}</label>
+            <textarea v-model="form.smsBody" class="w-full h-20 p-3 text-sm rounded-lg border border-slate-200 resize-none" :placeholder="$t('ui.image.qrcode-generate.optionalPlaceholder')" />
           </div>
         </div>
 
@@ -118,28 +118,28 @@
         <div class="pt-3 border-t border-slate-100 space-y-3">
           <div class="text-xs font-medium text-slate-600 flex items-center gap-1.5">
             <component :is="icons.Palette" class="w-3.5 h-3.5" />
-            样式配置
+            {{ $t('ui.image.qrcode-generate.styleTitle') }}
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-400 mb-1">尺寸: {{ size }}px</label>
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.sizeLabel', { n: size }) }}</label>
               <input v-model.number="size" type="range" min="100" max="600" step="10" class="w-full" />
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">容错级别</label>
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.errorLevelLabel') }}</label>
               <select v-model="level" class="w-full h-9 px-2 text-sm rounded-lg border border-slate-200 bg-white">
-                <option value="L">低 (7%)</option>
-                <option value="M">中 (15%)</option>
-                <option value="Q">较高 (25%)</option>
-                <option value="H">高 (30%)</option>
+                <option value="L">{{ $t('ui.image.qrcode-generate.levelLow') }}</option>
+                <option value="M">{{ $t('ui.image.qrcode-generate.levelMedium') }}</option>
+                <option value="Q">{{ $t('ui.image.qrcode-generate.levelQuartile') }}</option>
+                <option value="H">{{ $t('ui.image.qrcode-generate.levelHigh') }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">前景色</label>
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.fgColorLabel') }}</label>
               <input v-model="fgColor" type="color" class="w-full h-9 rounded-lg border border-slate-200 cursor-pointer" />
             </div>
             <div>
-              <label class="block text-xs text-slate-400 mb-1">背景色</label>
+              <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.bgColorLabel') }}</label>
               <input v-model="bgColor" type="color" class="w-full h-9 rounded-lg border border-slate-200 cursor-pointer" />
             </div>
           </div>
@@ -148,8 +148,8 @@
         <!-- Logo -->
         <div v-if="activeType === 'text'" class="pt-3 border-t border-slate-100 space-y-3">
           <div class="text-xs font-medium text-slate-600 flex items-center justify-between">
-            <span class="flex items-center gap-1.5"><component :is="icons.Image" class="w-3.5 h-3.5" />中心 Logo</span>
-            <span class="text-[10px] text-slate-400 font-normal">建议容错设为 H</span>
+            <span class="flex items-center gap-1.5"><component :is="icons.Image" class="w-3.5 h-3.5" />{{ $t('ui.image.qrcode-generate.logoLabel') }}</span>
+            <span class="text-[10px] text-slate-400 font-normal">{{ $t('ui.image.qrcode-generate.logoHint') }}</span>
           </div>
           <div class="flex items-center gap-3">
             <div class="relative w-12 h-12 rounded-lg border border-slate-200 overflow-hidden shrink-0 bg-slate-50 flex items-center justify-center">
@@ -158,19 +158,19 @@
             </div>
             <div class="flex-1">
               <label class="inline-flex items-center gap-1.5 h-8 px-3 text-xs rounded-lg bg-slate-100 hover:bg-slate-200 cursor-pointer transition">
-                <component :is="icons.Upload" class="w-3.5 h-3.5" />上传 Logo
+                <component :is="icons.Upload" class="w-3.5 h-3.5" />{{ $t('ui.image.qrcode-generate.uploadLogo') }}
                 <input type="file" accept="image/*" class="hidden" @change="onLogoFile" />
               </label>
-              <button v-if="logoUrl" @click="clearLogo" class="ml-2 text-xs text-red-500 hover:text-red-600">移除</button>
+              <button v-if="logoUrl" @click="clearLogo" class="ml-2 text-xs text-red-500 hover:text-red-600">{{ $t('ui.image.qrcode-generate.btnRemove') }}</button>
             </div>
           </div>
           <div v-if="logoUrl" class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-[11px] text-slate-400 mb-1">Logo 大小: {{ logoSize }}%</label>
+              <label class="block text-[11px] text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.logoSizeLabel', { n: logoSize }) }}</label>
               <input v-model.number="logoSize" type="range" min="10" max="35" class="w-full" />
             </div>
             <div>
-              <label class="block text-[11px] text-slate-400 mb-1">圆角: {{ logoRadius }}px</label>
+              <label class="block text-[11px] text-slate-400 mb-1">{{ $t('ui.image.qrcode-generate.logoRadiusLabel', { n: logoRadius }) }}</label>
               <input v-model.number="logoRadius" type="range" min="0" max="30" class="w-full" />
             </div>
           </div>
@@ -183,12 +183,12 @@
           class="w-full h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition disabled:bg-slate-300 disabled:cursor-not-allowed"
         >
           <component :is="icons.QrCode" class="w-4 h-4" />
-          生成二维码
+          {{ $t('ui.image.qrcode-generate.btnGenerate') }}
         </button>
 
         <div v-if="currentText && currentText.length > 2000" class="text-xs text-orange-500 flex items-center gap-1.5 p-2 bg-orange-50 rounded-lg border border-orange-100">
           <component :is="icons.AlertTriangle" class="w-3.5 h-3.5" />
-          内容较长，建议容错级别调高到 Q 或 H
+          {{ $t('ui.image.qrcode-generate.longContentHint') }}
         </div>
       </div>
 
@@ -196,7 +196,7 @@
       <div class="bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
         <div class="flex items-center gap-2 mb-2">
           <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">预览</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.image.qrcode-generate.previewTitle') }}</span>
         </div>
 
         <div
@@ -209,7 +209,7 @@
           </template>
           <div v-else class="text-center text-slate-400 text-xs flex flex-col items-center gap-2">
             <component :is="icons.QrCode" class="w-12 h-12 mx-auto text-slate-300" />
-            点击左侧「生成二维码」按钮开始
+            {{ $t('ui.image.qrcode-generate.previewEmptyHint') }}
           </div>
         </div>
 
@@ -224,20 +224,20 @@
             @click="downloadPng"
             class="h-9 px-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium shadow-sm flex items-center gap-1.5 transition"
           >
-            <component :is="icons.Download" class="w-3.5 h-3.5" />下载 PNG
+            <component :is="icons.Download" class="w-3.5 h-3.5" />{{ $t('ui.image.qrcode-generate.btnDownloadPng') }}
           </button>
           <button
             @click="downloadSvg"
             class="h-9 px-4 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-medium flex items-center gap-1.5 transition"
           >
-            <component :is="icons.Download" class="w-3.5 h-3.5" />下载 SVG
+            <component :is="icons.Download" class="w-3.5 h-3.5" />{{ $t('ui.image.qrcode-generate.btnDownloadSvg') }}
           </button>
           <button
             @click="copyClipboard"
             class="h-9 px-4 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-medium flex items-center gap-1.5 transition"
             :disabled="copied"
           >
-            <component :is="copied ? icons.Check : icons.Copy" class="w-3.5 h-3.5" />{{ copied ? '已复制' : '复制图片' }}
+            <component :is="copied ? icons.Check : icons.Copy" class="w-3.5 h-3.5" />{{ copied ? $t('common.copied') : $t('ui.image.qrcode-generate.btnCopyImage') }}
           </button>
         </div>
       </div>
@@ -249,14 +249,16 @@
 import QRCode from 'qrcode'
 import * as icons from 'lucide-vue-next'
 
+const { t } = useI18n()
+
 // Content types
-const contentTypes = [
-  { value: 'text', label: '自定义文本' },
-  { value: 'wifi', label: 'WiFi' },
-  { value: 'email', label: 'Email' },
-  { value: 'vcard', label: 'vCard' },
-  { value: 'sms', label: '短信' },
-]
+const contentTypes = computed(() => [
+  { value: 'text', label: t('ui.image.qrcode-generate.typeText') },
+  { value: 'wifi', label: t('ui.image.qrcode-generate.typeWifi') },
+  { value: 'email', label: t('ui.image.qrcode-generate.typeEmail') },
+  { value: 'vcard', label: t('ui.image.qrcode-generate.typeVcard') },
+  { value: 'sms', label: t('ui.image.qrcode-generate.typeSms') },
+])
 
 const activeType = ref('text')
 

@@ -4,24 +4,24 @@
     <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
       <div class="flex items-center gap-2 mb-4">
         <h3 class="text-sm font-semibold text-slate-700">Properties → YAML</h3>
-        <span class="text-xs text-slate-400">扁平化键值对转层级结构</span>
+        <span class="text-xs text-slate-400">{{ $t('ui.dev.yaml-properties.p2yDesc') }}</span>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-4 items-stretch">
         <!-- 输入 -->
         <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-slate-500">Properties 输入</span>
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.yaml-properties.propsInputLabel') }}</span>
             <button
               @click="pInput = exampleProps"
               class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline"
             >
-              📝 示例
+              📝 {{ $t('common.example') }}
             </button>
           </div>
           <textarea
             v-model="pInput"
-            placeholder="app.name=测试&#10;app.version=1.0&#10;server.port=8080"
+            :placeholder="$t('ui.dev.yaml-properties.placeholderProps')"
             class="w-full h-40 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
           />
         </div>
@@ -34,15 +34,15 @@
             class="h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-medium shadow-sm flex items-center gap-1.5 transition"
           >
             <component :is="icons.ArrowRightLeft" class="w-4 h-4" />
-            转换
+            {{ $t('ui.dev.yaml-properties.btnConvert') }}
           </button>
         </div>
 
         <!-- 输出 -->
         <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-slate-500">YAML 输出</span>
-            <CopyButton :text="yOutput" label="复制" />
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.yaml-properties.yamlOutputLabel') }}</span>
+            <CopyButton :text="yOutput" :label="$t('common.copy')" />
           </div>
           <div
             v-if="yOutput"
@@ -53,7 +53,7 @@
             class="p-3 rounded-lg min-h-[120px] bg-slate-50 text-slate-400 flex flex-col items-center justify-center text-xs gap-1 border border-slate-100"
           >
             <component :is="icons.FileJson" class="w-6 h-6 text-slate-300" />
-            <span>在左侧粘贴内容，点击转换</span>
+            <span>{{ $t('ui.dev.yaml-properties.emptyHint') }}</span>
           </div>
         </div>
       </div>
@@ -63,23 +63,23 @@
     <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
       <div class="flex items-center gap-2 mb-4">
         <h3 class="text-sm font-semibold text-slate-700">YAML → Properties</h3>
-        <span class="text-xs text-slate-400">层级结构扁平化输出</span>
+        <span class="text-xs text-slate-400">{{ $t('ui.dev.yaml-properties.y2pDesc') }}</span>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-4 items-stretch">
         <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-slate-500">YAML 输入</span>
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.yaml-properties.yamlInputLabel') }}</span>
             <button
               @click="yInput = exampleYaml"
               class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline"
             >
-              📝 示例
+              📝 {{ $t('common.example') }}
             </button>
           </div>
           <textarea
             v-model="yInput"
-            placeholder="app:&#10;  name: 测试&#10;  version: 1.0&#10;server:&#10;  port: 8080"
+            :placeholder="$t('ui.dev.yaml-properties.placeholderYaml')"
             class="w-full h-40 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
           />
         </div>
@@ -91,14 +91,14 @@
             class="h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-medium shadow-sm flex items-center gap-1.5 transition"
           >
             <component :is="icons.ArrowRightLeft" class="w-4 h-4" />
-            转换
+            {{ $t('ui.dev.yaml-properties.btnConvert') }}
           </button>
         </div>
 
         <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-slate-500">Properties 输出</span>
-            <CopyButton :text="pOutput" label="复制" />
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.yaml-properties.propsOutputLabel') }}</span>
+            <CopyButton :text="pOutput" :label="$t('common.copy')" />
           </div>
           <div
             v-if="pOutput"
@@ -109,7 +109,7 @@
             class="p-3 rounded-lg min-h-[120px] bg-slate-50 text-slate-400 flex flex-col items-center justify-center text-xs gap-1 border border-slate-100"
           >
             <component :is="icons.FileText" class="w-6 h-6 text-slate-300" />
-            <span>在左侧粘贴内容，点击转换</span>
+            <span>{{ $t('ui.dev.yaml-properties.emptyHint') }}</span>
           </div>
         </div>
       </div>
@@ -120,6 +120,8 @@
 <script setup lang="ts">
 import * as yaml from 'js-yaml'
 import * as icons from 'lucide-vue-next'
+
+const { t } = useI18n()
 
 const pInput = ref('')
 const yInput = ref('')
@@ -178,7 +180,7 @@ function p2y() {
     const obj = parseProperties(pInput.value)
     yOutput.value = yaml.dump(obj, { lineWidth: 120 }).trim()
   } catch (e: any) {
-    yOutput.value = '转换失败: ' + e?.message
+    yOutput.value = t('ui.dev.yaml-properties.errConvert', { msg: e?.message })
   }
 }
 
@@ -187,7 +189,7 @@ function y2p() {
     const obj = yaml.load(yInput.value) as any
     pOutput.value = objToProperties(obj)
   } catch (e: any) {
-    pOutput.value = '转换失败: ' + e?.message
+    pOutput.value = t('ui.dev.yaml-properties.errConvert', { msg: e?.message })
   }
 }
 </script>

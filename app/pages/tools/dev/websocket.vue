@@ -1,14 +1,14 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">WebSocket 测试</h3>
-      <span class="text-xs text-slate-400">连接 WebSocket 服务器，实时收发消息</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.dev/websocket.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.dev.websocket.pageDesc') }}</span>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <!-- Connection panel -->
       <div class="bg-white rounded-xl p-4 border border-slate-200 lg:col-span-1 space-y-4">
-        <div class="text-xs font-medium text-slate-500">连接配置</div>
+        <div class="text-xs font-medium text-slate-500">{{ $t('ui.dev.websocket.connConfigLabel') }}</div>
         <div>
           <label class="block text-xs text-slate-400 mb-1">URL</label>
           <input
@@ -26,7 +26,7 @@
             class="flex-1 h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition disabled:bg-slate-300 disabled:cursor-not-allowed"
           >
             <component :is="icons.PlugZap" class="w-4 h-4" />
-            {{ connecting ? '连接中...' : '连接' }}
+            {{ connecting ? $t('ui.dev.websocket.statusConnecting') : $t('ui.dev.websocket.btnConnect') }}
           </button>
           <button
             v-else
@@ -34,7 +34,7 @@
             class="flex-1 h-10 px-5 rounded-xl bg-white border border-red-200 hover:bg-red-50 text-red-600 text-sm font-medium flex items-center justify-center gap-1.5 transition"
           >
             <component :is="icons.Unplug" class="w-4 h-4" />
-            断开
+            {{ $t('ui.dev.websocket.btnDisconnect') }}
           </button>
         </div>
 
@@ -48,7 +48,7 @@
 
         <!-- Quick URLs -->
         <div>
-          <div class="text-xs text-slate-400 mb-1">快速测试</div>
+          <div class="text-xs text-slate-400 mb-1">{{ $t('ui.dev.websocket.quickTestLabel') }}</div>
           <div class="flex flex-wrap gap-1">
             <button
               v-for="q in quickUrls"
@@ -64,16 +64,16 @@
       <div class="lg:col-span-2 space-y-4">
         <div class="bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-slate-500">发送消息</span>
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.websocket.sendMessageLabel') }}</span>
             <span class="text-xs flex items-center gap-1" :class="connected ? 'text-green-600' : 'text-slate-400'">
               <span class="w-1.5 h-1.5 rounded-full" :class="connected ? 'bg-green-500' : 'bg-slate-300'"></span>
-              {{ connected ? '已连接' : '未连接' }}
+              {{ connected ? $t('ui.dev.websocket.statusConnected') : $t('ui.dev.websocket.statusDisconnected') }}
             </span>
           </div>
           <textarea
             v-model="message"
             :disabled="!connected"
-            placeholder="输入要发送的消息..."
+            :placeholder="$t('ui.dev.websocket.messagePlaceholder')"
             @keyup.enter.exact.prevent="send"
             class="w-full h-24 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 disabled:bg-slate-50"
           />
@@ -83,16 +83,16 @@
             class="mt-2 h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center gap-1.5 transition disabled:bg-slate-300 disabled:cursor-not-allowed"
           >
             <component :is="icons.Send" class="w-4 h-4" />
-            发送 (Enter)
+            {{ $t('ui.dev.websocket.btnSend') }}
           </button>
         </div>
 
         <div class="bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-slate-500">消息记录</span>
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.websocket.messageLogLabel') }}</span>
             <button @click="messages = []" class="text-xs text-slate-400 hover:text-red-500 flex items-center gap-1">
               <component :is="icons.Trash2" class="w-3 h-3" />
-              清空
+              {{ $t('common.clear') }}
             </button>
           </div>
           <div class="h-64 overflow-auto space-y-1.5">
@@ -108,7 +108,7 @@
             </div>
             <div v-if="!messages.length" class="h-40 flex flex-col items-center justify-center text-slate-400 text-xs gap-1">
               <component :is="icons.MessageSquare" class="w-6 h-6 text-slate-300" />
-              暂无消息
+              {{ $t('ui.dev.websocket.noMessages') }}
             </div>
           </div>
         </div>
@@ -119,6 +119,7 @@
 
 <script setup lang="ts">
 import * as icons from 'lucide-vue-next'
+const { t } = useI18n()
 const url = ref('wss://echo.websocket.org')
 const connected = ref(false)
 const connecting = ref(false)
@@ -129,9 +130,9 @@ let ws: WebSocket | null = null
 const quickUrls = ['wss://echo.websocket.org', 'wss://ws.postman-echo.com/raw']
 
 const statusText = computed(() => {
-  if (connecting.value) return '连接中...'
-  if (connected.value) return '已连接'
-  return '未连接'
+  if (connecting.value) return t('ui.dev.websocket.statusConnecting')
+  if (connected.value) return t('ui.dev.websocket.statusConnected')
+  return t('ui.dev.websocket.statusDisconnected')
 })
 const statusColor = computed(() => {
   if (connecting.value) return 'text-yellow-600'
@@ -163,16 +164,16 @@ function connect() {
     }
     ws.onerror = () => {
       connecting.value = false
-      messages.value.push({ type: 'error', data: '连接错误', time: fmtTime() })
+      messages.value.push({ type: 'error', data: t('ui.dev.websocket.errConnect'), time: fmtTime() })
     }
     ws.onclose = () => {
       connected.value = false
       connecting.value = false
-      messages.value.push({ type: 'error', data: '连接已关闭', time: fmtTime() })
+      messages.value.push({ type: 'error', data: t('ui.dev.websocket.errClosed'), time: fmtTime() })
     }
   } catch (e: any) {
     connecting.value = false
-    messages.value.push({ type: 'error', data: e?.message || '连接失败', time: fmtTime() })
+    messages.value.push({ type: 'error', data: e?.message || t('ui.dev.websocket.errConnectFailed'), time: fmtTime() })
   }
 }
 

@@ -4,19 +4,19 @@
     <section class="bg-white rounded-xl border border-slate-200 p-5">
       <textarea
         v-model="text"
-        placeholder="在此粘贴或输入文本..."
+        :placeholder="$t('ui.text.word-count.placeholder')"
         class="w-full h-60 p-4 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
       />
     </section>
 
     <!-- Stats Grid -->
     <section class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-      <StatCard label="总字符" :value="stats.total" />
-      <StatCard label="字符（不含空格）" :value="stats.noSpace" />
-      <StatCard label="中文字符" :value="stats.chinese" />
-      <StatCard label="英文单词" :value="stats.words" />
-      <StatCard label="行数" :value="stats.lines" />
-      <StatCard label="段落数" :value="stats.paragraphs" />
+      <StatCard :label="$t('ui.text.word-count.statTotalChars')" :value="stats.total" />
+      <StatCard :label="$t('ui.text.word-count.statNoSpace')" :value="stats.noSpace" />
+      <StatCard :label="$t('ui.text.word-count.statChinese')" :value="stats.chinese" />
+      <StatCard :label="$t('ui.text.word-count.statWords')" :value="stats.words" />
+      <StatCard :label="$t('ui.text.word-count.statLines')" :value="stats.lines" />
+      <StatCard :label="$t('ui.text.word-count.statParagraphs')" :value="stats.paragraphs" />
     </section>
   </div>
 </template>

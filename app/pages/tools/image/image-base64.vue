@@ -1,8 +1,8 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">图片转 Base64</h3>
-      <span class="text-xs text-slate-400">图片文件转 Base64 字符串，或从 Base64 还原图片</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('ui.image.image-base64.title') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.image.image-base64.subtitle') }}</span>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -10,7 +10,7 @@
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-2">
           <component :is="icons.ImageToIcon" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">图片 → Base64</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.image.image-base64.imageToBase64Label') }}</span>
         </div>
         <!-- Upload zone -->
         <div
@@ -26,7 +26,7 @@
           >
             <input type="file" accept="image/*" class="hidden" @change="file2b64" />
             <component :is="icons.ImageUp" class="w-6 h-6 text-slate-300 mb-1" />
-            <span class="text-sm text-slate-500">选择图片文件</span>
+            <span class="text-sm text-slate-500">{{ $t('ui.image.image-base64.uploadHint') }}</span>
           </label>
           <div v-else class="relative group rounded-lg overflow-hidden border border-slate-200">
             <img :src="srcPreview" class="w-full h-32 object-contain bg-slate-50" />
@@ -41,11 +41,11 @@
         <textarea
           v-model="b64output"
           class="w-full h-40 p-3 text-xs rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
-          :placeholder="srcPreview ? '' : '上传图片后 Base64 将显示在此处...'"
+          :placeholder="srcPreview ? '' : $t('ui.image.image-base64.outputPlaceholder')"
         />
         <div v-if="b64output" class="mt-2 flex items-center gap-3 text-xs text-slate-400">
-          <span>长度: {{ b64output.length }}</span>
-          <CopyButton :text="b64output" label="复制" />
+          <span>{{ $t('ui.image.image-base64.lengthLabel', { n: b64output.length }) }}</span>
+          <CopyButton :text="b64output" :label="$t('common.copy')" />
         </div>
       </div>
 
@@ -53,11 +53,11 @@
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-2">
           <component :is="icons.FileImage" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">Base64 → 图片</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.image.image-base64.base64ToImageLabel') }}</span>
         </div>
         <textarea
           v-model="b64input"
-          placeholder="粘贴 base64 或 data:image/...;base64,..."
+          :placeholder="$t('ui.image.image-base64.inputPlaceholder')"
           class="w-full h-40 p-3 text-xs rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
         />
         <div v-if="previewUrl" class="mt-3 text-center">
@@ -67,12 +67,12 @@
             class="mt-2 h-9 px-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium shadow-sm flex items-center gap-1.5 mx-auto transition"
           >
             <component :is="icons.Download" class="w-3.5 h-3.5" />
-            下载
+            {{ $t('ui.image.image-base64.btnDownload') }}
           </button>
         </div>
         <div v-else-if="b64input" class="mt-3 text-xs text-red-500 flex items-center gap-1.5">
           <component :is="icons.AlertTriangle" class="w-4 h-4" />
-          无效的 Base64 图片数据
+          {{ $t('ui.image.image-base64.errInvalidBase64') }}
         </div>
       </div>
     </div>

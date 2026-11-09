@@ -1,15 +1,15 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">图片格式转换</h3>
-      <span class="text-xs text-slate-400">PNG / JPG / WebP / GIF 在线互转，本地处理不上传</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('ui.image.image-convert.title') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.image.image-convert.subtitle') }}</span>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-2">
           <component :is="icons.Upload" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">上传图片</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.image.image-convert.uploadLabel') }}</span>
         </div>
         <!-- Upload zone -->
         <div
@@ -25,7 +25,7 @@
           >
             <input type="file" accept="image/*" class="hidden" @change="onFile" />
             <component :is="icons.ImageUp" class="w-8 h-8 text-slate-300 mb-2" />
-            <span class="text-sm text-slate-500">点击或拖拽上传图片</span>
+            <span class="text-sm text-slate-500">{{ $t('ui.image.image-convert.uploadHint') }}</span>
           </label>
           <div v-else class="relative group rounded-lg overflow-hidden border border-slate-200">
             <img :src="src" class="w-full h-40 object-contain bg-slate-50" />
@@ -38,7 +38,7 @@
           </div>
         </div>
         <div v-if="src">
-          <div class="text-xs font-medium text-slate-500 mb-2">目标格式</div>
+          <div class="text-xs font-medium text-slate-500 mb-2">{{ $t('ui.image.image-convert.targetFormatLabel') }}</div>
           <div class="flex gap-2">
             <button
               v-for="f in formats"
@@ -49,7 +49,7 @@
             >{{ f.label }}</button>
           </div>
           <div class="mt-3">
-            <label class="block text-xs text-slate-400 mb-1">质量: {{ quality }}%</label>
+            <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.image.image-convert.qualityLabel', { n: quality }) }}</label>
             <input v-model.number="quality" type="range" min="10" max="100" class="w-full" />
           </div>
           <button
@@ -57,7 +57,7 @@
             class="w-full mt-3 h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition"
           >
             <component :is="icons.ArrowRightLeft" class="w-4 h-4" />
-            转换
+            {{ $t('ui.image.image-convert.btnConvert') }}
           </button>
         </div>
       </div>
@@ -65,11 +65,11 @@
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-2">
           <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">结果</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.image.image-convert.resultTitle') }}</span>
         </div>
         <div v-if="src && !result" class="text-center">
           <img :src="src" class="max-w-full max-h-64 rounded-lg border border-slate-200 mx-auto bg-slate-50" />
-          <div class="text-xs text-slate-400 mt-2">原图预览</div>
+          <div class="text-xs text-slate-400 mt-2">{{ $t('ui.image.image-convert.originalPreview') }}</div>
         </div>
         <div v-if="result" class="text-center">
           <img :src="result.url" class="max-w-full max-h-80 rounded-lg border border-indigo-200 bg-indigo-50 mx-auto shadow-sm" />
@@ -80,13 +80,13 @@
               class="h-9 px-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium shadow-sm flex items-center gap-1 transition"
             >
               <component :is="icons.Download" class="w-3.5 h-3.5" />
-              下载
+              {{ $t('ui.image.image-convert.btnDownload') }}
             </button>
           </div>
         </div>
         <div v-if="!result && !src" class="h-60 flex flex-col items-center justify-center text-slate-400 text-xs gap-2 bg-slate-50 rounded-lg border border-slate-100">
           <component :is="icons.Image" class="w-8 h-8 text-slate-300" />
-          等待上传图片
+          {{ $t('ui.image.image-convert.emptyHint') }}
         </div>
       </div>
     </div>

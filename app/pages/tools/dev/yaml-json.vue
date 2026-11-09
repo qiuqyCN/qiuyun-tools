@@ -4,21 +4,21 @@
     <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
       <div class="flex items-center gap-2 mb-4">
         <h3 class="text-sm font-semibold text-slate-700">YAML → JSON</h3>
-        <span class="text-xs text-slate-400">YAML 格式转标准 JSON</span>
+        <span class="text-xs text-slate-400">{{ $t('ui.dev.yaml-json.yamlToJsonDesc') }}</span>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-4 items-stretch">
         <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-slate-500">YAML 输入</span>
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.yaml-json.yamlInputLabel') }}</span>
             <div class="flex items-center gap-3">
-              <button @click="yamlInput = exampleYaml" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 示例</button>
-              <button @click="clear1" class="text-xs text-slate-400 hover:text-slate-600">清空</button>
+              <button @click="yamlInput = exampleYaml" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 {{ $t('common.example') }}</button>
+              <button @click="clear1" class="text-xs text-slate-400 hover:text-slate-600">{{ $t('common.clear') }}</button>
             </div>
           </div>
           <textarea
             v-model="yamlInput"
-            placeholder="输入 YAML..."
+            :placeholder="$t('ui.dev.yaml-json.placeholderYaml')"
             class="w-full h-40 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
           />
         </div>
@@ -30,14 +30,14 @@
             class="h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-medium shadow-sm flex items-center gap-1.5 transition"
           >
             <component :is="icons.ArrowRightLeft" class="w-4 h-4" />
-            转换
+            {{ $t('ui.dev.yaml-json.btnConvert') }}
           </button>
         </div>
 
         <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-slate-500">JSON 输出</span>
-            <CopyButton :text="jsonOutput" label="复制" />
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.yaml-json.jsonOutputLabel') }}</span>
+            <CopyButton :text="jsonOutput" :label="$t('common.copy')" />
           </div>
           <div
             v-if="yamlError"
@@ -52,7 +52,7 @@
             class="p-3 rounded-lg min-h-[120px] bg-slate-50 text-slate-400 flex flex-col items-center justify-center text-xs gap-1 border border-slate-100"
           >
             <component :is="icons.FileJson" class="w-6 h-6 text-slate-300" />
-            <span>在左侧粘贴内容，点击转换</span>
+            <span>{{ $t('ui.dev.yaml-json.emptyHint') }}</span>
           </div>
         </div>
       </div>
@@ -62,21 +62,21 @@
     <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
       <div class="flex items-center gap-2 mb-4">
         <h3 class="text-sm font-semibold text-slate-700">JSON → YAML</h3>
-        <span class="text-xs text-slate-400">标准 JSON 转 YAML 格式</span>
+        <span class="text-xs text-slate-400">{{ $t('ui.dev.yaml-json.jsonToYamlDesc') }}</span>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-4 items-stretch">
         <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-slate-500">JSON 输入</span>
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.yaml-json.jsonInputLabel') }}</span>
             <div class="flex items-center gap-3">
-              <button @click="jsonInput = exampleJson" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 示例</button>
-              <button @click="clear2" class="text-xs text-slate-400 hover:text-slate-600">清空</button>
+              <button @click="jsonInput = exampleJson" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 {{ $t('common.example') }}</button>
+              <button @click="clear2" class="text-xs text-slate-400 hover:text-slate-600">{{ $t('common.clear') }}</button>
             </div>
           </div>
           <textarea
             v-model="jsonInput"
-            placeholder="输入 JSON..."
+            :placeholder="$t('ui.dev.yaml-json.placeholderJson')"
             class="w-full h-40 p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
           />
         </div>
@@ -88,14 +88,14 @@
             class="h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-medium shadow-sm flex items-center gap-1.5 transition"
           >
             <component :is="icons.ArrowRightLeft" class="w-4 h-4" />
-            转换
+            {{ $t('ui.dev.yaml-json.btnConvert') }}
           </button>
         </div>
 
         <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-medium text-slate-500">YAML 输出</span>
-            <CopyButton :text="yamlOutput" label="复制" />
+            <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.yaml-json.yamlOutputLabel') }}</span>
+            <CopyButton :text="yamlOutput" :label="$t('common.copy')" />
           </div>
           <div
             v-if="jsonError"
@@ -110,7 +110,7 @@
             class="p-3 rounded-lg min-h-[120px] bg-slate-50 text-slate-400 flex flex-col items-center justify-center text-xs gap-1 border border-slate-100"
           >
             <component :is="icons.FileText" class="w-6 h-6 text-slate-300" />
-            <span>在左侧粘贴内容，点击转换</span>
+            <span>{{ $t('ui.dev.yaml-json.emptyHint') }}</span>
           </div>
         </div>
       </div>
@@ -121,6 +121,8 @@
 <script setup lang="ts">
 import * as yaml from 'js-yaml'
 import * as icons from 'lucide-vue-next'
+
+const { t } = useI18n()
 
 const yamlInput = ref('')
 const jsonInput = ref('')
@@ -153,7 +155,7 @@ function yamlToJson() {
     const obj = yaml.load(yamlInput.value)
     jsonOutput.value = JSON.stringify(obj, null, 2)
   } catch (e: any) {
-    yamlError.value = 'YAML 解析失败: ' + e?.reason
+    yamlError.value = t('ui.dev.yaml-json.errYamlParse', { msg: e?.reason })
   }
 }
 
@@ -163,7 +165,7 @@ function jsonToYaml() {
     const obj = JSON.parse(jsonInput.value)
     yamlOutput.value = yaml.dump(obj, { lineWidth: 120, noRefs: true }).trim()
   } catch (e: any) {
-    jsonError.value = 'JSON 解析失败: ' + e?.message
+    jsonError.value = t('ui.dev.yaml-json.errJsonParse', { msg: e?.message })
   }
 }
 

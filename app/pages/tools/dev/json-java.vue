@@ -1,38 +1,38 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">JSON / Java 互转</h3>
-      <span class="text-xs text-slate-400">自动生成带 Getter/Setter 的 Java 实体类</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.dev/json-java.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.dev.json-java.pageDesc') }}</span>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-4 items-stretch">
       <!-- 输入 -->
       <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-medium text-slate-500">JSON 输入</span>
-          <button @click="input = example" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 示例</button>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.json-java.inputLabel') }}</span>
+          <button @click="input = example" class="text-xs text-indigo-500 hover:text-indigo-600 hover:underline">📝 {{ $t('common.example') }}</button>
         </div>
         <textarea
           v-model="input"
-          placeholder='{"user": {"name": "张三", "age": 25, "tags": ["开发者"]}}'
+          :placeholder="$t('ui.dev.json-java.placeholder')"
           class="w-full h-[440px] p-3 text-sm rounded-lg border border-slate-200 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
         />
       </div>
 
       <!-- 操作按钮 -->
       <div class="flex lg:flex-col items-center justify-center gap-2 shrink-0">
-        <CopyButton :text="output" label="复制" />
-        <DownloadButton v-if="output && !output.startsWith('JSON')" :content="output" filename="Pojo.java" label="下载" />
+        <CopyButton :text="output" :label="$t('common.copy')" />
+        <DownloadButton v-if="output && !outputIsError" :content="output" filename="Pojo.java" :label="$t('ui.dev.json-java.btnDownload')" />
         <button
           @click="input = ''"
           class="h-8 px-3 rounded-lg text-xs text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
-        >清空</button>
+        >{{ $t('common.clear') }}</button>
       </div>
 
       <!-- 输出 -->
       <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-medium text-slate-500">Java POJO 输出</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.json-java.outputLabel') }}</span>
         </div>
         <pre
           v-if="output"
@@ -43,7 +43,7 @@
           class="w-full h-[440px] p-3 rounded-lg bg-slate-50 text-slate-400 border border-slate-100 flex flex-col items-center justify-center gap-2 text-xs"
         >
           <component :is="icons.FileCode2" class="w-8 h-8 text-slate-300" />
-          <span>在左侧粘贴 JSON，Java 类将自动生成</span>
+          <span>{{ $t('ui.dev.json-java.emptyHint') }}</span>
         </div>
       </div>
     </div>
@@ -53,19 +53,13 @@
 <script setup lang="ts">
 import * as icons from 'lucide-vue-next'
 
-const example = `{
-  "user": {
-    "name": "张三",
-    "age": 25,
-    "email": "zhangsan@example.com",
-    "tags": ["开发者", "架构师"]
-  },
-  "active": true,
-  "score": 98.5
-}`
+const { t } = useI18n()
+
+const example = computed(() => t('ui.dev.json-java.exampleJson'))
 
 const input = ref('')
 const output = ref('')
+const outputIsError = ref(false)
 
 const typeMap: Record<string, string> = {
   string: 'String',
@@ -159,13 +153,15 @@ function generatePojo(obj: Record<string, any>, className: string, indent = ''):
 }
 
 watch(input, () => {
-  if (!input.value.trim()) { output.value = ''; return }
+  if (!input.value.trim()) { output.value = ''; outputIsError.value = false; return }
   try {
     const obj = JSON.parse(input.value)
-    if (typeof obj !== 'object') { output.value = '根节点必须是对象'; return }
+    if (typeof obj !== 'object') { output.value = t('ui.dev.json-java.errRootNotObject'); outputIsError.value = true; return }
     output.value = `import java.util.List;\n\n${generatePojo(obj, 'GeneratedPojo')}`
+    outputIsError.value = false
   } catch (e: any) {
-    output.value = 'JSON 解析失败: ' + e?.message
+    output.value = t('ui.dev.json-java.errJsonParse', { msg: e?.message })
+    outputIsError.value = true
   }
 }, { immediate: true })
 </script>

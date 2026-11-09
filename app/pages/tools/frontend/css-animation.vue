@@ -1,46 +1,46 @@
 <template>
   <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
     <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">CSS 动画生成器</h3>
-      <span class="text-xs text-slate-400">选择常见动画类型，调整参数并实时预览</span>
+      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.frontend/css-animation.name') }}</h3>
+      <span class="text-xs text-slate-400">{{ $t('ui.frontend.css-animation.pageDesc') }}</span>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div class="bg-white rounded-xl p-4 border border-slate-200 lg:col-span-1 space-y-3">
-        <div class="text-xs font-medium text-slate-500 mb-1">动画配置</div>
+        <div class="text-xs font-medium text-slate-500 mb-1">{{ $t('ui.frontend.css-animation.configLabel') }}</div>
         <div>
-          <label class="block text-xs text-slate-400 mb-1">动画类型</label>
+          <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.css-animation.typeLabel') }}</label>
           <select v-model="preset" @change="applyPreset" class="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white text-sm">
-            <option value="fade">淡入淡出</option>
-            <option value="slide">滑动</option>
-            <option value="bounce">弹跳</option>
-            <option value="pulse">脉冲</option>
-            <option value="rotate">旋转</option>
-            <option value="shake">抖动</option>
+            <option value="fade">{{ $t('ui.frontend.css-animation.typeFade') }}</option>
+            <option value="slide">{{ $t('ui.frontend.css-animation.typeSlide') }}</option>
+            <option value="bounce">{{ $t('ui.frontend.css-animation.typeBounce') }}</option>
+            <option value="pulse">{{ $t('ui.frontend.css-animation.typePulse') }}</option>
+            <option value="rotate">{{ $t('ui.frontend.css-animation.typeRotate') }}</option>
+            <option value="shake">{{ $t('ui.frontend.css-animation.typeShake') }}</option>
           </select>
         </div>
         <div class="grid grid-cols-2 gap-2 text-xs">
           <div>
-            <label class="block text-slate-400 mb-0.5">时长 (s)</label>
+            <label class="block text-slate-400 mb-0.5">{{ $t('ui.frontend.css-animation.fieldDuration') }}</label>
             <input v-model.number="duration" type="number" step="0.1" class="w-full h-8 px-2 rounded border border-slate-200 font-mono" />
           </div>
           <div>
-            <label class="block text-slate-400 mb-0.5">延迟 (s)</label>
+            <label class="block text-slate-400 mb-0.5">{{ $t('ui.frontend.css-animation.fieldDelay') }}</label>
             <input v-model.number="delay" type="number" step="0.1" class="w-full h-8 px-2 rounded border border-slate-200 font-mono" />
           </div>
         </div>
         <div>
-          <label class="block text-xs text-slate-400 mb-1">缓动函数</label>
+          <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.css-animation.fieldTiming') }}</label>
           <select v-model="timing" class="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white text-sm">
             <option v-for="t in timings" :key="t" :value="t">{{ t }}</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs text-slate-400 mb-1">迭代次数</label>
+          <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.css-animation.fieldCount') }}</label>
           <input v-model="count" class="w-full h-8 px-2 rounded border border-slate-200 font-mono text-sm" />
         </div>
         <div>
-          <label class="block text-xs text-slate-400 mb-1">方向</label>
+          <label class="block text-xs text-slate-400 mb-1">{{ $t('ui.frontend.css-animation.fieldDirection') }}</label>
           <select v-model="direction" class="w-full h-9 px-2 rounded-lg border border-slate-200 bg-white text-sm">
             <option value="normal">normal</option>
             <option value="reverse">reverse</option>
@@ -50,14 +50,14 @@
         </div>
         <label class="flex items-center gap-1.5 text-xs text-slate-500 cursor-pointer">
           <input v-model="running" type="checkbox" class="rounded" />
-          运行动画
+          {{ $t('ui.frontend.css-animation.runLabel') }}
         </label>
       </div>
 
       <div class="bg-white rounded-xl p-4 border border-slate-200 lg:col-span-2 flex flex-col">
         <div class="flex items-center gap-2 mb-2">
           <component :is="icons.Eye" class="w-4 h-4 text-indigo-400" />
-          <span class="text-xs font-medium text-slate-500">预览</span>
+          <span class="text-xs font-medium text-slate-500">{{ $t('ui.frontend.css-animation.previewLabel') }}</span>
         </div>
         <div class="flex-1 bg-slate-50 rounded-lg flex items-center justify-center min-h-[200px] border border-slate-100">
           <div
@@ -67,8 +67,8 @@
         </div>
         <div class="mt-4">
           <div class="flex items-center justify-between text-xs font-medium text-slate-500 mb-1">
-            <span class="flex items-center gap-1"><component :is="icons.Code" class="w-3.5 h-3.5" />生成的 CSS</span>
-            <CopyButton :text="fullCss" label="复制" />
+            <span class="flex items-center gap-1"><component :is="icons.Code" class="w-3.5 h-3.5" />{{ $t('ui.frontend.css-animation.cssLabel') }}</span>
+            <CopyButton :text="fullCss" :label="$t('common.copy')" />
           </div>
           <pre class="p-3 rounded-lg bg-slate-900 text-indigo-300 text-xs font-mono whitespace-pre-wrap overflow-auto max-h-48">{{ fullCss }}</pre>
         </div>
