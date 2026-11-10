@@ -32,7 +32,7 @@
       </div>
 
       <!-- 输入 -->
-      <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
+      <div class="flex-1 min-w-0 bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
         <div class="flex items-center justify-between mb-2">
           <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.code-beautify.inputLabel') }}</span>
         </div>
@@ -69,7 +69,7 @@
       </div>
 
       <!-- 输出 -->
-      <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
+      <div class="flex-1 min-w-0 bg-white rounded-xl p-4 border border-slate-200 flex flex-col">
         <div class="flex items-center justify-between mb-2">
           <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.code-beautify.outputLabel') }}</span>
           <CopyButton :text="output" :label="$t('common.copy')" />

@@ -7,8 +7,8 @@
 
     <div class="bg-white rounded-xl p-4 border border-slate-200 mb-4">
       <div class="flex items-center gap-4">
-        <div>
-          <label class="block text-xs text-slate-500 mb-1">{{ $t('ui.crypto.rsa.keySizeLabel') }}</label>
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-slate-500 whitespace-nowrap">{{ $t('ui.crypto.rsa.keySizeLabel') }}</label>
           <select v-model.number="keySize" class="h-10 px-3 text-sm rounded-lg border border-slate-200 bg-white">
             <option :value="2048">{{ $t('ui.crypto.rsa.option2048') }}</option>
             <option :value="4096">{{ $t('ui.crypto.rsa.option4096') }}</option>

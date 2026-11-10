@@ -269,31 +269,68 @@ pnpm generate   # 产物：.output/public/
 1. **干净 URL 直接命中 index 文件** —— 文件实际位于 `<route>/index.html`，因此 `/ja/tools/dev/cron` 必须直接映射到 `.../cron/index.html`，**不能**发生重定向。否则所有深层链接都会 `301 → /ja/tools/dev/cron/`，与 canonical 不一致。
 2. **`404.html` 必须以 404 状态码返回** —— 应用对未知工具抛出真实 404。Netlify、Vercel、Cloudflare Pages 默认如此；Nginx 需要手动配置。
 
-Nginx 托管静态产物的配置：
+Nginx 托管静态产物的完整配置：
 
 ```nginx
+# HTTP → HTTPS。首次申请证书时先注释掉 return，确保 ACME / 域名验证能走 HTTP 访问
 server {
-    listen 443 ssl http2;
+    listen 80;
+    listen [::]:80;
     server_name tools.qiuyun.dev;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name tools.qiuyun.dev;
+
     root /srv/qiuyun-tools/.output/public;
+    index index.html;
+    server_tokens off;
 
     ssl_certificate     /etc/letsencrypt/live/tools.qiuyun.dev/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/tools.qiuyun.dev/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_session_cache   shared:SSL:10m;
 
-    # 构建产物带内容哈希
+    # ACME / 域名验证：必须命中真实文件，不能落到 SPA 回退
+    location ^~ /.well-known/acme-challenge/ {
+        alias /srv/qiuyun-tools/.output/public/.well-known/acme-challenge/;
+        default_type "text/plain";
+        try_files $uri =404;
+    }
+
+    # 构建产物带内容哈希，可长期缓存
     location /_nuxt/ {
         expires 1y;
         add_header Cache-Control "public, immutable";
+        access_log off;
+    }
+
+    # 其他静态资源。必须放在 .well-known 之后（后者用 ^~ 优先）
+    location ~* \.(png|jpg|jpeg|gif|webp|svg|ico|css|js|woff2?)$ {
+        expires 30d;
+        add_header Cache-Control "public";
+        access_log off;
     }
 
     # 直接命中 <route>/index.html，不产生尾斜杠跳转
     location / {
         try_files $uri $uri/index.html $uri/ =404;
+        add_header Cache-Control "public, max-age=0, must-revalidate";
     }
 
+    # 未知路径必须返回真实 404 状态码
     error_page 404 /404.html;
+    location = /404.html {
+        internal;
+    }
 }
 ```
+
+> ACME 那段不能省：缺了它，`/.well-known/acme-challenge/<token>` 会落到 `try_files … =404`，导致证书签发与云平台域名验证直接报 `404`。每次 `rsync --delete` 后需重新放回验证文件，或在同步时排除该目录。
 
 SSG 会失去的能力：
 

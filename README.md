@@ -269,31 +269,69 @@ Absolutely required host configuration:
 1. **Serve index files for clean URLs** — the files live at `<route>/index.html`, so `/ja/tools/dev/cron` must map to `.../cron/index.html` **without** a redirect. Otherwise every deep link answers `301 → /ja/tools/dev/cron/`, which no longer matches the canonical URL.
 2. **Serve `404.html` with a 404 status** — the app throws a real 404 for unknown tools. Netlify, Vercel and Cloudflare Pages do this automatically; on Nginx you must wire it up manually.
 
-Nginx serving the static bundle:
+Nginx serving the static bundle (complete config):
 
 ```nginx
+# HTTP → HTTPS. While issuing the certificate for the first time, comment out
+# the redirect so the ACME / domain-verification challenge can be reached over HTTP.
 server {
-    listen 443 ssl http2;
+    listen 80;
+    listen [::]:80;
     server_name tools.qiuyun.dev;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name tools.qiuyun.dev;
+
     root /srv/qiuyun-tools/.output/public;
+    index index.html;
+    server_tokens off;
 
     ssl_certificate     /etc/letsencrypt/live/tools.qiuyun.dev/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/tools.qiuyun.dev/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_session_cache   shared:SSL:10m;
+
+    # ACME / domain-verification challenge — must hit the real file, never the SPA fallback
+    location ^~ /.well-known/acme-challenge/ {
+        alias /srv/qiuyun-tools/.output/public/.well-known/acme-challenge/;
+        default_type "text/plain";
+        try_files $uri =404;
+    }
 
     # Assets are content-hashed
     location /_nuxt/ {
         expires 1y;
         add_header Cache-Control "public, immutable";
+        access_log off;
+    }
+
+    # Other static files. Keep this after the .well-known block (that one uses ^~).
+    location ~* \.(png|jpg|jpeg|gif|webp|svg|ico|css|js|woff2?)$ {
+        expires 30d;
+        add_header Cache-Control "public";
+        access_log off;
     }
 
     # Serve <route>/index.html directly, no trailing-slash redirect
     location / {
         try_files $uri $uri/index.html $uri/ =404;
+        add_header Cache-Control "public, max-age=0, must-revalidate";
     }
 
+    # Unknown paths must answer with a real 404 status
     error_page 404 /404.html;
+    location = /404.html {
+        internal;
+    }
 }
 ```
+
+> The ACME block matters: without it, `/.well-known/acme-challenge/<token>` falls through to `try_files … =404`, so certificate issuance and cloud-provider domain verification fail with `404`. Re-apply that challenge file after every `rsync --delete`, or exclude it from the sync.
 
 What SSG does **not** give you:
 
