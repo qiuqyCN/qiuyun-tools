@@ -9,7 +9,7 @@
       <!-- File → Base64 -->
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-2">
-          <component :is="icons.ImageToIcon" class="w-4 h-4 text-indigo-400" />
+          <component :is="icons.Repeat" class="w-4 h-4 text-indigo-400" />
           <span class="text-xs font-medium text-slate-500">{{ $t('ui.image.image-base64.imageToBase64Label') }}</span>
         </div>
         <!-- Upload zone -->

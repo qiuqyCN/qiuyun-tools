@@ -6,6 +6,7 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "postgenerate": "node scripts/fix-error-pages.mjs",
     "preview": "nuxt preview",
     "i18n:check": "node --experimental-strip-types scripts/i18n-check.ts",
     "postinstall": "nuxt prepare"

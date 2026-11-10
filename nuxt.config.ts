@@ -20,17 +20,18 @@ export default defineNuxtConfig({
     locales: localeOptions,
     // 语言包唯一目录：app/locales（相对 i18n restructureDir 解析）
     langDir: '../app/locales',
-    lazy: true,
     // 根路径永远渲染默认语言，不做任何自动跳转
     detectBrowserLanguage: false,
-    bundle: {
-      optimizeTranslationDirective: false,
+    // regex-tester 的 HTML 示例是纯文本测试数据（不参与渲染），需保留原始尖括号
+    compilation: {
+      strictMessage: false,
+      escapeHtml: false,
     },
   },
 
   // ============ SEO 配置 ============
   site: {
-    url: 'https://qiuyun.tools',
+    url: 'https://tools.qiuyun.dev',
     name: '秋云工具',
     description:
       '免费在线开发者工具箱,包含JSON格式化、加密工具、图片处理、代码格式化、前端工具、文档转换等60+实用工具,所有工具纯前端运行,数据不上传更安全。',
@@ -58,12 +59,17 @@ export default defineNuxtConfig({
     },
   },
 
-  // ============ Robots 配置 ============
+  nitro: {
+    prerender: {
+      // 屏蔽 @nuxtjs/sitemap 自动生成的 /sitemap.xml 跳转壳（与 sitemap_index.xml 重复）
+      ignore: ['/sitemap.xml'],
+    },
+  },
+
   robots: {
-    UserAgent: '*',
-    Allow: '/',
-    Disallow: ['/api/', '/_nuxt/'],
-    Sitemap: [`${SITE_URL}/sitemap_index.xml`],
+    allow: '/',
+    disallow: ['/api/'],
+    sitemap: [`${SITE_URL}/sitemap_index.xml`],
   },
 
   // ============ Sitemap 配置(多语言) ============

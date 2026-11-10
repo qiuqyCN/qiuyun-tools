@@ -2,13 +2,15 @@
  * useSeo - 多语言 SEO 统一处理 composable
  * 自动处理 canonical、hreflang alternates、htmlAttrs.lang
  */
+import { SITE_URL } from '#shared/locales'
+
 export function useSeoMulti(opts: {
   /** 当前页面路径 (可选,默认使用 route.fullPath) */
   path?: string
   /** 当前语言版本是否包含语言前缀 (默认自动判断) */
   includeLocalePrefix?: boolean
 }) {
-  const siteUrl = 'https://qiuyun.tools'
+  const siteUrl = SITE_URL
   const route = useRoute()
   const { locale, locales } = useI18n()
 

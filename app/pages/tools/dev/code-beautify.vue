@@ -50,7 +50,7 @@
           :disabled="!input.trim()"
           class="h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-medium shadow-sm flex items-center gap-1.5 transition"
         >
-          <component :is="icons.MagicWand" class="w-4 h-4" />
+          <component :is="icons.Wand2" class="w-4 h-4" />
           {{ $t('ui.dev.code-beautify.btnFormat') }}
         </button>
         <button
@@ -58,7 +58,7 @@
           :disabled="!input.trim()"
           class="h-10 px-5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed text-slate-600 text-sm font-medium flex items-center gap-1.5 transition"
         >
-          <component :is="icons.Compress" class="w-4 h-4" />
+          <component :is="icons.Minimize2" class="w-4 h-4" />
           {{ $t('ui.dev.code-beautify.btnMinify') }}
         </button>
         <button

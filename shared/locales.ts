@@ -21,7 +21,7 @@ export interface LocaleMeta {
   iso: string
 }
 
-export const SITE_URL = 'https://qiuyun.tools'
+export const SITE_URL = 'https://tools.qiuyun.dev'
 
 export const DEFAULT_LOCALE = 'zh-CN'
 

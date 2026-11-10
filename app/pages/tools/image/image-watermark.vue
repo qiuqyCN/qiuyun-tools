@@ -75,7 +75,7 @@
             @click="apply"
             class="w-full h-10 px-5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium shadow-sm flex items-center justify-center gap-1.5 transition"
           >
-            <component :is="icons.Watermark" class="w-4 h-4" />
+            <component :is="icons.Stamp" class="w-4 h-4" />
             {{ $t('ui.image.image-watermark.btnApply') }}
           </button>
         </div>

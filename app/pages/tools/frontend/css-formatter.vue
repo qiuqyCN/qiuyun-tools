@@ -35,7 +35,7 @@
               @click="minify"
               class="h-9 px-4 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-medium flex items-center gap-1 transition"
             >
-              <component :is="icons.Compress" class="w-3.5 h-3.5" />
+              <component :is="icons.Minimize2" class="w-3.5 h-3.5" />
               {{ $t('ui.frontend.css-formatter.btnMinify') }}
             </button>
             <CopyButton :text="output" :label="$t('common.copy')" />

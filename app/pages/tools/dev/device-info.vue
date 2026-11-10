@@ -9,7 +9,7 @@
       <!-- Basic -->
       <div class="bg-white rounded-xl p-4 border border-slate-200">
         <div class="flex items-center gap-2 mb-3">
-          <component :is="icons.Window" class="w-4 h-4 text-indigo-400" />
+          <component :is="icons.Monitor" class="w-4 h-4 text-indigo-400" />
           <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.device-info.sectionBasic') }}</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2.5">

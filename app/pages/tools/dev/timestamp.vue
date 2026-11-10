@@ -137,11 +137,11 @@ import * as icons from 'lucide-vue-next'
 
 const { t } = useI18n()
 
-// 当前时间
-const now = ref(Date.now())
+// 当前时间（初始值固定为 0，避免 SSR/CSR hydration mismatch；onMounted 里会立即设为真实时间）
+const now = ref(0)
 const nowSec = computed(() => Math.floor(now.value / 1000))
 const nowMs = computed(() => now.value)
-const nowDate = computed(() => formatDate(new Date(now.value)))
+const nowDate = computed(() => (now.value ? formatDate(new Date(now.value)) : ''))
 
 // 每秒更新
 let timer: number | null = null
@@ -155,7 +155,8 @@ onUnmounted(() => {
 
 // Timestamp → Date
 const tsInput = ref('')
-const exampleTs = String(Math.floor(Date.now() / 1000))
+// 固定值，避免 SSR/CSR mismatch；按钮点击后按当前时间生成
+const exampleTs = '1700000000'
 
 const tsInvalid = computed(() => {
   const raw = tsInput.value.trim()
