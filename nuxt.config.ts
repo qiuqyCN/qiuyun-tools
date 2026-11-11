@@ -56,6 +56,33 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
       ],
+      // ============ 第三方统计脚本 ============
+      script: [
+        // Google Tag Manager（GTM-PXFBGGX3）
+        { async: true, src: 'https://www.googletagmanager.com/gtm.js?id=GTM-PXFBGGX3' },
+        {
+          // eslint-disable-next-line no-script-url
+          innerHTML: [
+            "window.dataLayer = window.dataLayer || [];",
+            "function gtag(){dataLayer.push(arguments);}",
+            "gtag('js', new Date());",
+          ].join('\n'),
+          type: 'text/javascript',
+        },
+        // 百度统计（hm.js?a7978dcd856e150e2cde981f3ab7ab20）
+        {
+          innerHTML: [
+            'var _hmt = _hmt || [];',
+            '(function() {',
+            "  var hm = document.createElement('script');",
+            "  hm.src = 'https://hm.baidu.com/hm.js?a7978dcd856e150e2cde981f3ab7ab20';",
+            "  var s = document.getElementsByTagName('script')[0];",
+            '  s.parentNode.insertBefore(hm, s);',
+            '})();',
+          ].join('\n'),
+          type: 'text/javascript',
+        },
+      ],
     },
   },
 
@@ -75,11 +102,8 @@ export default defineNuxtConfig({
   // ============ Sitemap 配置(多语言) ============
   sitemap: {
     autoLastmod: true,
-    xslColumns: [
-      { label: 'URL', width: '65%' },
-      { label: 'Last Modified', select: 'sitemap:lastmod', width: '25%' },
-      { label: 'Priority', select: 'sitemap:priority', width: '12%' },
-    ],
+    // 禁用 XSLT：Chrome/Edge 正在移除 XSLT 原生支持，保留会导致浏览器弹出警告
+    xsl: false,
     defaults: {
       changefreq: 'weekly',
       priority: 0.8,
