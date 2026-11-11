@@ -7,6 +7,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "postgenerate": "node scripts/fix-error-pages.mjs",
+    "indexnow": "node scripts/indexnow.mjs",
     "preview": "nuxt preview",
     "i18n:check": "node --experimental-strip-types scripts/i18n-check.ts",
     "postinstall": "nuxt prepare"

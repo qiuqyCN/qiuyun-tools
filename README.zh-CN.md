@@ -133,6 +133,7 @@ npm run dev
 | `pnpm build` | 构建生产产物到 `.output/` |
 | `pnpm preview` | 本地预览生产构建 |
 | `pnpm generate` | 静态生成（产物写入 `.output/public/`） |
+| `pnpm indexnow` | 构建并上传后，把 sitemap 中的全部 URL（当前 1232 条）推送给 IndexNow（Bing / Yandex） |
 | `pnpm i18n:check` | 校验 14 种语言包：key 对齐、占位符、品牌名、关键词长度 |
 
 每次改动翻译相关文件后请执行 `pnpm i18n:check`，任何语言包偏离 `zh-CN` 基准（974 个 key）都会直接报错。
@@ -253,15 +254,15 @@ server {
 pnpm generate   # 产物：.output/public/
 ```
 
-`nuxt generate` 会把**全部 742 个页面**（14 种语言 ×（首页 + 52 个工具））预渲染到 `.output/public`，同时产出 `sitemap_index.xml`、14 个分片 XML、`robots.txt`、`404.html` 与 `200.html`。无需额外配置 prerender 路由 —— 语言路由会由 sitemap 与 i18n 数据源自动纳入。
+`nuxt generate` 会把**全部 1232 个页面**（14 种语言 × 88 个页面：首页 + 52 个工具 + 30 篇 Guide + 5 个法务页）预渲染到 `.output/public`，同时产出 `sitemap_index.xml`、14 个分片 XML、`robots.txt`、`404.html` 与 `200.html`。无需额外配置 prerender 路由 —— 语言路由会由 sitemap 与 i18n 数据源自动纳入。
 
 清理后重新生成的实测结果：
 
 | 产物 | 结果 |
 |---|---|
-| HTML 页面 | 742 个路由文件（每条路由一个 `index.html`） |
+| HTML 页面 | 1232 个路由文件（每条路由一个 `index.html`） |
 | `<html lang>` | 静态 HTML 中已按语言写死且正确（`ja-JP`、`de-DE`、`tr-TR` …） |
-| Sitemap | `sitemap_index.xml` + 14 个分片 × 53 条 = 742 个 URL |
+| Sitemap | `sitemap_index.xml` + 14 个分片 × 88 条 = 1232 个 URL |
 | 错误页 | 已生成 `404.html` 与 `200.html` |
 
 托管平台**必须**配置的两点：
@@ -340,7 +341,60 @@ SSG 会失去的能力：
 
 其余能力完全一致：52 个工具均为纯前端，语言切换器、根路径语言提示条与各语言 `<html lang>` 都按构建结果正常工作。
 
-### 5. 平台预设
+### 5. Cloudflare 代理（可选）
+
+若域名托管在 Cloudflare 且 `tools.qiuyun.dev` 使用橙色云（Proxied），需要额外处理三件事。
+
+**a. 还原真实客户端 IP**
+
+不做这一步，Nginx 看到的客户端 IP 全是 Cloudflare 节点，访问统计与限流会全部失真。仓库已附带现成文件 [deploy/nginx/cloudflare-realip.conf](deploy/nginx/cloudflare-realip.conf)，可直接上传到服务器 `/etc/nginx/snippets/cloudflare-realip.conf`，内容如下（网段与 `https://www.cloudflare.com/ips/` 一致）：
+
+```nginx
+# 网段来自 https://www.cloudflare.com/ips/ ，Cloudflare 调整后需同步更新
+real_ip_header CF-Connecting-IP;
+set_real_ip_from 173.245.48.0/20;
+set_real_ip_from 103.21.244.0/22;
+set_real_ip_from 103.22.200.0/22;
+set_real_ip_from 103.31.4.0/22;
+set_real_ip_from 141.101.64.0/18;
+set_real_ip_from 108.162.192.0/18;
+set_real_ip_from 190.93.240.0/20;
+set_real_ip_from 188.114.96.0/20;
+set_real_ip_from 197.234.240.0/22;
+set_real_ip_from 198.41.128.0/17;
+set_real_ip_from 162.158.0.0/15;
+set_real_ip_from 104.16.0.0/13;
+set_real_ip_from 104.24.0.0/14;
+set_real_ip_from 172.64.0.0/13;
+set_real_ip_from 131.0.72.0/22;
+set_real_ip_from 2400:cb00::/32;
+set_real_ip_from 2606:4700::/32;
+set_real_ip_from 2803:f800::/32;
+set_real_ip_from 2405:b500::/32;
+set_real_ip_from 2405:8100::/32;
+set_real_ip_from 2a06:98c0::/29;
+set_real_ip_from 2c0f:f248::/32;
+```
+
+然后在 `server` 块内加入一行（文件不存在时不要加，否则 `nginx -t` 会失败）：
+
+```nginx
+include /etc/nginx/snippets/cloudflare-realip.conf;
+```
+
+**b. SSL 模式设为 Full (strict)**
+
+源站已配置 Let's Encrypt 证书，因此 Full 或 Full (strict) 都可用。**不要**用 Flexible：源站 80→443 的跳转会与 Cloudflare 形成重定向循环。ACME HTTP-01 验证在橙云下依然可用，证书续期不受影响。
+
+**c. 开启 Crawler Hints（爬虫提示）**
+
+Cloudflare 控制台 → 选中域名 → **Caching → Crawler Hints** 打开。开启后 Cloudflare 检测到内容变化时会自动向 Bing / Yandex 等提交 IndexNow 通知，此时 `pnpm indexnow` 可只在重要发布时手动执行。
+
+验证是否生效：Bing Webmaster Tools → **IndexNow** 报告里出现非手动提交的批次即代表工作正常。Cloudflare 以代理身份提交，报告中的 key 不会是你自己的 key，属正常现象。
+
+> 注意：Crawler Hints 只在**橙色云**下生效；灰色云（DNS only）流量不经过 Cloudflare，该开关无效，仍需依赖 `pnpm indexnow`。
+
+### 6. 平台预设
 
 Nitro 会在构建时自动识别平台，必要时用 `NITRO_PRESET` 覆盖：
 

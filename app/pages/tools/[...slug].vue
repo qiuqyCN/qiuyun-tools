@@ -6,11 +6,15 @@
     :description="toolInfo.tool.desc"
     :icon="toolInfo.tool.icon"
   >
-    <div v-if="loading" class="py-12 text-center text-slate-400">{{ $t('common.loading') }}</div>
-    <div v-else-if="comp" class="tool-content">
+    <!-- 工具面板：comp 为 null 时 SSR 不输出，客户端水合后动态加载并替换 -->
+    <div v-if="comp" class="tool-content">
       <component :is="comp" />
     </div>
-    <Placeholder v-else :tool="toolInfo.tool" />
+    <!-- 加载中和 Placeholder 只在客户端出现，避免 SSR 输出占位 HTML -->
+    <ClientOnly>
+      <div v-if="loading" class="py-12 text-center text-slate-400">{{ $t('common.loading') }}</div>
+      <Placeholder v-else-if="toolInfo" :tool="toolInfo.tool" />
+    </ClientOnly>
   </ToolLayout>
 </template>
 
@@ -20,7 +24,6 @@ import { getBaseToolById, loadToolComponent } from '~/data/tools'
 import { stripLocalePrefix } from '#shared/locales'
 
 const route = useRoute()
-const { t } = useI18n()
 
 const innerPath = computed(() => stripLocalePrefix(route.path).path)
 
@@ -37,8 +40,8 @@ const toolInfo = computed(() => {
   if (!base || base.category.id !== parsedIds.value.categoryId) return null
   const key = `${base.category.id}/${base.tool.id}`
   return {
-    tool: { ...base.tool, key, name: t(`tools.${key}.name`), desc: t(`tools.${key}.desc`) },
-    category: { ...base.category, name: t(`categories.${base.category.id}.name`) },
+    tool: { ...base.tool, key, name: useI18n().t(`tools.${key}.name`), desc: useI18n().t(`tools.${key}.desc`) },
+    category: { ...base.category, name: useI18n().t(`categories.${base.category.id}.name`) },
   }
 })
 

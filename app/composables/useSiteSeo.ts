@@ -5,6 +5,7 @@
  */
 import { computed, watch } from 'vue'
 import { baseCategories } from '~/data/tools'
+import { getLegalDoc, type LegalKey } from '~/data/legal'
 import {
   DEFAULT_LOCALE,
   LOCALES,
@@ -34,6 +35,14 @@ export function useSiteSeo() {
   const isHomePage = computed(() => innerPath.value === '/')
   const isToolPage = computed(() => toolIds.value !== null)
 
+  // ============ 法务 / 信任页（privacy、terms、about、contact、disclaimer） ============
+  const LEGAL_KEYS: LegalKey[] = ['privacy', 'terms', 'about', 'contact', 'disclaimer']
+  const legalKey = computed<LegalKey | null>(() => {
+    const p = innerPath.value.replace(/^\/+|\/+$/g, '')
+    return LEGAL_KEYS.includes(p as LegalKey) ? (p as LegalKey) : null
+  })
+  const legalDoc = computed(() => (legalKey.value ? getLegalDoc(legalKey.value, locale.value) : null))
+
   // ============ 工具文案 ============
   const toolSeoInfo = computed(() => {
     if (!toolIds.value) return null
@@ -50,6 +59,7 @@ export function useSiteSeo() {
 
   // ============ URL ============
   const buildPath = (): string => {
+    if (legalKey.value) return `/${legalKey.value}`
     if (!toolIds.value) return '/'
     return `/tools/${toolIds.value.categoryId}/${toolIds.value.toolId}`
   }
@@ -64,12 +74,14 @@ export function useSiteSeo() {
   const siteName = computed(() => brandName(locale.value))
 
   const seoTitle = computed(() => {
+    if (legalDoc.value) return legalDoc.value.title
     if (isHomePage.value) return t('seo.homeTitle')
     if (toolSeoInfo.value) return `${toolSeoInfo.value.toolName} - ${toolSeoInfo.value.categoryName}`
     return ''
   })
 
   const seoDescription = computed(() => {
+    if (legalDoc.value) return legalDoc.value.description
     if (isHomePage.value) {
       return t('seo.homeDescription', { count: totalTools.value })
     }
@@ -98,6 +110,7 @@ export function useSiteSeo() {
   })
 
   const ogTitle = computed(() => {
+    if (legalDoc.value) return `${legalDoc.value.title} | ${siteName.value}`
     if (isHomePage.value) return t('seo.homeOgTitle')
     if (toolSeoInfo.value) {
       return `${toolSeoInfo.value.toolName} - ${toolSeoInfo.value.categoryName} | ${siteName.value}`
@@ -106,7 +119,7 @@ export function useSiteSeo() {
   })
 
   const ogDescription = computed(() => seoDescription.value)
-  const ogImage = `${SITE_URL}/favicon.png`
+  const ogImage = `${SITE_URL}/og.png`
   const ogUrl = computed(() => currentUrl.value)
   const ogLocale = computed(() => localeConfig.value.ogLocale)
 
@@ -120,11 +133,6 @@ export function useSiteSeo() {
         inLanguage: localeConfig.value.iso,
         description: t('seo.homeJsonLdDescription', { count: totalTools.value }),
         author: { '@type': 'Organization', name: siteName.value },
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: `${buildAbsoluteUrl(locale.value, '/')}/tools/{search_term_string}`,
-          'query-input': 'required name=search_term_string',
-        },
       })
     }
     if (toolSeoInfo.value) {
@@ -143,7 +151,6 @@ export function useSiteSeo() {
           price: '0',
           priceCurrency: locale.value === 'zh-CN' || locale.value === 'zh-TW' ? 'CNY' : 'USD',
         },
-        aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.8', ratingCount: '1000' },
       })
     }
     return ''
@@ -173,9 +180,12 @@ export function useSiteSeo() {
     ogTitle: _ogTitle,
     ogDescription: _ogDescription,
     ogImage,
+    ogImageWidth: 1200,
+    ogImageHeight: 630,
     ogUrl: _ogUrl,
     ogLocale: _ogLocale,
     ogType: 'website',
+    twitterCard: 'summary_large_image',
     twitterTitle: _ogTitle,
     twitterDescription: _ogDescription,
     twitterImage: ogImage,
@@ -204,9 +214,12 @@ export function useSiteSeo() {
         ogTitle: ogTitle.value,
         ogDescription: ogDescription.value,
         ogImage,
+        ogImageWidth: 1200,
+        ogImageHeight: 630,
         ogUrl: currentUrl.value,
         ogLocale: lc.ogLocale,
         ogType: 'website',
+        twitterCard: 'summary_large_image',
         twitterTitle: ogTitle.value,
         twitterDescription: ogDescription.value,
         twitterImage: ogImage,

@@ -90,6 +90,8 @@ export default defineNuxtConfig({
     prerender: {
       // 屏蔽 @nuxtjs/sitemap 自动生成的 /sitemap.xml 跳转壳（与 sitemap_index.xml 重复）
       ignore: ['/sitemap.xml'],
+      // 800+ 页面并行渲染峰值内存较高，限制并发避免低内存机器 OOM
+      concurrency: 4,
     },
   },
 

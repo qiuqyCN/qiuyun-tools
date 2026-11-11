@@ -128,15 +128,35 @@
       <!-- Content -->
       <main class="flex-1 overflow-auto">
         <slot />
+        <ToolContentSection v-if="currentToolKey" :tool-key="currentToolKey" />
       </main>
 
       <footer class="border-t border-slate-200 bg-white/60 backdrop-blur-sm">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between text-xs text-slate-400">
-          <span>© {{ new Date().getFullYear() }} {{ $t('site.name') }}</span>
-          <span class="flex items-center gap-2">
-            <component :is="icons.Shield" class="w-3.5 h-3.5" />
-            {{ $t('common.localProcessing') }}
-          </span>
+        <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-2.5 text-xs text-slate-400">
+          <nav class="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <NuxtLink
+              :to="buildLocalePath(locale, '/guide')"
+              class="hover:text-indigo-600 transition font-medium"
+            >
+              {{ locale.startsWith('zh') ? '开发者指南' : 'Guide' }}
+            </NuxtLink>
+            <span class="text-slate-200">·</span>
+            <NuxtLink
+              v-for="item in legalLinks"
+              :key="item.key"
+              :to="item.to"
+              class="hover:text-indigo-600 transition"
+            >
+              {{ item.label }}
+            </NuxtLink>
+          </nav>
+          <div class="flex items-center justify-between">
+            <span>© {{ new Date().getFullYear() }} {{ $t('site.name') }}</span>
+            <span class="flex items-center gap-2">
+              <component :is="icons.Shield" class="w-3.5 h-3.5" />
+              {{ $t('common.localProcessing') }}
+            </span>
+          </div>
         </div>
       </footer>
     </div>
@@ -145,8 +165,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { buildLocalePath } from '#shared/locales'
+import { buildLocalePath, stripLocalePrefix } from '#shared/locales'
 import { LANG_HINT_TEXT, detectHintLocale } from '#shared/lang-hint'
+import { getLegalLabel, type LegalKey } from '~/data/legal'
 import * as icons from 'lucide-vue-next'
 
 // 统一多语言 SEO(必须在最前面,确保 SSR 阶段立即求值)
@@ -154,6 +175,14 @@ useSiteSeo()
 
 const { locale } = useI18n()
 const route = useRoute()
+
+// ============ 当前工具页的 toolKey（用于注入正文 + FAQ） ============
+// 匹配 /tools/{category}/{tool} 格式，返回 "category/tool"，非工具页返回 null
+const currentToolKey = computed<string | null>(() => {
+  const clean = stripLocalePrefix(route.path).path
+  const match = clean.match(/^\/tools\/([^/]+)\/([^/]+)$/)
+  return match ? `${match[1]}/${match[2]}` : null
+})
 
 // ============ 根路径语言提示条（仅客户端） ============
 const LANG_HINT_KEY = 'qiuyun:lang-hint-dismissed'
@@ -195,6 +224,16 @@ watch(categories, (cats) => {
 
 // 首页路由(带语言前缀)
 const homeRoute = computed(() => buildLocalePath(locale.value, '/'))
+
+// 页脚法务 / 信任页链接（带语言前缀）
+const LEGAL_KEYS: LegalKey[] = ['about', 'contact', 'privacy', 'terms', 'disclaimer']
+const legalLinks = computed(() =>
+  LEGAL_KEYS.map(key => ({
+    key,
+    label: getLegalLabel(key, locale.value),
+    to: buildLocalePath(locale.value, `/${key}`),
+  })),
+)
 
 // 工具路由(带语言前缀)
 function resolveToolRoute(route: string) {

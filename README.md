@@ -133,6 +133,7 @@ npm run dev
 | `pnpm build` | Build the production bundle into `.output/` |
 | `pnpm preview` | Preview the production build locally |
 | `pnpm generate` | Static generation (writes `.output/public/`) |
+| `pnpm indexnow` | After deploying, submit every sitemap URL (currently 1232) to IndexNow (Bing / Yandex) |
 | `pnpm i18n:check` | Validate all 14 locale files: key parity, placeholders, brand name, keyword length |
 
 Run `pnpm i18n:check` before every PR that touches translations — it fails the build check when a locale drifts from the `zh-CN` baseline.
@@ -253,15 +254,15 @@ server {
 pnpm generate   # output: .output/public/
 ```
 
-`nuxt generate` prerenders **all 742 pages** — 14 locales × (home + 52 tools) — into `.output/public`, plus `sitemap_index.xml`, the 14 shard XMLs, `robots.txt`, `404.html` and `200.html`. No extra prerender configuration is required; the locale routes are picked up from the sitemap and i18n sources automatically.
+`nuxt generate` prerenders **all 1232 pages** — 14 locales × 88 pages (home + 52 tools + 30 guide articles + 5 legal pages) — into `.output/public`, plus `sitemap_index.xml`, the 14 shard XMLs, `robots.txt`, `404.html` and `200.html`. No extra prerender configuration is required; the locale routes are picked up from the sitemap and i18n sources automatically.
 
 Verified output after a clean generate:
 
 | Artifact | Result |
 |---|---|
-| HTML pages | 742 route files (`index.html` per route) |
+| HTML pages | 1232 route files (`index.html` per route) |
 | `<html lang>` | Correct per locale in the static HTML (`ja-JP`, `de-DE`, `tr-TR`, …) |
-| Sitemap | `sitemap_index.xml` + 14 shards × 53 entries = 742 URLs |
+| Sitemap | `sitemap_index.xml` + 14 shards × 88 entries = 1232 URLs |
 | Error pages | `404.html` and `200.html` emitted |
 
 Absolutely required host configuration:
@@ -341,7 +342,60 @@ What SSG does **not** give you:
 
 Everything else is identical: all 52 tools are client-side, the language switcher, the root-path language hint and per-locale `<html lang>` all work as built.
 
-### 5. Platform presets
+### 5. Cloudflare proxy (optional)
+
+If the domain is hosted on Cloudflare and `tools.qiuyun.dev` is proxied (orange cloud), three extra things are needed.
+
+**a. Restore the real client IP**
+
+Without this, every request in the Nginx log appears to come from a Cloudflare edge node, which breaks access analytics and rate limiting. A ready-made file ships with the repo: [deploy/nginx/cloudflare-realip.conf](deploy/nginx/cloudflare-realip.conf) — upload it to `/etc/nginx/snippets/cloudflare-realip.conf`. Contents (matching `https://www.cloudflare.com/ips/`):
+
+```nginx
+# Ranges from https://www.cloudflare.com/ips/ — re-sync when Cloudflare changes them
+real_ip_header CF-Connecting-IP;
+set_real_ip_from 173.245.48.0/20;
+set_real_ip_from 103.21.244.0/22;
+set_real_ip_from 103.22.200.0/22;
+set_real_ip_from 103.31.4.0/22;
+set_real_ip_from 141.101.64.0/18;
+set_real_ip_from 108.162.192.0/18;
+set_real_ip_from 190.93.240.0/20;
+set_real_ip_from 188.114.96.0/20;
+set_real_ip_from 197.234.240.0/22;
+set_real_ip_from 198.41.128.0/17;
+set_real_ip_from 162.158.0.0/15;
+set_real_ip_from 104.16.0.0/13;
+set_real_ip_from 104.24.0.0/14;
+set_real_ip_from 172.64.0.0/13;
+set_real_ip_from 131.0.72.0/22;
+set_real_ip_from 2400:cb00::/32;
+set_real_ip_from 2606:4700::/32;
+set_real_ip_from 2803:f800::/32;
+set_real_ip_from 2405:b500::/32;
+set_real_ip_from 2405:8100::/32;
+set_real_ip_from 2a06:98c0::/29;
+set_real_ip_from 2c0f:f248::/32;
+```
+
+Then reference it from the `server` block (skip this line until the file exists, otherwise `nginx -t` fails):
+
+```nginx
+include /etc/nginx/snippets/cloudflare-realip.conf;
+```
+
+**b. Set SSL mode to Full (strict)**
+
+The origin already has a Let's Encrypt certificate, so Full or Full (strict) both work. Do **not** use Flexible: the origin's 80→443 redirect combined with Cloudflare creates a redirect loop. ACME HTTP-01 validation still works through the proxy, so renewals are unaffected.
+
+**c. Enable Crawler Hints**
+
+Cloudflare dashboard → select the domain → **Caching → Crawler Hints**. Once enabled, Cloudflare automatically sends IndexNow notifications to Bing / Yandex when it detects content changes, so `pnpm indexnow` only needs to be run for major releases.
+
+To confirm it works: Bing Webmaster Tools → **IndexNow** report should show batches you did not submit manually. Cloudflare submits as the proxy, so the key in those reports will not be your own key — that is expected.
+
+> Crawler Hints only works on the **orange cloud**. With DNS-only records traffic bypasses Cloudflare, the toggle has no effect, and `pnpm indexnow` remains the only path.
+
+### 6. Platform presets
 
 Nitro auto-detects the platform at build time. Override with `NITRO_PRESET` when needed:
 
