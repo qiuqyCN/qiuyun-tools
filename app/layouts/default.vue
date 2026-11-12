@@ -127,8 +127,17 @@
 
       <!-- Content -->
       <main class="flex-1 overflow-auto">
-        <slot />
-        <ToolContentSection v-if="currentToolKey" :tool-key="currentToolKey" />
+        <!-- 工具页：统一套用 ToolLayout（面包屑 + 图标 + h1 + 描述），保证 52 个工具页结构一致 -->
+        <ToolLayout
+          v-if="currentTool"
+          :category-name="currentTool.categoryName"
+          :tool-name="currentTool.name"
+          :description="currentTool.desc"
+        >
+          <slot />
+          <ToolContentSection v-if="currentToolKey" :tool-key="currentToolKey" />
+        </ToolLayout>
+        <slot v-else />
       </main>
 
       <footer class="border-t border-slate-200 bg-white/60 backdrop-blur-sm">
@@ -214,6 +223,17 @@ const collapsed = ref(false)
 
 // 带多语言文案的分类
 const { categories } = useToolCatalog()
+
+// 当前工具（含分类名），用于渲染 ToolLayout 头部；非工具页或未收录的工具返回 null
+const currentTool = computed(() => {
+  const key = currentToolKey.value
+  if (!key) return null
+  for (const cat of categories.value) {
+    const tool = cat.tools.find(t => t.key === key)
+    if (tool) return { ...tool, categoryName: cat.name }
+  }
+  return null
+})
 
 // 初始化展开所有分类
 watch(categories, (cats) => {

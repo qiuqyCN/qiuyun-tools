@@ -1,9 +1,5 @@
 <template>
-  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-    <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.document/pdf-split.name') }}</h3>
-      <span class="text-xs text-slate-400">{{ $t('ui.document.pdf-split.pageDesc') }}</span>
-    </div>
+  <section class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
 
     <div class="bg-white rounded-xl p-4 border border-slate-200 max-w-2xl mx-auto space-y-4">
       <!-- Upload -->
@@ -61,6 +57,14 @@
             class="w-full h-10 px-3 text-sm rounded-lg border border-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
           />
           <div class="mt-1 text-xs text-slate-400">{{ $t('ui.document.pdf-split.pageRangeHint') }}</div>
+          <div class="mt-2">
+            <div class="text-[11px] text-slate-400 mb-1.5">{{ $t('ui.document.pdf-split.quickPresetLabel') }}</div>
+            <div class="flex flex-wrap gap-1.5">
+              <button v-for="p in rangePresets" :key="p.key" @click="applyRangePreset(p)" class="px-2.5 py-1 text-[11px] rounded-md border border-slate-200 text-slate-600 hover:border-indigo-400 hover:text-indigo-600 transition">
+                {{ $t(p.labelKey, p.interp) }}
+              </button>
+            </div>
+          </div>
         </div>
 
         <div v-if="mode === 'every'">
@@ -72,6 +76,14 @@
               <span class="font-mono font-semibold text-indigo-600">{{ Math.ceil(pages / everyN) }}</span>
               {{ $t('ui.document.pdf-split.filesUnit') }}
             </span>
+          </div>
+          <div class="mt-2 flex flex-wrap gap-1.5">
+            <button
+              v-for="p in everyPresets"
+              :key="p.n"
+              @click="everyN = p.n"
+              class="px-2.5 py-1 text-[11px] rounded-md border border-slate-200 text-slate-600 hover:border-indigo-400 hover:text-indigo-600 transition"
+            >{{ $t(p.labelKey) }}</button>
           </div>
         </div>
 
@@ -203,6 +215,41 @@ const canSplit = computed(() => {
     return ps.length > 0 && ps.length < pages.value
   }
   return false
+})
+
+const rangePresets = computed(() => {
+  const total = pages.value
+  if (!total || total < 3) return []
+  const mid = Math.ceil(total / 2)
+  const oneThird = Math.ceil(total / 3)
+  const twoThirds = Math.ceil((total * 2) / 3)
+  const oneFourth = Math.ceil(total / 4)
+  const twoFourths = Math.ceil(total / 2)
+  const threeFourths = Math.ceil((total * 3) / 4)
+  const mk = (gen: () => string) => gen()
+  return [
+    { key: 'half', labelKey: 'ui.document.pdf-split.quickHalf', interp: {}, gen: mk(() => `1-${mid}, ${mid + 1}-${total}`) },
+    { key: 'thirds', labelKey: 'ui.document.pdf-split.quickThirds', interp: {}, gen: mk(() => `1-${oneThird}, ${oneThird + 1}-${twoThirds}, ${twoThirds + 1}-${total}`) },
+    {
+      key: 'fourths', labelKey: 'ui.document.pdf-split.quickFourths', interp: {},
+      gen: mk(() => `1-${oneFourth}, ${oneFourth + 1}-${twoFourths}, ${twoFourths + 1}-${threeFourths}, ${threeFourths + 1}-${total}`),
+    },
+  ]
+})
+
+function applyRangePreset(p: { gen: string }) {
+  mode.value = 'range'
+  range.value = p.gen
+}
+
+const everyPresets = computed(() => {
+  const total = pages.value
+  const all: { n: number; labelKey: string }[] = [
+    { n: 5, labelKey: 'ui.document.pdf-split.quickEvery5' },
+    { n: 10, labelKey: 'ui.document.pdf-split.quickEvery10' },
+    { n: 20, labelKey: 'ui.document.pdf-split.quickEvery20' },
+  ]
+  return all.filter(p => !total || p.n < total)
 })
 
 function clearFile() {

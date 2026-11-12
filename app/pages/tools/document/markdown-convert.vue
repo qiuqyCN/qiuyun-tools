@@ -1,11 +1,7 @@
 <template>
   <div class="space-y-5">
     <!-- Markdown Convert -->
-    <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-      <div class="flex items-center gap-2 mb-4">
-        <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.document/markdown-convert.name') }}</h3>
-        <span class="text-xs text-slate-400">{{ $t('ui.document.markdown-convert.pageDesc') }}</span>
-      </div>
+    <section class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
 
       <div class="flex flex-col lg:flex-row gap-4 items-stretch">
         <div class="flex-1 bg-white rounded-xl p-4 border border-slate-200">
@@ -46,7 +42,7 @@
             <CopyButton :text="output" :label="$t('common.copy')" />
           </div>
           <div v-if="input" class="h-[440px] overflow-auto rounded-lg bg-slate-50 border border-slate-100">
-            <div v-if="mode === 'html'" class="prose max-w-none p-3" v-html="outputHtml" />
+            <div v-if="mode === 'html'" class="prose max-w-none p-3" v-html="previewHtml" />
             <pre v-else class="p-3 text-xs font-mono text-slate-700 whitespace-pre-wrap">{{ output }}</pre>
           </div>
           <div
@@ -78,6 +74,11 @@ const input = ref(t('ui.document.markdown-convert.defaultInput'))
 const exampleMd = t('ui.document.markdown-convert.exampleContent')
 
 const outputHtml = computed(() => marked.parse(input.value) as string)
+
+// 预览专用：h1 降级为 h2，避免与页面主标题重复；outputHtml 保持原始输出，不影响复制/导出
+const previewHtml = computed(() =>
+  outputHtml.value.replace(/<h1[^>]*>/g, '<h2>').replace(/<\/h1>/g, '</h2>'),
+)
 
 const output = computed(() => {
   if (!input.value) return ''

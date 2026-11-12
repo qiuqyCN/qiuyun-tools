@@ -1,9 +1,5 @@
 <template>
-  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-    <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.dev/json-java.name') }}</h3>
-      <span class="text-xs text-slate-400">{{ $t('ui.dev.json-java.pageDesc') }}</span>
-    </div>
+  <section class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
 
     <div class="flex flex-col lg:flex-row gap-4 items-stretch">
       <!-- 输入 -->

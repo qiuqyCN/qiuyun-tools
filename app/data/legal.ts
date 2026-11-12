@@ -20,7 +20,7 @@ export interface LegalDoc {
   sections: LegalSection[]
 }
 
-export const CONTACT_EMAIL = 'contact@qiuyun.dev'
+export const CONTACT_EMAIL = 'qiuyun-sa@qq.com'
 
 const UPDATED = '2026-11-11'
 

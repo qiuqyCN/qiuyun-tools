@@ -185,10 +185,6 @@ export function useSiteSeo() {
     ogUrl: _ogUrl,
     ogLocale: _ogLocale,
     ogType: 'website',
-    twitterCard: 'summary_large_image',
-    twitterTitle: _ogTitle,
-    twitterDescription: _ogDescription,
-    twitterImage: ogImage,
   })
 
   useHead({
@@ -219,10 +215,6 @@ export function useSiteSeo() {
         ogUrl: currentUrl.value,
         ogLocale: lc.ogLocale,
         ogType: 'website',
-        twitterCard: 'summary_large_image',
-        twitterTitle: ogTitle.value,
-        twitterDescription: ogDescription.value,
-        twitterImage: ogImage,
       })
 
       useHead({

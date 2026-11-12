@@ -1,9 +1,5 @@
 <template>
-  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-    <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">{{ $t('ui.image.image-compress.title') }}</h3>
-      <span class="text-xs text-slate-400">{{ $t('ui.image.image-compress.subtitle') }}</span>
-    </div>
+  <section class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <!-- Input -->

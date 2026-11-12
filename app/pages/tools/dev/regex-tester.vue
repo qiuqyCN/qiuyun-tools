@@ -1,9 +1,5 @@
 <template>
-  <section class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-    <div class="flex items-center gap-2 mb-4">
-      <h3 class="text-sm font-semibold text-slate-700">{{ $t('tools.dev/regex-tester.name') }}</h3>
-      <span class="text-xs text-slate-400">{{ $t('ui.dev.regex-tester.pageDesc') }}</span>
-    </div>
+  <section class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
 
     <div class="flex flex-col lg:flex-row gap-4 items-stretch">
       <!-- 左侧：正则输入 + 速查 -->
@@ -13,17 +9,17 @@
             <span class="text-xs font-medium text-slate-500">{{ $t('ui.dev.regex-tester.patternLabel') }}</span>
           </div>
           <div class="flex items-center gap-1">
-            <span class="text-xl text-slate-400 font-mono">/</span>
+            <span class="shrink-0 text-xl text-slate-400 font-mono">/</span>
             <input
               v-model="pattern"
               :placeholder="$t('ui.dev.regex-tester.patternPlaceholder')"
-              class="flex-1 h-11 px-3 text-sm font-mono rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+              class="flex-1 min-w-0 h-11 px-3 text-sm font-mono rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
             />
-            <span class="text-xl text-slate-400 font-mono">/</span>
+            <span class="shrink-0 text-xl text-slate-400 font-mono">/</span>
             <input
               v-model="flags"
               placeholder="gim"
-              class="w-16 h-11 px-2 text-sm font-mono rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+              class="w-16 shrink-0 h-11 px-2 text-sm font-mono rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
             />
           </div>
           <div v-if="regexError" class="mt-2 text-xs text-red-500">{{ regexError }}</div>
