@@ -6,7 +6,7 @@
       <span class="text-slate-700 font-medium">{{ title }}</span>
     </nav>
 
-    <header class="mb-10">
+    <header class="mb-8">
       <h1 class="text-2xl lg:text-3xl font-bold text-slate-800 mb-3 flex items-center gap-2">
         <component :is="icons.GraduationCap" class="w-7 h-7 text-indigo-500" />
         {{ title }}
@@ -14,9 +14,66 @@
       <p class="text-slate-500 text-sm leading-relaxed max-w-2xl">{{ subtitle }}</p>
     </header>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <!-- 筛选区 -->
+    <div class="mb-6 space-y-3">
+      <!-- 搜索框 -->
+      <div class="relative max-w-md">
+        <component :is="icons.Search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <input
+          v-model="searchKeyword"
+          type="search"
+          :placeholder="searchPlaceholder"
+          class="w-full h-10 pl-9 pr-3 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400"
+        />
+        <button
+          v-if="searchKeyword"
+          @click="searchKeyword = ''"
+          class="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center"
+          :aria-label="clearLabel"
+        >
+          <component :is="icons.X" class="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      <!-- Tag 按钮组 -->
+      <div v-if="tags.length > 0" class="flex flex-wrap items-center gap-1.5">
+        <button
+          @click="activeTag = null"
+          class="px-2.5 py-1 text-[11px] rounded-md border transition"
+          :class="activeTag === null ? 'border-indigo-500 bg-indigo-50 text-indigo-700 font-medium' : 'border-slate-200 text-slate-600 hover:border-indigo-300'"
+        >{{ allLabel }}</button>
+        <button
+          v-for="t in tags"
+          :key="t.tag"
+          @click="activeTag = activeTag === t.tag ? null : t.tag"
+          class="px-2.5 py-1 text-[11px] rounded-md border transition"
+          :class="activeTag === t.tag ? 'border-indigo-500 bg-indigo-50 text-indigo-700 font-medium' : 'border-slate-200 text-slate-600 hover:border-indigo-300'"
+        >
+          {{ t.tag }}
+          <span class="ml-1 text-slate-400">{{ t.count }}</span>
+        </button>
+      </div>
+
+      <!-- 结果数 -->
+      <div class="text-xs text-slate-400">
+        {{ filteredCountLabel }}
+      </div>
+    </div>
+
+    <!-- 空状态 -->
+    <div v-if="filteredArticles.length === 0" class="py-16 text-center">
+      <component :is="icons.SearchX" class="w-10 h-10 text-slate-300 mx-auto mb-3" />
+      <div class="text-sm text-slate-500">{{ noResult }}</div>
+      <button
+        @click="searchKeyword = ''; activeTag = null"
+        class="mt-3 text-xs text-indigo-500 hover:text-indigo-600 underline-offset-2 hover:underline"
+      >{{ resetLabel }}</button>
+    </div>
+
+    <!-- 卡片网格 -->
+    <div v-else class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
       <NuxtLink
-        v-for="article in articles"
+        v-for="article in filteredArticles"
         :key="article.slug"
         :to="buildLocalePath(locale, `/guide/${article.slug}`)"
         class="group block rounded-2xl border border-slate-100 bg-white hover:border-indigo-200 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden"
@@ -59,7 +116,7 @@
 <script setup lang="ts">
 import * as icons from 'lucide-vue-next'
 import { buildLocalePath } from '#shared/locales'
-import { getGuideMeta, guideArticles, type GuideArticle } from '~/data/guide'
+import { getGuideMeta, guideArticles, getGuideArticlesSorted, getAllTags, type GuideArticle } from '~/data/guide'
 
 const { locale } = useI18n()
 
@@ -76,8 +133,44 @@ const readMore = computed(() => (isZh.value ? '阅读全文' : 'Read'))
 const footerNote = computed(() =>
   isZh.value ? '文章持续更新中 · 每篇都附带可直接使用的在线工具' : 'New articles coming soon · Each one links to a working online tool',
 )
+const searchPlaceholder = computed(() => (isZh.value ? '搜索文章标题或描述…' : 'Search articles…'))
+const allLabel = computed(() => (isZh.value ? '全部' : 'All'))
+const clearLabel = computed(() => (isZh.value ? '清除' : 'Clear'))
+const noResult = computed(() => (isZh.value ? '没有找到匹配的文章' : 'No matching articles found'))
+const resetLabel = computed(() => (isZh.value ? '清除筛选' : 'Clear filters'))
 
-const articles = computed(() => guideArticles)
+// ============ 筛选状态 ============
+const searchKeyword = ref('')
+const activeTag = ref<string | null>(null)
+
+const tags = computed(() => getAllTags())
+
+const filteredArticles = computed(() => {
+  const kw = searchKeyword.value.trim().toLowerCase()
+  const sorted = getGuideArticlesSorted()
+  return sorted.filter(a => {
+    // Tag 筛选
+    if (activeTag.value && !a.tags.includes(activeTag.value)) return false
+    // 搜索：匹配 title + description
+    if (kw) {
+      const m = getGuideMeta(a, locale.value)
+      const hay = (m.title + ' ' + m.description + ' ' + m.excerpt + ' ' + a.tags.join(' ')).toLowerCase()
+      if (!hay.includes(kw)) return false
+    }
+    return true
+  })
+})
+
+const filteredCountLabel = computed(() => {
+  const total = guideArticles.length
+  const now = filteredArticles.value.length
+  if (now === total) return isZh.value ? `共 ${total} 篇文章` : `${total} articles`
+  if (activeTag.value && searchKeyword.value) {
+    return isZh.value ? `"${searchKeyword.value}" · #${activeTag.value} · ${now}/${total}` : `"${searchKeyword.value}" · #${activeTag.value} · ${now}/${total}`
+  }
+  if (activeTag.value) return isZh.value ? `#${activeTag.value} · ${now}/${total}` : `#${activeTag.value} · ${now}/${total}`
+  return isZh.value ? `"${searchKeyword.value}" · ${now}/${total}` : `"${searchKeyword.value}" · ${now}/${total}`
+})
 
 function getMeta(a: GuideArticle) {
   return getGuideMeta(a, locale.value)

@@ -29,22 +29,24 @@ export const legalDocs: Record<LegalKey, Record<LegalLang, LegalDoc>> = {
     zh: {
       title: '隐私政策',
       description: '秋云工具的隐私政策：工具运算全部在浏览器本地完成，说明我们不收集什么、收集哪些统计信息以及你享有的权利。',
-      updated: UPDATED,
+      updated: '2026-11-12',
       sections: [
         {
           heading: '一、核心承诺',
           body: [
             '秋云工具（tools.qiuyun.dev，以下称"本站"）是一个纯前端工具站。所有工具的计算过程都在你的浏览器内完成，你输入的文本、代码、图片、PDF 或其他文件不会上传到我们的服务器，也不会被我们保存、读取或转存。',
             '关闭网页后，工具产生的中间数据即从内存中释放。本站没有账号系统，不需要注册即可使用全部功能。',
+            '本政策是秋云主站隐私政策的子站分则。主站通用条款同样适用于本站；涉及本站工具、统计和广告的具体规则，以本政策为准。主站政策：https://qiuyun.dev/privacy',
           ],
         },
         {
           heading: '二、我们收集的信息',
           body: [
             '1. 服务器访问日志：包括 IP 地址、浏览器标识（User-Agent）、访问路径、状态码与时间。仅用于安全防护、故障排查与容量评估，保留 30 天。',
-            '2. 匿名访问统计：本站使用 Google Analytics 4（通过 Google Tag Manager）与百度统计，收集页面浏览量、来源渠道、设备类型、屏幕尺寸、大致地理位置（城市级）等聚合数据，用于了解哪些工具被使用、页面是否需要优化。',
+            '2. 第三方访问统计：本站使用 Google Analytics 4（通过 Google Tag Manager）与百度统计，收集页面浏览量、来源渠道、设备类型、屏幕尺寸、大致地理位置（城市级）以及统计 Cookie 标识等信息，用于了解哪些工具被使用、页面是否需要优化。这些数据可能以伪匿名标识关联到浏览器或设备，并非完全匿名。',
             '3. 安全防护：本站通过 Cloudflare 提供 CDN 与安全防护，Cloudflare 可能写入 __cf_bm 等 Cookie 用于识别自动化流量。',
-            '我们不收集工具输入内容，不收集姓名、手机号、身份证件等个人信息，也不建立用于广告定向的用户画像。',
+            '我们不收集工具输入内容，也不主动收集姓名、手机号、身份证件等直接身份信息。IP 地址、设备信息和统计 Cookie 标识可能由上述服务商按照各自隐私政策处理；我们目前不利用这些信息建立广告定向画像。',
+            '相关服务商隐私政策：Google（https://policies.google.com/privacy）、百度统计（https://tongji.baidu.com/web/help/article?id=330&type=0）、Cloudflare（https://www.cloudflare.com/privacypolicy/）。',
           ],
         },
         {
@@ -61,7 +63,7 @@ export const legalDocs: Record<LegalKey, Record<LegalLang, LegalDoc>> = {
         {
           heading: '四、我们不会做的事',
           body: [
-            '我们不会出售、出租或交易你的任何数据；不会把工具输入内容用于训练模型；不会在未经你同意的情况下向第三方共享可用于识别个人身份的信息；不会要求你绑定手机号或提供实名信息。',
+            '我们不会出售、出租或交易你的数据；不会把工具输入内容用于训练模型；除本政策披露的统计、安全和基础设施服务商外，不会主动向第三方共享可用于识别个人身份的信息；不会要求你绑定手机号或提供实名信息。',
           ],
         },
         {
@@ -70,26 +72,28 @@ export const legalDocs: Record<LegalKey, Record<LegalLang, LegalDoc>> = {
             '本站目前未投放任何广告。若未来接入 Google AdSense，将适用以下条款：',
             '第三方供应商（包括 Google）会使用 Cookie 根据你此前对本站或其他网站的访问投放广告；Google 使用广告 Cookie 使其及其合作伙伴能够根据你对本站及互联网其他网站的访问展示广告。',
             `你可以访问 Google 广告设置（https://adssettings.google.com）管理或退出个性化广告，也可以访问 https://www.aboutads.info 了解如何退出部分第三方供应商的个性化广告。`,
-            '启用广告前，本政策会先行更新，并在页面上提供对应的同意选项。',
+            '你可以通过 https://policies.google.com/technologies/partner-sites 了解 Google 如何使用来自合作伙伴网站的信息。',
+            '启用广告前，本政策会先行更新，并在页面上提供对应的同意选项。对欧洲经济区和英国访客，我们将通过 Google 认证的同意管理平台（如 Funding Choices）征求广告同意，你可以通过同一平台撤回或修改选择。',
           ],
         },
         {
           heading: '六、数据保留期限',
           body: [
-            '服务器访问日志保留 30 天。Google Analytics 数据按账号默认设置保留 14 个月，百度统计按平台默认策略保留。聚合后的统计数据可能长期保留，但已无法关联到任何个人。',
+            '服务器访问日志保留 30 天。Google Analytics 用户级与事件级数据按本站账号实际设置的期限保留，百度统计按平台策略保留。聚合报告可能由服务商保留更久，但原则上不再用于识别特定个人。',
           ],
         },
         {
           heading: '七、你的权利',
           body: [
             '依据 GDPR、CCPA 等适用法律，你有权访问、更正、删除与你相关的数据，有权反对或限制处理，有权撤回此前的同意，也有权向所在地的数据保护机构投诉。',
+            '你可以通过浏览器设置禁用或清除统计 Cookie，以阻止后续统计处理；如需访问、更正或删除其他相关数据，或对本政策提出疑问，请通过下方邮箱联系我们。',
             `如需行使上述权利，请发送邮件至 ${CONTACT_EMAIL}，我们将在 30 天内答复。`,
           ],
         },
         {
           heading: '八、儿童隐私',
           body: [
-            '本站不面向 13 岁以下儿童，也不会有意收集儿童的个人信息。若你发现儿童向我们提供了信息，请联系我们删除。',
+            '本站不面向 13 岁以下儿童；适用法律要求更高年龄门槛的，从其规定。我们不会有意收集儿童个人信息。若你认为儿童向我们提供了个人信息，请联系我们，我们会在核实后删除相关数据。',
           ],
         },
         {
@@ -109,22 +113,24 @@ export const legalDocs: Record<LegalKey, Record<LegalLang, LegalDoc>> = {
     en: {
       title: 'Privacy Policy',
       description: 'Privacy policy for Qiuyun Tools: every tool runs locally in your browser. Learn what we do not collect, which analytics we use, and your rights.',
-      updated: UPDATED,
+      updated: '2026-11-12',
       sections: [
         {
           heading: '1. Our core commitment',
           body: [
             'Qiuyun Tools (tools.qiuyun.dev, the "Site") is a client-side toolbox. Every tool computes inside your browser. The text, code, images, PDFs and other files you enter are never uploaded to our servers, and we never store, read or copy them.',
             'Intermediate data is released from memory when you close the page. There is no account system: every tool is usable without signing up.',
+            'This policy supplements the main Qiuyun privacy policy. The main policy applies to common matters, while this document governs the tools, analytics and advertising practices specific to this Site. Main policy: https://qiuyun.dev/privacy',
           ],
         },
         {
           heading: '2. Information we collect',
           body: [
             '1. Server access logs: IP address, user agent, requested path, status code and timestamp. Used only for security, troubleshooting and capacity planning; retained for 30 days.',
-            '2. Anonymous analytics: the Site uses Google Analytics 4 (via Google Tag Manager) and Baidu Analytics to collect aggregated data such as page views, referral source, device type, screen size and approximate location (city level). This helps us understand which tools are used and what needs improvement.',
+            '2. Third-party analytics: the Site uses Google Analytics 4 (via Google Tag Manager) and Baidu Analytics to collect page views, referral sources, device types, screen sizes, approximate locations (city level), analytics cookie identifiers and similar information. This helps us understand which tools are used and what needs improvement. These data may be linked to a browser or device through pseudonymous identifiers and are not fully anonymous.',
             '3. Security: the Site is served through Cloudflare, which may set cookies such as __cf_bm to detect automated traffic.',
-            'We do not collect the content you enter into tools, and we do not collect names, phone numbers, identity documents or any other personal identifiers. We do not build advertising profiles.',
+            'We do not collect the content you enter into tools, and we do not proactively collect directly identifying details such as names, phone numbers or identity documents. IP addresses, device information and analytics cookie identifiers may be processed by the providers above under their own privacy policies. We currently do not use this information to build advertising profiles.',
+            'Provider privacy policies: Google (https://policies.google.com/privacy), Baidu Analytics (https://tongji.baidu.com/web/help/article?id=330&type=0), and Cloudflare (https://www.cloudflare.com/privacypolicy/).',
           ],
         },
         {
@@ -141,7 +147,7 @@ export const legalDocs: Record<LegalKey, Record<LegalLang, LegalDoc>> = {
         {
           heading: '4. What we never do',
           body: [
-            'We do not sell, rent or trade your data. We do not use your tool inputs to train models. We do not share personally identifiable information with third parties without your consent. We never require a phone number or real-name verification.',
+            'We do not sell, rent or trade your data. We do not use your tool inputs to train models. Except for the analytics, security and infrastructure providers disclosed in this policy, we do not proactively share personally identifiable information with third parties. We never require a phone number or real-name verification.',
           ],
         },
         {
@@ -150,26 +156,28 @@ export const legalDocs: Record<LegalKey, Record<LegalLang, LegalDoc>> = {
             'The Site currently displays no ads. If Google AdSense is enabled in the future, the following applies:',
             'Third-party vendors, including Google, use cookies to serve ads based on your prior visits to this and other websites. Google uses advertising cookies to enable it and its partners to serve ads based on your visits to this Site and/or other sites on the Internet.',
             `You may visit Google Ads Settings (https://adssettings.google.com) to opt out of personalized advertising, or https://www.aboutads.info to opt out of some third-party vendors' use of cookies for personalized advertising.`,
-            'This policy will be updated, and a consent mechanism provided, before any ads are enabled.',
+            'To learn how Google uses information from partner sites, visit https://policies.google.com/technologies/partner-sites.',
+            'This policy will be updated, and a consent mechanism provided, before any ads are enabled. For visitors in the EEA and UK, we will use a Google-certified consent management platform such as Funding Choices to request advertising consent, and you will be able to withdraw or change your choice through the same platform.',
           ],
         },
         {
           heading: '6. Data retention',
           body: [
-            'Server access logs are kept for 30 days. Google Analytics data is retained for 14 months (account default); Baidu Analytics follows its platform defaults. Aggregated statistics may be retained indefinitely, but can no longer be linked to any individual.',
+            'Server access logs are kept for 30 days. Google Analytics user-level and event-level data is retained for the period configured in our account, and Baidu Analytics follows its platform policies. Aggregated reports may be retained longer by the providers, but are not intended to identify specific individuals.',
           ],
         },
         {
           heading: '7. Your rights',
           body: [
             'Under applicable laws such as the GDPR and CCPA you have the right to access, correct or delete your data, to object to or restrict processing, to withdraw consent, and to lodge a complaint with your local data protection authority.',
+            'You can block or delete analytics cookies in your browser settings to prevent further analytics processing. To request access, correction or deletion of other relevant data, or to ask a question about this policy, contact us using the email address below.',
             `To exercise these rights, email ${CONTACT_EMAIL}. We respond within 30 days.`,
           ],
         },
         {
           heading: '8. Children',
           body: [
-            'The Site is not directed at children under 13 and does not knowingly collect their personal information. If you believe a child has provided information to us, contact us and we will delete it.',
+            'The Site is not directed at children under 13, or any higher minimum age required by applicable law. We do not knowingly collect children’s personal information. If you believe a child has provided personal information to us, contact us and we will delete it after verification.',
           ],
         },
         {

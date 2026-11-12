@@ -3704,3 +3704,52 @@ export function getGuideMeta(article: GuideArticle, locale: string) {
   const lang: GuideLang = locale.startsWith('zh') ? 'zh' : 'en'
   return article[lang]
 }
+
+/** heading 文本 → 锚点 id */
+export function slugifyHeading(text: string): string {
+  let s = text.trim().toLowerCase()
+  s = s.replace(/[\s]+/g, '-')
+  s = s.replace(/[^\p{L}\p{N}\-_]/gu, '')
+  s = s.replace(/-+/g, '-').replace(/^-|-$/g, '')
+  return s || 'section'
+}
+
+export function getGuideArticlesSorted(): GuideArticle[] {
+  return [...guideArticles].sort((a, b) => (a.date < b.date ? 1 : -1))
+}
+
+export function getPrevNext(slug: string): { prev: GuideArticle | null; next: GuideArticle | null } {
+  const sorted = getGuideArticlesSorted()
+  const idx = sorted.findIndex(a => a.slug === slug)
+  if (idx === -1) return { prev: null, next: null }
+  return { prev: idx > 0 ? sorted[idx - 1] : null, next: idx < sorted.length - 1 ? sorted[idx + 1] : null }
+}
+
+export function getRelated(slug: string, limit = 3): GuideArticle[] {
+  const current = guideArticles.find(a => a.slug === slug)
+  if (!current) return []
+  const cTools = new Set(current.toolKeys ?? [])
+  const cTags = new Set(current.tags)
+  const scored = guideArticles
+    .filter(a => a.slug !== slug)
+    .map(a => {
+      const aTools = new Set(a.toolKeys ?? [])
+      const aTags = new Set(a.tags)
+      let score = 0
+      cTools.forEach(t => { if (aTools.has(t)) score += 3 })
+      cTags.forEach(t => { if (aTags.has(t)) score += 1 })
+      if (score === 0) score = 0.1 - Math.abs(new Date(a.date).getTime() - new Date(current.date).getTime()) / 1e10
+      return { a, score }
+    })
+    .sort((x, y) => y.score - x.score)
+    .slice(0, limit)
+  return scored.map(s => s.a)
+}
+
+export function getAllTags(): Array<{ tag: string; count: number }> {
+  const map = new Map<string, number>()
+  guideArticles.forEach(a => a.tags.forEach(t => map.set(t, (map.get(t) ?? 0) + 1)))
+  return [...map.entries()]
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count)
+}

@@ -3,6 +3,16 @@
     <h1 class="text-2xl font-semibold text-slate-800">{{ doc.title }}</h1>
     <p class="mt-2 text-xs text-slate-400">{{ updatedText }}</p>
 
+    <a
+      v-if="kind === 'privacy'"
+      href="https://qiuyun.dev/privacy"
+      target="_blank"
+      rel="noopener"
+      class="mt-3 inline-flex text-xs text-indigo-600 hover:text-indigo-700 transition"
+    >
+      {{ isZh ? '查看秋云主站隐私政策总纲' : 'View the main Qiuyun privacy policy' }}
+    </a>
+
     <section v-for="(section, i) in doc.sections" :key="i" class="mt-7">
       <h2 class="text-base font-semibold text-slate-700">{{ section.heading }}</h2>
       <p
