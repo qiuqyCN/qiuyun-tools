@@ -56,8 +56,14 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
       ],
-      // ============ 第三方统计脚本 ============
+      // ============ 第三方统计 / 广告脚本 ============
       script: [
+        // Google AdSense（ca-pub-5598459476681539），自动广告，需存在于所有页面
+        {
+          async: true,
+          src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5598459476681539',
+          crossorigin: 'anonymous',
+        },
         // Google Tag Manager（GTM-PXFBGGX3）
         { async: true, src: 'https://www.googletagmanager.com/gtm.js?id=GTM-PXFBGGX3' },
         {
