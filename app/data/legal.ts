@@ -43,10 +43,10 @@ export const legalDocs: Record<LegalKey, Record<LegalLang, LegalDoc>> = {
           heading: '二、我们收集的信息',
           body: [
             '1. 服务器访问日志：包括 IP 地址、浏览器标识（User-Agent）、访问路径、状态码与时间。仅用于安全防护、故障排查与容量评估，保留 30 天。',
-            '2. 第三方访问统计：本站使用 Google Analytics 4（通过 Google Tag Manager）与百度统计，收集页面浏览量、来源渠道、设备类型、屏幕尺寸、大致地理位置（城市级）以及统计 Cookie 标识等信息，用于了解哪些工具被使用、页面是否需要优化。这些数据可能以伪匿名标识关联到浏览器或设备，并非完全匿名。',
+            '2. 第三方访问统计：本站使用自托管的 Umami（umami.qiuyun.dev）收集页面浏览量、来源渠道、设备类型与屏幕尺寸等信息，用于了解哪些工具被使用、页面是否需要优化。Umami 默认不使用 Cookie，不进行跨站跟踪，数据仅保存在本站自有服务器。',
             '3. 安全防护：本站通过 Cloudflare 提供 CDN 与安全防护，Cloudflare 可能写入 __cf_bm 等 Cookie 用于识别自动化流量。',
             '我们不收集工具输入内容，也不主动收集姓名、手机号、身份证件等直接身份信息。IP 地址、设备信息和统计 Cookie 标识可能由上述服务商按照各自隐私政策处理；我们目前不利用这些信息建立广告定向画像。',
-            '相关服务商隐私政策：Google（https://policies.google.com/privacy）、百度统计（https://tongji.baidu.com/web/help/article?id=330&type=0）、Cloudflare（https://www.cloudflare.com/privacypolicy/）。',
+            '相关服务商隐私政策：Umami（https://umami.is/privacy）、Cloudflare（https://www.cloudflare.com/privacypolicy/）。',
           ],
         },
         {
@@ -127,10 +127,10 @@ export const legalDocs: Record<LegalKey, Record<LegalLang, LegalDoc>> = {
           heading: '2. Information we collect',
           body: [
             '1. Server access logs: IP address, user agent, requested path, status code and timestamp. Used only for security, troubleshooting and capacity planning; retained for 30 days.',
-            '2. Third-party analytics: the Site uses Google Analytics 4 (via Google Tag Manager) and Baidu Analytics to collect page views, referral sources, device types, screen sizes, approximate locations (city level), analytics cookie identifiers and similar information. This helps us understand which tools are used and what needs improvement. These data may be linked to a browser or device through pseudonymous identifiers and are not fully anonymous.',
+            '2. Third-party analytics: the Site uses a self-hosted Umami instance (umami.qiuyun.dev) to collect page views, referral sources, device types and screen sizes. This helps us understand which tools are used and what needs improvement. Umami does not use cookies by default and performs no cross-site tracking; the data is stored only on our own server.',
             '3. Security: the Site is served through Cloudflare, which may set cookies such as __cf_bm to detect automated traffic.',
             'We do not collect the content you enter into tools, and we do not proactively collect directly identifying details such as names, phone numbers or identity documents. IP addresses, device information and analytics cookie identifiers may be processed by the providers above under their own privacy policies. We currently do not use this information to build advertising profiles.',
-            'Provider privacy policies: Google (https://policies.google.com/privacy), Baidu Analytics (https://tongji.baidu.com/web/help/article?id=330&type=0), and Cloudflare (https://www.cloudflare.com/privacypolicy/).',
+            'Provider privacy policies: Umami (https://umami.is/privacy), and Cloudflare (https://www.cloudflare.com/privacypolicy/).',
           ],
         },
         {

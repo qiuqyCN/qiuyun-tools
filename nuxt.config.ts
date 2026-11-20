@@ -56,7 +56,7 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
       ],
-      // ============ 第三方统计 / 广告脚本 ============
+      // ============ 第三方脚本 ============
       script: [
         // Google AdSense（ca-pub-5598459476681539），自动广告，需存在于所有页面
         {
@@ -64,29 +64,11 @@ export default defineNuxtConfig({
           src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5598459476681539',
           crossorigin: 'anonymous',
         },
-        // Google Tag Manager（GTM-PXFBGGX3）
-        { async: true, src: 'https://www.googletagmanager.com/gtm.js?id=GTM-PXFBGGX3' },
+        // Umami 自托管统计（umami.qiuyun.dev）
         {
-          // eslint-disable-next-line no-script-url
-          innerHTML: [
-            "window.dataLayer = window.dataLayer || [];",
-            "function gtag(){dataLayer.push(arguments);}",
-            "gtag('js', new Date());",
-          ].join('\n'),
-          type: 'text/javascript',
-        },
-        // 百度统计（hm.js?a7978dcd856e150e2cde981f3ab7ab20）
-        {
-          innerHTML: [
-            'var _hmt = _hmt || [];',
-            '(function() {',
-            "  var hm = document.createElement('script');",
-            "  hm.src = 'https://hm.baidu.com/hm.js?a7978dcd856e150e2cde981f3ab7ab20';",
-            "  var s = document.getElementsByTagName('script')[0];",
-            '  s.parentNode.insertBefore(hm, s);',
-            '})();',
-          ].join('\n'),
-          type: 'text/javascript',
+          defer: true,
+          src: 'https://umami.qiuyun.dev/script.js',
+          'data-website-id': '051d69a5-ba3f-4b2a-a2e2-6187c1cb2895',
         },
       ],
     },
